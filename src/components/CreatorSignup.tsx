@@ -14,10 +14,27 @@ export default function CreatorSignup({ onNavigate }: CreatorSignupProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 md:px-6">
-      {/* Logo */}
-      <div className="absolute top-8 md:top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2">
-        <Crown className="text-yellow-300" size={28} />
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 md:px-6"
+      style={{
+        background:
+          "linear-gradient(135deg, #FF6B6B 0%, #FF8E9B 50%, #C44E88 100%)",
+      }}
+    >
+      {/* Logo - Fixed positioning */}
+      <div className="flex items-center gap-2 mb-8 md:mb-12">
+        <img
+          src="/logo.png"
+          alt="Hooks Logo"
+          className="w-6 h-6 md:w-8 md:h-8 object-contain"
+          onError={(e) => {
+            // Fallback to Crown icon if logo fails to load
+            const target = e.target as HTMLImageElement;
+            target.style.display = "none";
+            target.nextElementSibling?.classList.add("ml-0");
+          }}
+        />
+        <Crown className="text-yellow-300 w-6 h-6 md:w-8 md:h-8 hidden" />
         <span className="text-2xl md:text-3xl font-bold text-white">Hooks</span>
       </div>
 

@@ -1,6 +1,13 @@
 import * as React from "react";
 
-import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
+// Define ToastActionElement locally if not exported from sonner
+type ToastActionElement = React.ReactNode;
+
+// Define ToastProps locally if not exported from sonner
+type ToastProps = {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+};
 
 const TOAST_LIMIT = 1;
 const TOAST_REMOVE_DELAY = 1000000;
@@ -152,10 +159,10 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       open: true,
-      onOpenChange: (open) => {
+      onOpenChange: (open: boolean) => {
         if (!open) dismiss();
       },
-    },
+    } as ToasterToast,
   });
 
   return {

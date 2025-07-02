@@ -1,4 +1,4 @@
-import { Crown, Menu, Star, Heart, Shield, Zap } from "lucide-react";
+import { Crown, Star, Heart, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -59,14 +59,23 @@ export default function Homepage({ onNavigate }: HomepageProps) {
   ];
 
   return (
-    <div className="min-h-screen text-white">
+    <div
+      className="min-h-screen text-white"
+      style={{
+        background:
+          "linear-gradient(135deg, #FF6B6B 0%, #FF8E9B 50%, #C44E88 100%)",
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 md:p-6">
+      <div className="flex items-center justify-center p-4 md:p-6">
         <div className="flex items-center gap-2">
-          <Crown className="text-yellow-300" size={24} />
+          <img
+            src="/logo.png"
+            alt="Hooks Logo"
+            className="w-6 h-6 md:w-8 md:h-8 object-contain"
+          />
           <span className="text-xl md:text-2xl font-bold">Hooks</span>
         </div>
-        <Menu size={24} />
       </div>
 
       {/* Hero Section */}
@@ -110,9 +119,12 @@ export default function Homepage({ onNavigate }: HomepageProps) {
         <h2 className="text-xl md:text-2xl font-bold text-center mb-6">
           Featured Creators
         </h2>
-        <div className="grid grid-cols-2 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {featuredCreators.map((creator, index) => (
-            <Card key={index} className="overflow-hidden">
+            <Card
+              key={index}
+              className="overflow-hidden border border-white/20 shadow-lg"
+            >
               <CardContent className="p-0 relative">
                 <img
                   src={creator.image}
@@ -134,8 +146,8 @@ export default function Homepage({ onNavigate }: HomepageProps) {
       </div>
 
       {/* Features */}
-      <div className="grid grid-cols-2 gap-4 md:gap-6 px-4 md:px-8 mb-8 md:mb-12">
-        <div className="text-center">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 px-4 md:px-8 mb-8 md:mb-12">
+        <div className="text-center bg-white/10 border border-white/20 rounded-lg p-4 shadow-lg">
           <Heart className="mx-auto mb-2 md:mb-3 text-pink-200" size={28} />
           <h4 className="font-semibold mb-1 md:mb-2 text-sm md:text-base">
             Smart Matching
@@ -144,7 +156,7 @@ export default function Homepage({ onNavigate }: HomepageProps) {
             AI-powered connections based on interests and preferences
           </p>
         </div>
-        <div className="text-center">
+        <div className="text-center bg-white/10 border border-white/20 rounded-lg p-4 shadow-lg">
           <Crown className="mx-auto mb-2 md:mb-3 text-yellow-300" size={28} />
           <h4 className="font-semibold mb-1 md:mb-2 text-sm md:text-base">
             Create Content
@@ -153,7 +165,7 @@ export default function Homepage({ onNavigate }: HomepageProps) {
             Share exclusive content and build your personal brand
           </p>
         </div>
-        <div className="text-center">
+        <div className="text-center bg-white/10 border border-white/20 rounded-lg p-4 shadow-lg">
           <Shield className="mx-auto mb-2 md:mb-3 text-green-300" size={28} />
           <h4 className="font-semibold mb-1 md:mb-2 text-sm md:text-base">
             Safe & Secure
@@ -162,7 +174,7 @@ export default function Homepage({ onNavigate }: HomepageProps) {
             Advanced security features to protect your privacy
           </p>
         </div>
-        <div className="text-center">
+        <div className="text-center bg-white/10 border border-white/20 rounded-lg p-4 shadow-lg">
           <Zap className="mx-auto mb-2 md:mb-3 text-blue-300" size={28} />
           <h4 className="font-semibold mb-1 md:mb-2 text-sm md:text-base">
             Instant Connect
@@ -178,9 +190,9 @@ export default function Homepage({ onNavigate }: HomepageProps) {
         <h2 className="text-xl md:text-2xl font-bold text-center mb-6">
           Creator Success Stories
         </h2>
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {successStories.map((story, index) => (
-            <Card key={index} className="bg-white/10 border-white/20">
+            <Card key={index} className="bg-white/10 border-white/20 shadow-lg">
               <CardContent className="p-4 flex items-start gap-3">
                 <img
                   src={story.image}
