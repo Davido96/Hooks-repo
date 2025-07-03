@@ -1,62 +1,75 @@
-import React, { useState } from 'react';
-import { Heart, X, Star, MessageCircle, User, LogOut, Crown, Bell, Search, Filter, Settings } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { Match } from '../types';
-import { ROUTES, RouteType } from '../routes';
+import React, { useState } from "react";
+import {
+  Heart,
+  X,
+  Star,
+  MessageCircle,
+  User,
+  LogOut,
+  Crown,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { Match } from "../types";
+import { ROUTES, RouteType } from "../routes";
 
 interface AuthenticatedHomepageProps {
   onNavigate: (route: RouteType) => void;
 }
 
-const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({ onNavigate }) => {
+const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({
+  onNavigate,
+}) => {
   const { user, logout } = useAuth();
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
   const [showMatch, setShowMatch] = useState(false);
 
   const matches: Match[] = [
     {
-      id: '1',
-      name: 'Anita Campbell',
+      id: "1",
+      name: "Anita Campbell",
       age: 30,
-      location: '2 km away • Victoria Island Lagos',
-      bio: 'Love traveling and exploring new cultures. Passionate about photography and good food.',
-      interests: ['Sports', 'Movies', 'Fashion'],
-      profilePicture: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400',
+      location: "2 km away • Victoria Island Lagos",
+      bio: "Love traveling and exploring new cultures. Passionate about photography and good food.",
+      interests: ["Sports", "Movies", "Fashion"],
+      profilePicture:
+        "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400",
       followers: 462,
-      subscribers: 271
+      subscribers: 271,
     },
     {
-      id: '2',
-      name: 'Sarah Johnson',
+      id: "2",
+      name: "Sarah Johnson",
       age: 28,
-      location: '3 km away • Lekki Lagos',
-      bio: 'Fitness enthusiast and yoga instructor. Looking for someone who shares my passion for healthy living.',
-      interests: ['Fitness', 'Yoga', 'Cooking'],
-      profilePicture: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=400',
+      location: "3 km away • Lekki Lagos",
+      bio: "Fitness enthusiast and yoga instructor. Looking for someone who shares my passion for healthy living.",
+      interests: ["Fitness", "Yoga", "Cooking"],
+      profilePicture:
+        "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=400",
       followers: 325,
-      subscribers: 198
+      subscribers: 198,
     },
     {
-      id: '3',
-      name: 'Emily Davis',
+      id: "3",
+      name: "Emily Davis",
       age: 26,
-      location: '5 km away • Ikoyi Lagos',
-      bio: 'Art lover and creative soul. Always looking for new adventures and meaningful connections.',
-      interests: ['Art', 'Music', 'Travel'],
-      profilePicture: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400',
+      location: "5 km away • Ikoyi Lagos",
+      bio: "Art lover and creative soul. Always looking for new adventures and meaningful connections.",
+      interests: ["Art", "Music", "Travel"],
+      profilePicture:
+        "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400",
       followers: 542,
-      subscribers: 389
-    }
+      subscribers: 389,
+    },
   ];
 
   const currentMatch = matches[currentMatchIndex];
 
-  const handleSwipe = (direction: 'left' | 'right') => {
-    if (direction === 'right') {
+  const handleSwipe = (direction: "left" | "right") => {
+    if (direction === "right") {
       setShowMatch(true);
       setTimeout(() => setShowMatch(false), 2000);
     }
-    
+
     setTimeout(() => {
       setCurrentMatchIndex((prev) => (prev + 1) % matches.length);
     }, 300);
@@ -68,7 +81,7 @@ const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({ onNavigat
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen text-white"
       style={{
         background:
@@ -92,14 +105,14 @@ const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({ onNavigat
           <Crown className="text-yellow-300 w-6 h-6 md:w-8 md:h-8 hidden" />
           <h1 className="text-xl md:text-3xl font-bold text-white">Hooks</h1>
         </div>
-        
+
         <div className="flex items-center space-x-2 md:space-x-4">
           <div className="flex items-center space-x-1 md:space-x-2">
             <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center">
               <User className="text-gray-600" size={16} />
             </div>
             <span className="text-white font-medium text-sm md:text-base hidden sm:block">
-              {user?.fullName || 'User'}
+              {user?.fullName || "User"}
             </span>
           </div>
           <button
@@ -148,7 +161,7 @@ const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({ onNavigat
         <div className="relative w-full max-w-sm">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
             <div className="relative">
-              <img 
+              <img
                 src={currentMatch.profilePicture}
                 alt={currentMatch.name}
                 className="w-full h-80 sm:h-96 object-cover"
@@ -160,8 +173,12 @@ const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({ onNavigat
               {/* Profile Info Overlay */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 md:p-4 text-white">
                 <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-lg md:text-xl font-bold">{currentMatch.name}</h2>
-                  <span className="text-base md:text-lg">{currentMatch.age}</span>
+                  <h2 className="text-lg md:text-xl font-bold">
+                    {currentMatch.name}
+                  </h2>
+                  <span className="text-base md:text-lg">
+                    {currentMatch.age}
+                  </span>
                 </div>
 
                 <p className="text-xs md:text-sm mb-2 opacity-90">
@@ -196,41 +213,41 @@ const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({ onNavigat
               </div>
             </div>
           </div>
-          
+
           {/* Action Buttons */}
           <div className="flex justify-center space-x-3 md:space-x-4 mt-4 md:mt-6">
             <button
-              onClick={() => handleSwipe('left')}
+              onClick={() => handleSwipe("left")}
               className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-110"
               title="Dislike"
               aria-label="Dislike"
             >
-              <X className="text-gray-600" size={18} md:size={20} />
+              <X className="text-gray-600 w-5 h-5 md:w-6 md:h-6" />
             </button>
-            
-            <button 
+
+            <button
               className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-110"
               title="Super Like"
               aria-label="Super Like"
             >
-              <Star className="text-yellow-500" size={18} md:size={20} />
+              <Star className="text-yellow-500" size={18} />
             </button>
 
-            <button 
+            <button
               className="w-12 h-12 md:w-14 md:h-14 bg-blue-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-110"
               title="Message"
               aria-label="Message"
             >
-              <MessageCircle className="text-white" size={18} md:size={20} />
+              <MessageCircle className="text-white" size={18} />
             </button>
-            
+
             <button
-              onClick={() => handleSwipe('right')}
+              onClick={() => handleSwipe("right")}
               className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-110"
               title="Like"
               aria-label="Like"
             >
-              <Heart className="text-white" size={18} md:size={20} />
+              <Heart className="text-white" size={18} />
             </button>
           </div>
         </div>
@@ -239,7 +256,8 @@ const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({ onNavigat
       {/* Bottom Stats */}
       <div className="text-center mt-4 md:mt-6 text-white px-3 md:px-4">
         <p className="font-medium text-sm md:text-base">
-          {matches.length} matches • {matches.length - currentMatchIndex - 1} profiles remaining
+          {matches.length} matches • {matches.length - currentMatchIndex - 1}{" "}
+          profiles remaining
         </p>
         <p className="text-xs md:text-sm opacity-75 mt-1">
           You have 3 super likes remaining today
@@ -251,9 +269,11 @@ const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({ onNavigat
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-4 md:p-6 max-w-sm mx-4 text-center">
             <div className="w-12 h-12 md:w-16 md:h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-              <Heart className="text-pink-500" size={24} md:size={32} />
+              <Heart className="text-pink-500 w-6 h-6 md:w-8 md:h-8" />
             </div>
-            <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">Success</h3>
+            <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">
+              Success
+            </h3>
             <p className="text-gray-600 text-sm md:text-base">
               Like sent, wait for user to accept match
             </p>
