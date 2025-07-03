@@ -119,7 +119,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
       } else {
         // Handle profile completion
         console.log("Profile setup completed:", profileData);
-        onNavigate("homepage");
+        onNavigate(ROUTES.HOMEPAGE);
       }
     }
   };

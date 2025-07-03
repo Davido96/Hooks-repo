@@ -3,14 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ROUTES, RouteType } from "../routes";
 
 interface CreatorSignupProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (route: RouteType) => void;
 }
 
 export default function CreatorSignup({ onNavigate }: CreatorSignupProps) {
   const handleSignUp = () => {
-    onNavigate("creator-setup");
+    onNavigate(ROUTES.CREATOR_SETUP);
   };
 
   return (
@@ -31,7 +32,7 @@ export default function CreatorSignup({ onNavigate }: CreatorSignupProps) {
             // Fallback to Crown icon if logo fails to load
             const target = e.target as HTMLImageElement;
             target.style.display = "none";
-            target.nextElementSibling?.classList.add("ml-0");
+            target.nextElementSibling?.classList.remove("hidden");
           }}
         />
         <Crown className="text-yellow-300 w-6 h-6 md:w-8 md:h-8 hidden" />
@@ -76,7 +77,10 @@ export default function CreatorSignup({ onNavigate }: CreatorSignupProps) {
 
           <p className="text-center text-xs md:text-sm text-gray-600">
             Already have an account?{" "}
-            <button className="text-pink-500 hover:text-pink-600 font-medium">
+            <button
+              onClick={() => onNavigate(ROUTES.LOGIN)}
+              className="text-pink-500 hover:text-pink-600 font-medium"
+            >
               Sign In
             </button>
           </p>

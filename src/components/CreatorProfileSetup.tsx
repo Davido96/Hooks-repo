@@ -12,9 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ROUTES, RouteType } from "../routes";
+import { useAuth } from "../contexts/AuthContext";
+import SuccessModal from "./SuccessModal";
 
 interface CreatorProfileSetupProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (route: RouteType) => void;
 }
 
 interface ProfileData {
@@ -46,6 +49,8 @@ export default function CreatorProfileSetupProps({
 }: CreatorProfileSetupProps) {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const { updateProfile } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: "",
     age: "",
@@ -118,9 +123,9 @@ export default function CreatorProfileSetupProps({
         newErrors.subscriptionFee = "Monthly subscription fee is required";
       } else if (
         isNaN(Number(profileData.subscriptionFee)) ||
-        Number(profileData.subscriptionFee) < 0
+        Number(profileData.subscriptionFee) < 10
       ) {
-        newErrors.subscriptionFee = "Please enter a valid amount";
+        newErrors.subscriptionFee = "Please enter a valid amount (minimum 10)";
       }
     }
 
@@ -135,9 +140,28 @@ export default function CreatorProfileSetupProps({
       } else {
         // Handle profile completion
         console.log("Profile setup completed:", profileData);
-        onNavigate("homepage");
+
+        // Update user profile in context
+        updateProfile({
+          fullName: profileData.fullName,
+          age: parseInt(profileData.age),
+          bio: profileData.bio,
+          gender: profileData.gender,
+          interestedIn: profileData.interestedIn,
+          city: profileData.city,
+          phoneNumber: profileData.phone,
+          interests: profileData.interests,
+        });
+
+        // Show success modal
+        setShowSuccessModal(true);
       }
     }
+  };
+
+  const handleSuccessComplete = () => {
+    setShowSuccessModal(false);
+    onNavigate(ROUTES.HOMEPAGE);
   };
 
   const prevStep = () => {
@@ -197,410 +221,430 @@ export default function CreatorProfileSetupProps({
   };
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 md:px-6 py-8"
-      style={{
-        background:
-          "linear-gradient(135deg, #FF6B6B 0%, #FF8E9B 50%, #C44E88 100%)",
-      }}
-    >
-      {/* Logo */}
-      <div className="flex items-center gap-2 mb-6 md:mb-8">
-        <img
-          src="/logo.png"
-          alt="Hooks Logo"
-          className="w-6 h-6 md:w-8 md:h-8 object-contain"
-          onError={(e) => {
-            // Fallback to Crown icon if logo fails to load
-            const target = e.target as HTMLImageElement;
-            target.style.display = "none";
-          }}
-        />
-        <span className="text-2xl md:text-3xl font-bold text-white">Hooks</span>
+    <>
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-4 md:px-6 py-8"
+        style={{
+          background:
+            "linear-gradient(135deg, #FF6B6B 0%, #FF8E9B 50%, #C44E88 100%)",
+        }}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-2 mb-6 md:mb-8">
+          <img
+            src="/logo.png"
+            alt="Hooks Logo"
+            className="w-6 h-6 md:w-8 md:h-8 object-contain"
+            onError={(e) => {
+              // Fallback to Crown icon if logo fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = "none";
+            }}
+          />
+          <span className="text-2xl md:text-3xl font-bold text-white">
+            Hooks
+          </span>
+        </div>
+
+        <Card className="w-full max-w-sm md:max-w-md">
+          <CardHeader className="text-center pb-4 md:pb-6">
+            {/* Progress Lines */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs text-gray-500">Step {step} of 3</span>
+              </div>
+              <div className="flex gap-2">
+                {/* Step 1 Line */}
+                <div
+                  className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
+                    step >= 1
+                      ? "bg-gradient-to-r from-pink-500 to-red-400"
+                      : "bg-gray-200"
+                  }`}
+                ></div>
+                {/* Step 2 Line */}
+                <div
+                  className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
+                    step >= 2
+                      ? "bg-gradient-to-r from-pink-500 to-red-400"
+                      : "bg-gray-200"
+                  }`}
+                ></div>
+                {/* Step 3 Line */}
+                <div
+                  className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
+                    step >= 3
+                      ? "bg-gradient-to-r from-pink-500 to-red-400"
+                      : "bg-gray-200"
+                  }`}
+                ></div>
+              </div>
+            </div>
+
+            <CardTitle className="text-xl md:text-2xl font-bold mb-2">
+              Set up your profile
+            </CardTitle>
+            <p className="text-gray-600 text-sm md:text-base">
+              {getStepTitle()}
+            </p>
+          </CardHeader>
+
+          <CardContent className="space-y-4 md:space-y-6">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                nextStep();
+              }}
+            >
+              {step === 1 && (
+                <>
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="relative">
+                      <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                        {profileData.profilePicture ? (
+                          <img
+                            src={URL.createObjectURL(
+                              profileData.profilePicture
+                            )}
+                            alt="Profile preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Camera className="text-gray-400" size={20} />
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        aria-label="Upload profile picture"
+                      />
+                    </div>
+                    <p className="text-xs md:text-sm text-gray-500">
+                      Profile picture (optional)
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName" className="text-sm">
+                      Full Name *
+                    </Label>
+                    <Input
+                      id="fullName"
+                      className={`h-10 md:h-11 ${
+                        errors.fullName ? "border-red-500" : ""
+                      }`}
+                      value={profileData.fullName}
+                      onChange={(e) =>
+                        updateProfileData("fullName", e.target.value)
+                      }
+                      aria-describedby={
+                        errors.fullName ? "fullName-error" : undefined
+                      }
+                    />
+                    {errors.fullName && (
+                      <p id="fullName-error" className="text-red-500 text-xs">
+                        {errors.fullName}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="age" className="text-sm">
+                      Age *
+                    </Label>
+                    <Input
+                      id="age"
+                      type="number"
+                      min="18"
+                      max="100"
+                      className={`h-10 md:h-11 ${
+                        errors.age ? "border-red-500" : ""
+                      }`}
+                      value={profileData.age}
+                      onChange={(e) => updateProfileData("age", e.target.value)}
+                      aria-describedby={errors.age ? "age-error" : undefined}
+                    />
+                    {errors.age && (
+                      <p id="age-error" className="text-red-500 text-xs">
+                        {errors.age}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="bio" className="text-sm">
+                      Bio
+                    </Label>
+                    <Textarea
+                      id="bio"
+                      rows={3}
+                      className="resize-none"
+                      value={profileData.bio}
+                      onChange={(e) => updateProfileData("bio", e.target.value)}
+                      placeholder="Tell us about yourself..."
+                    />
+                  </div>
+                </>
+              )}
+
+              {step === 2 && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="gender" className="text-sm">
+                      Gender *
+                    </Label>
+                    <Select
+                      value={profileData.gender}
+                      onValueChange={(value) =>
+                        updateProfileData("gender", value)
+                      }
+                    >
+                      <SelectTrigger
+                        className={`h-10 md:h-11 ${
+                          errors.gender ? "border-red-500" : ""
+                        }`}
+                      >
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="non-binary">Non-binary</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.gender && (
+                      <p className="text-red-500 text-xs">{errors.gender}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="interested" className="text-sm">
+                      Interested In *
+                    </Label>
+                    <Select
+                      value={profileData.interestedIn}
+                      onValueChange={(value) =>
+                        updateProfileData("interestedIn", value)
+                      }
+                    >
+                      <SelectTrigger
+                        className={`h-10 md:h-11 ${
+                          errors.interestedIn ? "border-red-500" : ""
+                        }`}
+                      >
+                        <SelectValue placeholder="Select preference" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="men">Men</SelectItem>
+                        <SelectItem value="women">Women</SelectItem>
+                        <SelectItem value="non-binary">Non-binary</SelectItem>
+                        <SelectItem value="everyone">Everyone</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.interestedIn && (
+                      <p className="text-red-500 text-xs">
+                        {errors.interestedIn}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="race" className="text-sm">
+                      Race/Ethnicity
+                    </Label>
+                    <Select
+                      value={profileData.race}
+                      onValueChange={(value) =>
+                        updateProfileData("race", value)
+                      }
+                    >
+                      <SelectTrigger className="h-10 md:h-11">
+                        <SelectValue placeholder="Select race/ethnicity (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="black">
+                          Black/African American
+                        </SelectItem>
+                        <SelectItem value="white">White/Caucasian</SelectItem>
+                        <SelectItem value="asian">Asian</SelectItem>
+                        <SelectItem value="hispanic">
+                          Hispanic/Latino
+                        </SelectItem>
+                        <SelectItem value="native">Native American</SelectItem>
+                        <SelectItem value="pacific">
+                          Pacific Islander
+                        </SelectItem>
+                        <SelectItem value="mixed">Mixed Race</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="prefer-not-to-say">
+                          Prefer not to say
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="city" className="text-sm">
+                      City *
+                    </Label>
+                    <Input
+                      id="city"
+                      className={`h-10 md:h-11 ${
+                        errors.city ? "border-red-500" : ""
+                      }`}
+                      value={profileData.city}
+                      onChange={(e) =>
+                        updateProfileData("city", e.target.value)
+                      }
+                      placeholder="Enter your city"
+                      aria-describedby={errors.city ? "city-error" : undefined}
+                    />
+                    {errors.city && (
+                      <p id="city-error" className="text-red-500 text-xs">
+                        {errors.city}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm">
+                      Phone Number *
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      className={`h-10 md:h-11 ${
+                        errors.phone ? "border-red-500" : ""
+                      }`}
+                      value={profileData.phone}
+                      onChange={(e) =>
+                        updateProfileData("phone", e.target.value)
+                      }
+                      placeholder="Enter your phone number"
+                      aria-describedby={
+                        errors.phone ? "phone-error" : undefined
+                      }
+                    />
+                    {errors.phone && (
+                      <p id="phone-error" className="text-red-500 text-xs">
+                        {errors.phone}
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {step === 3 && (
+                <div className="space-y-4">
+                  <h2 className="text-xs md:text-xs font-light text-gray-800 mb-2">
+                    Monthly subscription fee (Keys)*
+                  </h2>
+
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Input
+                        id="subscriptionFee"
+                        type="number"
+                        min="10"
+                        max="1000"
+                        step="1"
+                        className={`h-10 md:h-11 pl-8 ${
+                          errors.subscriptionFee ? "border-red-500" : ""
+                        }`}
+                        value={profileData.subscriptionFee}
+                        onChange={(e) =>
+                          updateProfileData("subscriptionFee", e.target.value)
+                        }
+                        placeholder="0.00"
+                        aria-describedby={
+                          errors.subscriptionFee
+                            ? "subscriptionFee-error"
+                            : undefined
+                        }
+                      />
+                    </div>
+                    {errors.subscriptionFee && (
+                      <p
+                        id="subscriptionFee-error"
+                        className="text-red-500 text-xs"
+                      >
+                        {errors.subscriptionFee}
+                      </p>
+                    )}
+                    <h2 className="text-xs md:text-xs font-extralight text-gray-800 mb-2">
+                      Set how much subscribers pay monthly to access your
+                      exclusive content (Minimum 10Keys)
+                    </h2>
+                  </div>
+
+                  <p className="text-xs md:text-xs text-black text-center">
+                    Select interests to help us connect you with like-minded
+                    people
+                  </p>
+                  <div
+                    className="flex flex-wrap gap-2"
+                    role="group"
+                    aria-label="Select your interests"
+                  >
+                    {interests.map((interest) => (
+                      <button
+                        key={interest}
+                        type="button"
+                        onClick={() => toggleInterest(interest)}
+                        className={`px-2 py-1 md:px-3 md:py-2 rounded-full text-xs md:text-sm border transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
+                          profileData.interests.includes(interest)
+                            ? "bg-pink-500 text-white border-pink-500"
+                            : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+                        }`}
+                        aria-pressed={profileData.interests.includes(interest)}
+                      >
+                        {interest}
+                      </button>
+                    ))}
+                  </div>
+                  {profileData.interests.length > 0 && (
+                    <p className="text-xs text-gray-500 text-center">
+                      {profileData.interests.length} interest
+                      {profileData.interests.length !== 1 ? "s" : ""} selected
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-4">
+                {step > 1 && (
+                  <Button
+                    type="button"
+                    onClick={prevStep}
+                    variant="outline"
+                    className="flex-1 h-10 md:h-11"
+                  >
+                    Back
+                  </Button>
+                )}
+                <Button
+                  type="submit"
+                  className={`font-semibold text-white bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 h-10 md:h-11 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
+                    step === 1 ? "w-full" : "flex-1"
+                  }`}
+                  disabled={step === 3 && profileData.interests.length === 0}
+                >
+                  {step === 3 ? "Complete Setup" : "Continue"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card className="w-full max-w-sm md:max-w-md">
-        <CardHeader className="text-center pb-4 md:pb-6">
-          {/* Progress Lines */}
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-xs text-gray-500">Step {step} of 3</span>
-            </div>
-            <div className="flex gap-2">
-              {/* Step 1 Line */}
-              <div
-                className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
-                  step >= 1
-                    ? "bg-gradient-to-r from-pink-500 to-red-400"
-                    : "bg-gray-200"
-                }`}
-              ></div>
-              {/* Step 2 Line */}
-              <div
-                className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
-                  step >= 2
-                    ? "bg-gradient-to-r from-pink-500 to-red-400"
-                    : "bg-gray-200"
-                }`}
-              ></div>
-              {/* Step 3 Line */}
-              <div
-                className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
-                  step >= 3
-                    ? "bg-gradient-to-r from-pink-500 to-red-400"
-                    : "bg-gray-200"
-                }`}
-              ></div>
-            </div>
-          </div>
-
-          <CardTitle className="text-xl md:text-2xl font-bold mb-2">
-            Set up your profile
-          </CardTitle>
-          <p className="text-gray-600 text-sm md:text-base">{getStepTitle()}</p>
-        </CardHeader>
-
-        <CardContent className="space-y-4 md:space-y-6">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              nextStep();
-            }}
-          >
-            {step === 1 && (
-              <>
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="relative">
-                    <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
-                      {profileData.profilePicture ? (
-                        <img
-                          src={URL.createObjectURL(profileData.profilePicture)}
-                          alt="Profile preview"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <Camera className="text-gray-400" size={20} />
-                      )}
-                    </div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      aria-label="Upload profile picture"
-                    />
-                  </div>
-                  <p className="text-xs md:text-sm text-gray-500">
-                    Profile picture (optional)
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-sm">
-                    Full Name *
-                  </Label>
-                  <Input
-                    id="fullName"
-                    className={`h-10 md:h-11 ${
-                      errors.fullName ? "border-red-500" : ""
-                    }`}
-                    value={profileData.fullName}
-                    onChange={(e) =>
-                      updateProfileData("fullName", e.target.value)
-                    }
-                    aria-describedby={
-                      errors.fullName ? "fullName-error" : undefined
-                    }
-                  />
-                  {errors.fullName && (
-                    <p id="fullName-error" className="text-red-500 text-xs">
-                      {errors.fullName}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="age" className="text-sm">
-                    Age *
-                  </Label>
-                  <Input
-                    id="age"
-                    type="number"
-                    min="18"
-                    max="100"
-                    className={`h-10 md:h-11 ${
-                      errors.age ? "border-red-500" : ""
-                    }`}
-                    value={profileData.age}
-                    onChange={(e) => updateProfileData("age", e.target.value)}
-                    aria-describedby={errors.age ? "age-error" : undefined}
-                  />
-                  {errors.age && (
-                    <p id="age-error" className="text-red-500 text-xs">
-                      {errors.age}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="bio" className="text-sm">
-                    Bio
-                  </Label>
-                  <Textarea
-                    id="bio"
-                    rows={3}
-                    className="resize-none"
-                    value={profileData.bio}
-                    onChange={(e) => updateProfileData("bio", e.target.value)}
-                    placeholder="Tell us about yourself..."
-                  />
-                </div>
-              </>
-            )}
-
-            {step === 2 && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="gender" className="text-sm">
-                    Gender *
-                  </Label>
-                  <Select
-                    value={profileData.gender}
-                    onValueChange={(value) =>
-                      updateProfileData("gender", value)
-                    }
-                  >
-                    <SelectTrigger
-                      className={`h-10 md:h-11 ${
-                        errors.gender ? "border-red-500" : ""
-                      }`}
-                    >
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="non-binary">Non-binary</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.gender && (
-                    <p className="text-red-500 text-xs">{errors.gender}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="interested" className="text-sm">
-                    Interested In *
-                  </Label>
-                  <Select
-                    value={profileData.interestedIn}
-                    onValueChange={(value) =>
-                      updateProfileData("interestedIn", value)
-                    }
-                  >
-                    <SelectTrigger
-                      className={`h-10 md:h-11 ${
-                        errors.interestedIn ? "border-red-500" : ""
-                      }`}
-                    >
-                      <SelectValue placeholder="Select preference" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="men">Men</SelectItem>
-                      <SelectItem value="women">Women</SelectItem>
-                      <SelectItem value="non-binary">Non-binary</SelectItem>
-                      <SelectItem value="everyone">Everyone</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.interestedIn && (
-                    <p className="text-red-500 text-xs">
-                      {errors.interestedIn}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="race" className="text-sm">
-                    Race/Ethnicity
-                  </Label>
-                  <Select
-                    value={profileData.race}
-                    onValueChange={(value) => updateProfileData("race", value)}
-                  >
-                    <SelectTrigger className="h-10 md:h-11">
-                      <SelectValue placeholder="Select race/ethnicity (optional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="black">
-                        Black/African American
-                      </SelectItem>
-                      <SelectItem value="white">White/Caucasian</SelectItem>
-                      <SelectItem value="asian">Asian</SelectItem>
-                      <SelectItem value="hispanic">Hispanic/Latino</SelectItem>
-                      <SelectItem value="native">Native American</SelectItem>
-                      <SelectItem value="pacific">Pacific Islander</SelectItem>
-                      <SelectItem value="mixed">Mixed Race</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                      <SelectItem value="prefer-not-to-say">
-                        Prefer not to say
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="city" className="text-sm">
-                    City *
-                  </Label>
-                  <Input
-                    id="city"
-                    className={`h-10 md:h-11 ${
-                      errors.city ? "border-red-500" : ""
-                    }`}
-                    value={profileData.city}
-                    onChange={(e) => updateProfileData("city", e.target.value)}
-                    placeholder="Enter your city"
-                    aria-describedby={errors.city ? "city-error" : undefined}
-                  />
-                  {errors.city && (
-                    <p id="city-error" className="text-red-500 text-xs">
-                      {errors.city}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-sm">
-                    Phone Number *
-                  </Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    className={`h-10 md:h-11 ${
-                      errors.phone ? "border-red-500" : ""
-                    }`}
-                    value={profileData.phone}
-                    onChange={(e) => updateProfileData("phone", e.target.value)}
-                    placeholder="Enter your phone number"
-                    aria-describedby={errors.phone ? "phone-error" : undefined}
-                  />
-                  {errors.phone && (
-                    <p id="phone-error" className="text-red-500 text-xs">
-                      {errors.phone}
-                    </p>
-                  )}
-                </div>
-              </>
-            )}
-
-            {step === 3 && (
-              <div className="space-y-4">
-                <h2 className="text-xs md:text-xs font-light text-gray-800 mb-2">
-                  Monthly subscription fee (Keys)*
-                </h2>
-
-                <div className="space-y-2">
-                  {/* <Label htmlFor="subscriptionFee" className="text-sm">
-                    Amount (USD) *
-                  </Label> */}
-                  <div className="relative">
-                    {/* <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                      $
-                    </span> */}
-                    <Input
-                      id="subscriptionFee"
-                      type="number"
-                      min="10"
-                      max="1000"
-                      step="1"
-                      className={`h-10 md:h-11 pl-8 ${
-                        errors.subscriptionFee ? "border-red-500" : ""
-                      }`}
-                      value={profileData.subscriptionFee}
-                      onChange={(e) =>
-                        updateProfileData("subscriptionFee", e.target.value)
-                      }
-                      placeholder="0.00"
-                      aria-describedby={
-                        errors.subscriptionFee
-                          ? "subscriptionFee-error"
-                          : undefined
-                      }
-                    />
-                  </div>
-                  {errors.subscriptionFee && (
-                    <p
-                      id="subscriptionFee-error"
-                      className="text-red-500 text-xs"
-                    >
-                      {errors.subscriptionFee}
-                    </p>
-                  )}
-                  <h2 className="text-xs md:text-xs font-extralight text-gray-800 mb-2">
-                    Set how much subscribers pay monthly to access your
-                    exclusive content (Minimum 10Keys)
-                  </h2>
-                </div>
-
-                <p className="text-xs md:text-xs text-black text-center">
-                  Select interests to help us connect you with like-minded
-                  people
-                </p>
-                <div
-                  className="flex flex-wrap gap-2"
-                  role="group"
-                  aria-label="Select your interests"
-                >
-                  {interests.map((interest) => (
-                    <button
-                      key={interest}
-                      type="button"
-                      onClick={() => toggleInterest(interest)}
-                      className={`px-2 py-1 md:px-3 md:py-2 rounded-full text-xs md:text-sm border transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
-                        profileData.interests.includes(interest)
-                          ? "bg-pink-500 text-white border-pink-500"
-                          : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
-                      }`}
-                      aria-pressed={profileData.interests.includes(interest)}
-                    >
-                      {interest}
-                    </button>
-                  ))}
-                </div>
-                {profileData.interests.length > 0 && (
-                  <p className="text-xs text-gray-500 text-center">
-                    {profileData.interests.length} interest
-                    {profileData.interests.length !== 1 ? "s" : ""} selected
-                  </p>
-                )}
-              </div>
-            )}
-
-            <div className="flex gap-3 pt-4">
-              {step > 1 && (
-                <Button
-                  type="button"
-                  onClick={prevStep}
-                  variant="outline"
-                  className="flex-1 h-10 md:h-11"
-                >
-                  Back
-                </Button>
-              )}
-              <Button
-                type="submit"
-                className={`font-semibold text-white bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 h-10 md:h-11 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
-                  step === 1 ? "w-full" : "flex-1"
-                }`}
-                disabled={step === 3 && profileData.interests.length === 0}
-              >
-                {step === 3 ? "Complete Setup" : "Continue"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onComplete={handleSuccessComplete}
+      />
+    </>
   );
 }
