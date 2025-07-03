@@ -119,7 +119,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
       } else {
         // Handle profile completion
         console.log("Profile setup completed:", profileData);
-        onNavigate("homepage");
+        onNavigate(ROUTES.HOMEPAGE);
       }
     }
   };
@@ -205,18 +205,36 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
 
       <Card className="w-full max-w-sm md:max-w-md">
         <CardHeader className="text-center pb-4 md:pb-6">
-          {/* Progress Line */}
+          {/* Progress Lines */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs text-gray-500">Step {step} of 3</span>
-              <span className="text-xs text-gray-500">
-                {Math.round((step / 3) * 100)}%
-              </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+
+            <div className="flex gap-2">
+              {/* Step 1 Line */}
               <div
-                className="bg-gradient-to-r from-pink-500 to-red-400 h-2 rounded-full transition-all duration-300 ease-in-out"
-                style={{ width: `${(step / 3) * 100}%` }}
+                className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
+                  step >= 1
+                    ? "bg-gradient-to-r from-pink-500 to-red-400"
+                    : "bg-gray-200"
+                }`}
+              ></div>
+              {/* Step 2 Line */}
+              <div
+                className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
+                  step >= 2
+                    ? "bg-gradient-to-r from-pink-500 to-red-400"
+                    : "bg-gray-200"
+                }`}
+              ></div>
+              {/* Step 3 Line */}
+              <div
+                className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
+                  step >= 3
+                    ? "bg-gradient-to-r from-pink-500 to-red-400"
+                    : "bg-gray-200"
+                }`}
               ></div>
             </div>
           </div>

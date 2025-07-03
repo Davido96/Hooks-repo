@@ -1,4 +1,4 @@
-import { Crown, Star, Heart, Shield, Zap } from "lucide-react";
+import { Crown, Star, Heart, Shield, Zap, HeartIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -88,7 +88,7 @@ export default function Homepage({ onNavigate }: HomepageProps) {
       </div>
 
       {/* For Creators & For Fans */}
-      <div className="flex flex-col sm:flex-row gap-4 px-4 md:px-8 mb-8 md:mb-12">
+      <div className="flex flex-col sm:flex-row gap-4 px-16 md:px-16 mb-8 md:mb-12">
         <div className="flex-1 text-center">
           <Star className="text-yellow-300 mx-auto mb-3" size={28} />
           <h3 className="text-lg font-semibold mb-2">For Creators</h3>
@@ -97,18 +97,18 @@ export default function Homepage({ onNavigate }: HomepageProps) {
           </p>
           <Button
             onClick={() => onNavigate("creator-signup")}
-            className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-black font-semibold"
+            className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-black px-16 md:px-16 sm:px-16 font-semibold"
           >
             Start Creating
           </Button>
         </div>
         <div className="flex-1 text-center">
-          <Star className="text-yellow-300 mx-auto mb-3" size={28} />
+          <HeartIcon className="text-slate-300 mx-auto mb-3" size={28} />
           <h3 className="text-lg font-semibold mb-2">For Fans</h3>
           <p className="text-sm opacity-90 mb-4">
             Discover and connect with your favorite creators
           </p>
-          <Button className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 font-semibold">
+          <Button className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 font-semibold px-16 md:px-16 sm:px-16">
             Follow Creators
           </Button>
         </div>
@@ -214,21 +214,24 @@ export default function Homepage({ onNavigate }: HomepageProps) {
       </div>
 
       {/* CTA Section */}
-      <div className="text-center px-4 md:px-8 pb-8 md:pb-12">
+      <div className="text-center px-16 md:px-16 pb-8 md:pb-12">
         <h2 className="text-xl md:text-2xl font-bold mb-2">
           Ready to Join the Movement?
         </h2>
         <p className="opacity-90 mb-6 text-sm md:text-base">
           Be part of Nigeria's premier creator economy platform
         </p>
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
           <Button
             onClick={() => onNavigate("creator-signup")}
-            className="flex-1 bg-white text-pink-500 hover:bg-white/90 font-semibold"
+            className="flex-1 bg-white text-pink-500 text-center hover:bg-white/90 font-semibold"
           >
             Start as Creator
           </Button>
-          <Button className="flex-1 bg-transparent border-2 border-white hover:bg-white/10 font-semibold">
+          <Button
+            onClick={() => onNavigate("fan-signup")}
+            className="flex-1 bg-transparent border-2 border-white hover:bg-white/10 font-semibold"
+          >
             Join as Fan
           </Button>
         </div>
