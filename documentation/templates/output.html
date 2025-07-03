@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pygments/2.16.1/styles/monokai.min.css">
+    <style>
+        body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+    </style>
+</head>
+<body class="markdown-body">
+<h1>Hooks Backend Documentation<a name='hooks_backend_documentation'></a></h1>
+<h2>Index<a name='toc'></a></h2>
+<ol>
+<li><a href="#hooks_backend_documentation">hooks backend documentation</a></li>
+<li><a href="#profile_retrieve">profile retrieve</a></li>
+<li><a href="#profile_update">profile update</a></li>
+<li><a href="#user_signin">user signin</a></li>
+<li><a href="#user_signup">user signup</a></li>
+</ol>
+<h1>User Signup<a name='user_signup'></a></h1>
+<p>This API creates a new user on the platform. There are only two kinds of user allowed in the platform. (Fan,Creator). This endpoint defaults the user to Fan unless otherwise specified in the user_type Payload.</p>
+<p><strong>Endpoint:</strong><code>/user/signup/</code></p>
+<p><strong>Method:</strong> <code>POST</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">{
+
+email:*****
+
+password:*****
+
+password2:*****
+
+user_type:*****
+
+}
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:201</strong></p>
+<pre><code class="language-json">{
+  &quot;email&quot;: &quot;saliuoazeez@gmail.com&quot;,
+  &quot;user_type&quot;: &quot;Fan&quot;
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>User Signin<a name='user_signin'></a></h1>
+<p>This endpoint signs in a user and returns a Refresh and access token for further requests.</p>
+<p><strong>Endpoint:</strong><code>/user/signin/</code></p>
+<p><strong>Method:</strong> <code>POST</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">{
+
+email:*****
+
+password:*****
+
+}
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">{
+  &quot;refresh&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1MDYwNDc0MSwiaWF0IjoxNzUwNTE4MzQxLCJqdGkiOiI2MDE1ZmFmOGFhODk0MTk5OTYyOTExNzIwMWZlYzE2MCIsInVzZXJfaWQiOjJ9.KFGhvWiLeje57xxkNwQkryt4VAZ-UJ3o7VKytidY6kc&quot;,
+  &quot;access&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwNTM2MzQxLCJpYXQiOjE3NTA1MTgzNDEsImp0aSI6IjMwY2M3YWMzZmNlZDRlMWZiMzM2YTJiNTFjZjllNmZmIiwidXNlcl9pZCI6Mn0.IpMIqXctIWWrpQRko42egN7FWWASdpEHbxmVxBcixgA&quot;,
+  &quot;user&quot;: {
+    &quot;email&quot;: &quot;saliuoazeez@gmail.com&quot;,
+    &quot;user_id&quot;: 2
+  }
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>Profile Update<a name='profile_update'></a></h1>
+<p>This endpoint updates the profile of a user. N.B:All fields could be optionally sent in the payload.</p>
+<p><strong>Endpoint:</strong><code>/profile/</code></p>
+<p><strong>Method:</strong> <code>PUT</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">{
+
+full_name:*****
+
+location:*****
+
+interests:*****
+
+display_pic:*****
+
+}
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">{
+  &quot;full_name&quot;: &quot;Saliu Opeyemi&quot;,
+  &quot;display_pic&quot;: &quot;N/A&quot;,
+  &quot;location&quot;: &quot;Ijebu Ode&quot;,
+  &quot;interests&quot;: [
+    &quot;Games&quot;
+  ]
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>Profile Retrieve<a name='profile_retrieve'></a></h1>
+<p>This endpoint retrieves the profile information of the logged in user. N.B: By attaching a query string user_id=**id to the endpoint, Other user's profile could be retrieved.</p>
+<p><strong>Endpoint:</strong><code>/profile/</code></p>
+<p><strong>Method:</strong> <code>GET</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">{
+  &quot;full_name&quot;: &quot;Saliu Opeyemi&quot;,
+  &quot;display_pic&quot;: &quot;N/A&quot;,
+  &quot;location&quot;: &quot;Ijebu Ode&quot;,
+  &quot;interests&quot;: [
+    &quot;Games&quot;
+  ]
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+
+</body>
+</html>
