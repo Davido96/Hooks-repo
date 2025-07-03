@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface ProfileSetupProps {
+interface CreatorProfileSetupProps {
   onNavigate: (page: string) => void;
 }
 
@@ -27,6 +27,7 @@ interface ProfileData {
   city: string;
   phone: string;
   interests: string[];
+  subscriptionFee: string;
   profilePicture?: File;
 }
 
@@ -37,9 +38,12 @@ interface FormErrors {
   interestedIn?: string;
   city?: string;
   phone?: string;
+  subscriptionFee?: string;
 }
 
-export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
+export default function CreatorProfileSetupProps({
+  onNavigate,
+}: CreatorProfileSetupProps) {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<FormErrors>({});
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -52,6 +56,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
     city: "",
     phone: "",
     interests: [],
+    subscriptionFee: "",
   });
 
   const interests = [
@@ -105,6 +110,17 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
         newErrors.phone = "Phone number is required";
       } else if (!/^\+?[\d\s-()]+$/.test(profileData.phone)) {
         newErrors.phone = "Please enter a valid phone number";
+      }
+    }
+
+    if (currentStep === 3) {
+      if (!profileData.subscriptionFee.trim()) {
+        newErrors.subscriptionFee = "Monthly subscription fee is required";
+      } else if (
+        isNaN(Number(profileData.subscriptionFee)) ||
+        Number(profileData.subscriptionFee) < 0
+      ) {
+        newErrors.subscriptionFee = "Please enter a valid amount";
       }
     }
 
@@ -174,7 +190,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
       case 2:
         return "Location and Preferences";
       case 3:
-        return "Interests";
+        return "Interests & Pricing";
       default:
         return "";
     }
@@ -210,7 +226,6 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs text-gray-500">Step {step} of 3</span>
             </div>
-
             <div className="flex gap-2">
               {/* Step 1 Line */}
               <div
@@ -481,7 +496,54 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
 
             {step === 3 && (
               <div className="space-y-4">
-                <p className="text-xs md:text-sm text-gray-600 text-center">
+                <h2 className="text-xs md:text-xs font-light text-gray-800 mb-2">
+                  Monthly subscription fee (Keys)*
+                </h2>
+
+                <div className="space-y-2">
+                  {/* <Label htmlFor="subscriptionFee" className="text-sm">
+                    Amount (USD) *
+                  </Label> */}
+                  <div className="relative">
+                    {/* <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                      $
+                    </span> */}
+                    <Input
+                      id="subscriptionFee"
+                      type="number"
+                      min="10"
+                      max="1000"
+                      step="1"
+                      className={`h-10 md:h-11 pl-8 ${
+                        errors.subscriptionFee ? "border-red-500" : ""
+                      }`}
+                      value={profileData.subscriptionFee}
+                      onChange={(e) =>
+                        updateProfileData("subscriptionFee", e.target.value)
+                      }
+                      placeholder="0.00"
+                      aria-describedby={
+                        errors.subscriptionFee
+                          ? "subscriptionFee-error"
+                          : undefined
+                      }
+                    />
+                  </div>
+                  {errors.subscriptionFee && (
+                    <p
+                      id="subscriptionFee-error"
+                      className="text-red-500 text-xs"
+                    >
+                      {errors.subscriptionFee}
+                    </p>
+                  )}
+                  <h2 className="text-xs md:text-xs font-extralight text-gray-800 mb-2">
+                    Set how much subscribers pay monthly to access your
+                    exclusive content (Minimum 10Keys)
+                  </h2>
+                </div>
+
+                <p className="text-xs md:text-xs text-black text-center">
                   Select interests to help us connect you with like-minded
                   people
                 </p>

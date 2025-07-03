@@ -2,7 +2,9 @@ import { useState } from "react";
 import Homepage from "./components/Homepage";
 import CreatorSignup from "./components/CreatorSignup";
 import ProfileSetup from "./components/ProfileSetup";
+import CreatorProfileSetupProps from "./components/CreatorProfileSetup";
 import { ChevronLeft } from "lucide-react";
+import FanSignup from "./components/FanSignup";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("homepage");
@@ -13,6 +15,10 @@ function App() {
         return <Homepage onNavigate={setCurrentPage} />;
       case "creator-signup":
         return <CreatorSignup onNavigate={setCurrentPage} />;
+      case "creator-setup":
+        return <CreatorProfileSetupProps onNavigate={setCurrentPage} />;
+      case "fan-signup":
+        return <FanSignup onNavigate={setCurrentPage} />;
       case "profile-setup":
         return <ProfileSetup onNavigate={setCurrentPage} />;
       default:

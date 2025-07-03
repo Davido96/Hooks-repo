@@ -4,13 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface CreatorSignupProps {
+interface FanSignupProps {
   onNavigate: (page: string) => void;
 }
 
-export default function CreatorSignup({ onNavigate }: CreatorSignupProps) {
+export default function FanSignup({ onNavigate }: FanSignupProps) {
   const handleSignUp = () => {
-    onNavigate("creator-setup");
+    onNavigate("profile-setup");
   };
 
   return (
@@ -43,9 +43,7 @@ export default function CreatorSignup({ onNavigate }: CreatorSignupProps) {
           <CardTitle className="text-xl md:text-2xl font-bold mb-2">
             Get started!
           </CardTitle>
-          <p className="text-gray-600 text-sm md:text-base">
-            Sign Up as a creator
-          </p>
+          <p className="text-gray-600 text-sm md:text-base">Sign Up as a Fan</p>
         </CardHeader>
         <CardContent className="space-y-4 md:space-y-6">
           <div className="space-y-2">
