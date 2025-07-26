@@ -4,7 +4,9 @@ import rest_framework
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
+
+from users.permissions import IsActiveAndLoggedin
 
 from . import serializers,models
 
@@ -13,7 +15,7 @@ from users.models import Users
 
 class ProfileView(APIView):
     permission_classes = [
-        IsAuthenticated,
+        IsActiveAndLoggedin,
     ]
 
     def get(self,request):
@@ -32,13 +34,21 @@ class ProfileView(APIView):
                 output = serializers.RetrieveProfileSerializer(profile,many=False).data
                 return Response(output,status=status.HTTP_200_OK)
 
+
+
+class UpdateProfileView(APIView):
+    permission_classes=[
+        IsActiveAndLoggedin
+    ]
     def put(self,request):
-        user_profile = request.user.profile
-        serializer = serializers.RetrieveProfileSerializer(data=request.data,instance=user_profile)
+        user = request.user
+        serializer = serializers.ProfileUpdateSerializer(data=request.data,instance=user)
         if serializer.is_valid(raise_exception=True):
             output_instance = serializer.save()
             output = serializers.RetrieveProfileSerializer(output_instance,many=False).data
             return Response(output,status=status.HTTP_200_OK)
+
+
 
 
 class TestView(APIView):

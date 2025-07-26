@@ -84,9 +84,9 @@ password:*****
 
 # Profile Update
 
-This endpoint updates the profile of a user. N.B:All fields could be optionally sent in the payload.
+This endpoint updates the profile of a user. N.B:All fields could be optionally sent in the payload i.e. Any combination of the payloads could be sent in the request. Valid interest include ['social networking', 'dancing', 'fun times', 'social', 'career', 'business', 'environment', 'fitness', 'nature', 'sports', 'recreation', 'running', 'cycling', 'comedy', 'coffee', 'night waalks', 'foodie', 'dating', 'relationship', 'others']. The maximum size of the display_pic is 2MB and allowed formats are [".jpg",".jpeg",".png"]. Also, Fans cannot update montly_sub_keys and would always br null when retrieved.
 
-**Endpoint:**`/profile/`
+**Endpoint:**`/profile/update/`
 
 **Method:** `PUT`
 
@@ -97,11 +97,19 @@ This endpoint updates the profile of a user. N.B:All fields could be optionally 
 
 full_name:*****
 
-location:*****
+gender:*****
+
+display_pic:*****
+
+monthly_sub_keys (Creators Only):*****
+
+state:*****
+
+city:*****
 
 interests:*****
 
-display_pic:*****
+bio:*****
 
 }
 
@@ -112,12 +120,18 @@ display_pic:*****
 
 ``` json
 {
-  "full_name": "Saliu Opeyemi",
-  "display_pic": "N/A",
-  "location": "Ijebu Ode",
+  "id": 1,
+  "full_name": "Saliu Opeyemi Abdul Azeez",
+  "display_pic": "https://hooks-storage.s3.amazonaws.com/display_pic/33092378-1bf2-4362-9671-504bbd91f604default_pp.jpeg",
+  "age": 0,
+  "bio": "A skilled backend developer and innovation specialist.",
+  "gender": "Male",
+  "state": "Ogun",
+  "city": "Ijebu Ode",
   "interests": [
-    "Games"
-  ]
+    "dancing"
+  ],
+  "monthly_sub_keys": null
 }
 ```
 
@@ -144,12 +158,45 @@ This endpoint retrieves the profile information of the logged in user. N.B: By a
 
 ``` json
 {
-  "full_name": "Saliu Opeyemi",
-  "display_pic": "N/A",
-  "location": "Ijebu Ode",
+  "id": 1,
+  "full_name": "Saliu Opeyemi Abdul Azeez",
+  "display_pic": "https://hooks-storage.s3.amazonaws.com/display_pic/33092378-1bf2-4362-9671-504bbd91f604default_pp.jpeg",
+  "age": 0,
+  "bio": "A skilled backend developer and innovation specialist.",
+  "gender": "Male",
+  "state": "Ogun",
+  "city": "Ijebu Ode",
   "interests": [
-    "Games"
-  ]
+    "dancing"
+  ],
+  "monthly_sub_keys": null
+}
+```
+
+[Table of contents](#toc)
+
+
+# Signout User
+
+This API logsout the user from all devices incases where multiple sessions have been initiated.
+
+**Endpoint:**`/user/signout/`
+
+**Method:** `POST`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+{
+  "message": "Logged Out from all devices"
 }
 ```
 

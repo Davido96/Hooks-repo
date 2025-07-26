@@ -7,6 +7,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt import token_blacklist
 
+from .permissions import IsActiveAndLoggedin
+
 from . import serializers
 
 
@@ -35,6 +37,8 @@ class SigninView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
         refresh_token = RefreshToken.for_user(user)
+        user.logged_in = True
+        user.save()
         output = {
             "refresh":str(refresh_token),
             "access":str(refresh_token.access_token),
@@ -45,6 +49,17 @@ class SigninView(APIView):
         }
         return Response(output,status=status.HTTP_200_OK)
 
+
+class SignOutView(APIView):
+    permission_classes =[
+        IsActiveAndLoggedin
+    ]
+
+    def post(self,request):
+        #Logs out user in all sessions.
+        request.user.logged_in = False
+        request.user.save()
+        return Response({"message":"Logged Out from all devices"},status=status.HTTP_200_OK)
 
 
 

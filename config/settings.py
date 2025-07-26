@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -88,12 +92,25 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+DATABASES ={
+    "default":{
+        "ENGINE":"django.db.backends.postgresql",
+        "NAME":"hooks",
+        "USER":"saliuoazeez",
+        "PASSWORD":os.getenv("DATABASE_PASSWORD"),
+        "HOST":"localhost",
+        "PORT":"5432",
     }
 }
+
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
 
 
 # Password validation
@@ -113,6 +130,48 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME')
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'  # Optional
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+        'OPTIONS': {
+            'bucket_name': AWS_STORAGE_BUCKET_NAME,
+            'region_name': AWS_S3_REGION_NAME,
+            'custom_domain': AWS_S3_CUSTOM_DOMAIN,
+            'file_overwrite': AWS_S3_FILE_OVERWRITE,
+            'default_acl': AWS_DEFAULT_ACL,
+            'object_parameters': AWS_S3_OBJECT_PARAMETERS,
+        },
+    },
+}
+
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+
+STORAGES['staticfiles'] = {
+    'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+    'OPTIONS': {
+        'bucket_name': AWS_STORAGE_BUCKET_NAME,
+        'region_name': AWS_S3_REGION_NAME,
+    },
+}
+
+
+
 
 
 # Internationalization
@@ -149,3 +208,28 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "users.Users"
+
+#TODO Turnoff during production
+CORS_ORIGIN_ALLOW_ALL=True
+CORS_ALLOW_CREDENTIALS=True
+
+CORS_ALLOW_ORIGINS=[
+
+]
+
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",  # db index 1
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+
+CELERY_BROKER_URL="redis://localhost:6379/0"
+CELERY_ACCEPT_CONTENT=["json"]
+CELERY_TASK_SERIALIZER="json"

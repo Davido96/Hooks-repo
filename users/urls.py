@@ -6,4 +6,5 @@ urlpatterns = [
     #path("",views.TestView.as_view(),name="Test-View"),
     path("signup/",views.SignupView.as_view(),name="signup"),
     path("signin/",views.SigninView.as_view(),name="signin"),
+    path("signout/",views.SignOutView.as_view(),name="Signout"),
 ]
