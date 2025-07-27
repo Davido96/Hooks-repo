@@ -119,3 +119,13 @@ class ProfileUpdateSerializer(serializers.Serializer):
         instance.profile.save()
 
         return instance.profile
+
+class MinimalProfileSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Profile
+        fields = ["id","full_name","gender","bio"]
+
+    def get_id(self,obj):
+        return obj.user.id

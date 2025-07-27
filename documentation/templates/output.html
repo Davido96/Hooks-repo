@@ -20,10 +20,14 @@
 <h1>Hooks Backend Documentation<a name='hooks_backend_documentation'></a></h1>
 <h2>Index<a name='toc'></a></h2>
 <ol>
+<li><a href="#follow_user">follow user</a></li>
+<li><a href="#get_followers">get followers</a></li>
+<li><a href="#get_followings">get followings</a></li>
 <li><a href="#hooks_backend_documentation">hooks backend documentation</a></li>
 <li><a href="#profile_retrieve">profile retrieve</a></li>
 <li><a href="#profile_update">profile update</a></li>
 <li><a href="#signout_user">signout user</a></li>
+<li><a href="#unfollow_user">unfollow user</a></li>
 <li><a href="#user_signin">user signin</a></li>
 <li><a href="#user_signup">user signup</a></li>
 </ol>
@@ -161,6 +165,130 @@ bio:*****
 <p><strong>status code:200</strong></p>
 <pre><code class="language-json">{
   &quot;message&quot;: &quot;Logged Out from all devices&quot;
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>Follow User<a name='follow_user'></a></h1>
+<p>This API allows a user to follow another user. N.B:The User should not have been previously followed ie. Following can only be done once per user pair. A User cannot follow themselves.</p>
+<p><strong>Endpoint:</strong><code>/follow/</code></p>
+<p><strong>Method:</strong> <code>POST</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">{
+
+follow (A User Id):*****
+
+}
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:201</strong></p>
+<pre><code class="language-json">{
+  &quot;id&quot;: 2,
+  &quot;follower&quot;: {
+    &quot;id&quot;: 1,
+    &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
+    &quot;gender&quot;: &quot;Male&quot;,
+    &quot;bio&quot;: &quot;A skilled backend developer and innovation specialist.&quot;
+  },
+  &quot;following&quot;: {
+    &quot;id&quot;: 2,
+    &quot;full_name&quot;: &quot;N/A&quot;,
+    &quot;gender&quot;: &quot;N/A&quot;,
+    &quot;bio&quot;: &quot;N/A&quot;
+  },
+  &quot;message&quot;: &quot;Following&quot;
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>Unfollow User<a name='unfollow_user'></a></h1>
+<p>This API allows a user to unfollow another user. N.B:The other user should have been previously followed. A user cannot unfollow themselves.</p>
+<p><strong>Endpoint:</strong><code>/follow/unfollow/</code></p>
+<p><strong>Method:</strong> <code>POST</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">{
+
+unfollow (A followed user id):*****
+
+}
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">{
+  &quot;user&quot;: {
+    &quot;id&quot;: 2,
+    &quot;full_name&quot;: &quot;N/A&quot;,
+    &quot;gender&quot;: &quot;N/A&quot;,
+    &quot;bio&quot;: &quot;N/A&quot;
+  },
+  &quot;message&quot;: &quot;Unfollowed&quot;
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>Get Followings<a name='get_followings'></a></h1>
+<p>This API retrieves all the users that the logged in user is currently following. Also vy applying the flag ?count to the endpoint, The total number of the logged in user followings can be retrieved.</p>
+<p><strong>Endpoint:</strong><code>/follow/followings/</code></p>
+<p><strong>Method:</strong> <code>GET</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: 3,
+    &quot;follower&quot;: {
+      &quot;id&quot;: 1,
+      &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
+      &quot;gender&quot;: &quot;Male&quot;,
+      &quot;bio&quot;: &quot;A skilled backend developer and innovation specialist.&quot;
+    },
+    &quot;following&quot;: {
+      &quot;id&quot;: 2,
+      &quot;full_name&quot;: &quot;N/A&quot;,
+      &quot;gender&quot;: &quot;N/A&quot;,
+      &quot;bio&quot;: &quot;N/A&quot;
+    }
+  }
+]
+WHERE FLAG IS APPLIED
+{
+  &quot;following&quot;: 1
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>Get Followers<a name='get_followers'></a></h1>
+<p>This API retrieves all the users that are currently following the logged in user. N.B:By applying the flag ?count to the endpoint url, the total number of the logged in user followers can be retrieved.</p>
+<p><strong>Endpoint:</strong><code>/follow/followers/</code></p>
+<p><strong>Method:</strong> <code>GET</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">WITHOUT FLAG
+[
+  {
+    &quot;id&quot;: 3,
+    &quot;follower&quot;: {
+      &quot;id&quot;: 1,
+      &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
+      &quot;gender&quot;: &quot;Male&quot;,
+      &quot;bio&quot;: &quot;A skilled backend developer and innovation specialist.&quot;
+    },
+    &quot;following&quot;: {
+      &quot;id&quot;: 2,
+      &quot;full_name&quot;: &quot;Balogun Abiola&quot;,
+      &quot;gender&quot;: &quot;Male&quot;,
+      &quot;bio&quot;: &quot;N/A&quot;
+    }
+  }
+]
+WITH FLAG
+{
+  &quot;followers&quot;: 1
 }
 </code></pre>
 <p><a href="#toc">Table of contents</a></p>

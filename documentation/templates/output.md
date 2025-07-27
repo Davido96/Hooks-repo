@@ -4,12 +4,16 @@
 ## Index<a name='toc'></a>
 
 
-1. [hooks backend documentation](#hooks_backend_documentation)  
-2. [profile retrieve](#profile_retrieve)  
-3. [profile update](#profile_update)  
-4. [signout user](#signout_user)  
-5. [user signin](#user_signin)  
-6. [user signup](#user_signup)  
+1. [follow user](#follow_user)  
+2. [get followers](#get_followers)  
+3. [get followings](#get_followings)  
+4. [hooks backend documentation](#hooks_backend_documentation)  
+5. [profile retrieve](#profile_retrieve)  
+6. [profile update](#profile_update)  
+7. [signout user](#signout_user)  
+8. [unfollow user](#unfollow_user)  
+9. [user signin](#user_signin)  
+10. [user signup](#user_signup)  
 
 
 # User Signup<a name='user_signup'></a>
@@ -203,6 +207,178 @@ This API logsout the user from all devices incases where multiple sessions have 
 ``` json
 {
   "message": "Logged Out from all devices"
+}
+```
+
+[Table of contents](#toc)
+
+
+# Follow User<a name='follow_user'></a>
+
+This API allows a user to follow another user. N.B:The User should not have been previously followed ie. Following can only be done once per user pair. A User cannot follow themselves.
+
+**Endpoint:**`/follow/`
+
+**Method:** `POST`
+
+## Payload
+
+``` json
+{
+
+follow (A User Id):*****
+
+}
+
+```
+## Response body
+
+**status code:201**
+
+``` json
+{
+  "id": 2,
+  "follower": {
+    "id": 1,
+    "full_name": "Saliu Opeyemi Abdul Azeez",
+    "gender": "Male",
+    "bio": "A skilled backend developer and innovation specialist."
+  },
+  "following": {
+    "id": 2,
+    "full_name": "N/A",
+    "gender": "N/A",
+    "bio": "N/A"
+  },
+  "message": "Following"
+}
+```
+
+[Table of contents](#toc)
+
+
+# Unfollow User<a name='unfollow_user'></a>
+
+This API allows a user to unfollow another user. N.B:The other user should have been previously followed. A user cannot unfollow themselves.
+
+**Endpoint:**`/follow/unfollow/`
+
+**Method:** `POST`
+
+## Payload
+
+``` json
+{
+
+unfollow (A followed user id):*****
+
+}
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+{
+  "user": {
+    "id": 2,
+    "full_name": "N/A",
+    "gender": "N/A",
+    "bio": "N/A"
+  },
+  "message": "Unfollowed"
+}
+```
+
+[Table of contents](#toc)
+
+
+# Get Followings<a name='get_followings'></a>
+
+This API retrieves all the users that the logged in user is currently following. Also vy applying the flag ?count to the endpoint, The total number of the logged in user followings can be retrieved.
+
+**Endpoint:**`/follow/followings/`
+
+**Method:** `GET`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+[
+  {
+    "id": 3,
+    "follower": {
+      "id": 1,
+      "full_name": "Saliu Opeyemi Abdul Azeez",
+      "gender": "Male",
+      "bio": "A skilled backend developer and innovation specialist."
+    },
+    "following": {
+      "id": 2,
+      "full_name": "N/A",
+      "gender": "N/A",
+      "bio": "N/A"
+    }
+  }
+]
+WHERE FLAG IS APPLIED
+{
+  "following": 1
+}
+```
+
+[Table of contents](#toc)
+
+
+# Get Followers<a name='get_followers'></a>
+
+This API retrieves all the users that are currently following the logged in user. N.B:By applying the flag ?count to the endpoint url, the total number of the logged in user followers can be retrieved.
+
+**Endpoint:**`/follow/followers/`
+
+**Method:** `GET`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+WITHOUT FLAG
+[
+  {
+    "id": 3,
+    "follower": {
+      "id": 1,
+      "full_name": "Saliu Opeyemi Abdul Azeez",
+      "gender": "Male",
+      "bio": "A skilled backend developer and innovation specialist."
+    },
+    "following": {
+      "id": 2,
+      "full_name": "Balogun Abiola",
+      "gender": "Male",
+      "bio": "N/A"
+    }
+  }
+]
+WITH FLAG
+{
+  "followers": 1
 }
 ```
 
