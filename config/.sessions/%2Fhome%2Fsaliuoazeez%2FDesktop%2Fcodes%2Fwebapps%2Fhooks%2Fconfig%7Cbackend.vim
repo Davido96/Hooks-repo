@@ -13,8 +13,10 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +16 settings.py
-badd +1 urls.py
+badd +207 settings.py
+badd +25 urls.py
+badd +16 asgi.py
+badd +12 celery.py
 argglobal
 %argdel
 edit settings.py
@@ -34,8 +36,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 95 + 95) / 191)
-exe 'vert 2resize ' . ((&columns * 95 + 95) / 191)
+exe 'vert 1resize ' . ((&columns * 94 + 95) / 190)
+exe 'vert 2resize ' . ((&columns * 95 + 95) / 190)
 argglobal
 nnoremap <buffer>  ghs :Gitsigns stage_hunk
 vnoremap <buffer>  ghs :Gitsigns stage_hunk
@@ -134,7 +136,7 @@ setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
 setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_insert#\ INSERT\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_b_insert#\ \ backend\ %#lualine_transitional_lualine_b_insert_to_lualine_c_5_insert#%<%#lualine_c_5_insert#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_insert#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_8_LV_Bold_insert#\ settings.py%#lualine_c_normal#\ %#lualine_c_normal#%=%#lualine_x_13_insert#\ a\ %#lualine_c_normal#%#lualine_x_14_insert#\ --\ INSERT\ --\ %#lualine_c_normal#%#lualine_x_16_insert#\ \ 21\ %#lualine_c_normal#%#lualine_x_diff_added_insert#\ \ 3\ %#lualine_transitional_lualine_b_insert_to_lualine_x_diff_added_insert#%#lualine_b_insert#\ 10%%\ %#lualine_b_insert#\ 16:27\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_a_insert#\ \ 06:39\ 
+setlocal statusline=%#lualine_a_insert#\ INSERT\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_b_insert#\ \ backend\ %#lualine_transitional_lualine_b_insert_to_lualine_c_2_insert#%<%#lualine_c_2_insert#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_insert#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_5_LV_Bold_insert#\ settings.py%#lualine_c_normal#\ %#lualine_c_normal#%=%#lualine_x_11_insert#\ y\ %#lualine_c_normal#%#lualine_x_12_insert#\ --\ INSERT\ --\ %#lualine_c_normal#%#lualine_x_14_insert#\ \ 13\ %#lualine_c_normal#%#lualine_x_diff_added_insert#\ \ 2\ %#lualine_x_diff_modified_insert#\ 1\ %#lualine_transitional_lualine_b_insert_to_lualine_x_diff_modified_insert#%#lualine_b_insert#\ 86%%\ %#lualine_b_insert#207:1\ \ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_a_insert#\ \ 09:04\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -155,19 +157,29 @@ setlocal nowinfixwidth
 setlocal winhighlight=Normal:Normal,VertSplit:VerticalSplit
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 16 - ((15 * winheight(0) + 21) / 43)
+97
+sil! normal! zo
+150
+sil! normal! zo
+151
+sil! normal! zo
+225
+sil! normal! zo
+226
+sil! normal! zo
+let s:l = 207 - ((20 * winheight(0) + 18) / 36)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 16
-normal! 026|
+keepjumps 207
+normal! 0
 wincmd w
 argglobal
 if bufexists(fnamemodify("urls.py", ":p")) | buffer urls.py | else | edit urls.py | endif
 if &buftype ==# 'terminal'
   silent file urls.py
 endif
-balt settings.py
+balt asgi.py
 nnoremap <buffer>  co TypescriptOrganizeImports
 nnoremap <buffer>  cR TypescriptRenameFile
 nnoremap <buffer>  ghs :Gitsigns stage_hunk
@@ -264,7 +276,7 @@ setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
 setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_insert#\ INSERT\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_b_insert#\ \ backend\ %#lualine_transitional_lualine_b_insert_to_lualine_c_5_insert#%<%#lualine_c_5_insert#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_insert#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_8_LV_Bold_insert#\ settings.py%#lualine_c_normal#\ %#lualine_c_normal#%=%#lualine_x_13_insert#\ a\ %#lualine_c_normal#%#lualine_x_14_insert#\ --\ INSERT\ --\ %#lualine_c_normal#%#lualine_x_16_insert#\ \ 21\ %#lualine_c_normal#%#lualine_x_diff_added_insert#\ \ 3\ %#lualine_transitional_lualine_b_insert_to_lualine_x_diff_added_insert#%#lualine_b_insert#\ 10%%\ %#lualine_b_insert#\ 16:27\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_a_insert#\ \ 06:39\ 
+setlocal statusline=%#lualine_a_insert#\ INSERT\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_b_insert#\ \ backend\ %#lualine_transitional_lualine_b_insert_to_lualine_c_2_insert#%<%#lualine_c_2_insert#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_insert#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_5_LV_Bold_insert#\ settings.py%#lualine_c_normal#\ %#lualine_c_normal#%=%#lualine_x_11_insert#\ y\ %#lualine_c_normal#%#lualine_x_12_insert#\ --\ INSERT\ --\ %#lualine_c_normal#%#lualine_x_14_insert#\ \ 13\ %#lualine_c_normal#%#lualine_x_diff_added_insert#\ \ 2\ %#lualine_x_diff_modified_insert#\ 1\ %#lualine_transitional_lualine_b_insert_to_lualine_x_diff_modified_insert#%#lualine_b_insert#\ 86%%\ %#lualine_b_insert#207:1\ \ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_a_insert#\ \ 07:42\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -284,15 +296,15 @@ setlocal nowinfixwidth
 setlocal winhighlight=Normal:Normal,VertSplit:VerticalSplit
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 21) / 43)
+let s:l = 25 - ((24 * winheight(0) + 18) / 36)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 1
-normal! 0
+keepjumps 25
+normal! 044|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 95 + 95) / 191)
-exe 'vert 2resize ' . ((&columns * 95 + 95) / 191)
+exe 'vert 1resize ' . ((&columns * 94 + 95) / 190)
+exe 'vert 2resize ' . ((&columns * 95 + 95) / 190)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

@@ -11,6 +11,9 @@ from .permissions import IsActiveAndLoggedin
 
 from . import serializers
 
+from datetime import datetime
+import pytz
+
 
 
 class SignupView(APIView):
@@ -38,6 +41,7 @@ class SigninView(APIView):
         user = serializer.validated_data
         refresh_token = RefreshToken.for_user(user)
         user.logged_in = True
+        user.last_login = datetime.now(pytz.timezone("UTC"))
         user.save()
         output = {
             "refresh":str(refresh_token),

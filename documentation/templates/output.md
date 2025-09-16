@@ -8,12 +8,16 @@
 2. [get followers](#get_followers)  
 3. [get followings](#get_followings)  
 4. [hooks backend documentation](#hooks_backend_documentation)  
-5. [profile retrieve](#profile_retrieve)  
-6. [profile update](#profile_update)  
-7. [signout user](#signout_user)  
-8. [unfollow user](#unfollow_user)  
-9. [user signin](#user_signin)  
-10. [user signup](#user_signup)  
+5. [like request](#like_request)  
+6. [like request response](#like_request_response)  
+7. [profile retrieve](#profile_retrieve)  
+8. [profile update](#profile_update)  
+9. [retrieve likes](#retrieve_likes)  
+10. [signout user](#signout_user)  
+11. [unfollow user](#unfollow_user)  
+12. [user recommendation](#user_recommendation)  
+13. [user signin](#user_signin)  
+14. [user signup](#user_signup)  
 
 
 # User Signup<a name='user_signup'></a>
@@ -379,6 +383,176 @@ WITHOUT FLAG
 WITH FLAG
 {
   "followers": 1
+}
+```
+
+[Table of contents](#toc)
+
+
+# User Recommendation<a name='user_recommendation'></a>
+
+This API recommends users for the logged in user to interact with which may include follow/like.
+
+**Endpoint:**`/follow/recommended/`
+
+**Method:** `GET`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+[
+  {
+    "id": 2,
+    "full_name": "Balogun Abiola",
+    "display_pic": "https://hooks-storage.s3.amazonaws.com/display_pic/275581f4-10bb-4145-86f7-6313cbba88e3default_pp.jpeg",
+    "age": 0,
+    "location": "N/A",
+    "followers": 1,
+    "subscribers": "Not Available",
+    "interests": [
+      "nature",
+      "sports"
+    ],
+    "active": false
+  },
+  {
+    "id": 3,
+    "full_name": "Rebecca Omotoke",
+    "display_pic": "https://hooks-storage.s3.amazonaws.com/display_pic/275581f4-10bb-4145-86f7-6313cbba88e3default_pp.jpeg",
+    "age": 0,
+    "location": "N/A",
+    "followers": 0,
+    "subscribers": "Not Available",
+    "interests": [
+      "social networking",
+      "dancing",
+      "social"
+    ],
+    "active": true
+  }
+]
+```
+
+[Table of contents](#toc)
+
+
+# Like Request<a name='like_request'></a>
+
+This API allows the logged in user to send a like request to another user. N.B:A like request can only be sent to a user that has a pending Like request from the user or has accepted the request previously.
+
+**Endpoint:**`/follow/like/`
+
+**Method:** `POST`
+
+## Payload
+
+``` json
+{
+
+"like (user_id)":"*****"
+
+}
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+{
+  "like": {
+    "id": 1,
+    "full_name": "Saliu Opeyemi Abdul Azeez",
+    "gender": "Male",
+    "bio": "A skilled backend developer and innovation specialist."
+  }
+}
+```
+
+[Table of contents](#toc)
+
+
+# Retrieve Likes<a name='retrieve_likes'></a>
+
+This API retrieves likes that are associated with the logged in user. N.B:A status query parameter must be provided for this request. status options are pending,requested and confirmed. A pending status retrieves all the like requests initiated by the logged in user that have not been accepted/rejected by the other user. A requested status retrieves all the like requests initiated by other users towards the logged in user which the logged in user can either accept or reject. A confirmed status retrieves all the likes associated with the logged in user that have been confirmed by the user or other users.
+
+**Endpoint:**`/follow/like/?status=requested`
+
+**Method:** `GET`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "like": {
+        "id": 3,
+        "full_name": "Rebecca Omotoke",
+        "gender": "Female",
+        "bio": "N/A"
+      }
+    }
+  ]
+}
+```
+
+[Table of contents](#toc)
+
+
+# Like Request Response<a name='like_request_response'></a>
+
+This API allows the logged in to either accept or reject a like request. N.B:The logged in user must be the one the like request was directed at to make them eligible to respond to the request. Also, the like request should not have been previously confirmed.
+
+**Endpoint:**`/follow/like/respond/`
+
+**Method:** `POST`
+
+## Payload
+
+``` json
+{
+
+"like_instance":"*****"
+
+"action (either accept/reject)":"*****"
+
+}
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+{
+  "like_id": 6,
+  "like": {
+    "id": 1,
+    "full_name": "Saliu Opeyemi Abdul Azeez",
+    "gender": "Male",
+    "bio": "A skilled backend developer and innovation specialist."
+  },
+  "action": "Accepted"
 }
 ```
 

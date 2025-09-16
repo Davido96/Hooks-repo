@@ -1,6 +1,10 @@
 from django.db import models
 from users.models import Users
 
+from datetime import date
+
+
+
 class Profile(models.Model):
     user = models.OneToOneField(Users,on_delete=models.CASCADE,related_name="profile",primary_key=True)
 
@@ -15,6 +19,11 @@ class Profile(models.Model):
     display_pic = models.CharField(max_length=300,default="https://hooks-storage.s3.amazonaws.com/display_pic/275581f4-10bb-4145-86f7-6313cbba88e3default_pp.jpeg")
     location = models.CharField(max_length=300,default="N/A")
     interests = models.JSONField(default=list)
+
+    #For validating daily likes 
+    date = models.DateField(default=date.today())
+    liked_today = models.IntegerField(default=0)
+    max_daily_likes = models.IntegerField(default=2)
 
     #For User types Creators
     monthly_sub_keys = models.IntegerField(default=0)

@@ -75,3 +75,21 @@ class SigninSerializer(serializers.Serializer):
         except models.Users.DoesNotExist:
             raise serializers.ValidationError("Invalid Email/Password.")
 
+
+class MinimalUserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+    gender = serializers.SerializerMethodField()
+    display_pic = serializers.SerializerMethodField()
+
+    class Meta:
+        model= models.Users
+        fields = ["id","full_name","gender","display_pic"]
+
+    def get_full_name(self,obj):
+        return obj.profile.full_name
+
+    def get_gender(self,obj):
+        return obj.profile.gender
+
+    def get_display_pic(self,obj):
+        return obj.profile.display_pic

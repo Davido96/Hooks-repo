@@ -1,10 +1,10 @@
 [1;36m 
  -------------- celery@Electron v5.5.3 (immunity)
 --- ***** ----- 
--- ******* ---- Linux-6.14.0-24-generic-x86_64-with-glibc2.39 2025-07-27 07:06:29
+-- ******* ---- Linux-6.14.0-29-generic-x86_64-with-glibc2.39 2025-09-16 07:19:34
 - *** --- * --- 
 - ** ---------- [config]
-- ** ---------- .> app:         config:0x70269c8b2b60
+- ** ---------- .> app:         config:0x75c519bfeb90
 - ** ---------- .> transport:   redis://localhost:6379/0
 - ** ---------- .> results:     disabled://
 - *** --- * --- .> concurrency: 4 (prefork)
@@ -17,7 +17,3 @@
 [tasks]
 
 [0m
-
-worker: Hitting Ctrl+C again will initiate cold shutdown, terminating all running tasks!
-
-worker: Warm shutdown (MainProcess)

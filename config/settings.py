@@ -204,8 +204,10 @@ REST_FRAMEWORK = {
     ]
 }
 
+TOKEN_LIFETIME = 5
+
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME":timedelta(hours=5)
+    "ACCESS_TOKEN_LIFETIME":timedelta(hours=TOKEN_LIFETIME)
 }
 
 AUTH_USER_MODEL = "users.Users"

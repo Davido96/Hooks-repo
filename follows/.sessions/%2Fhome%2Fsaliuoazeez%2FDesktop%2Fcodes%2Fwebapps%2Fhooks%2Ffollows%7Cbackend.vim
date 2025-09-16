@@ -3,7 +3,7 @@ let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-
 let v:this_session=expand("<sfile>:p")
 silent only
 silent tabonly
-cd ~/Desktop/codes/webapps/hooks/profiles
+cd ~/Desktop/codes/webapps/hooks/follows
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
@@ -13,12 +13,14 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +15 ~/Desktop/codes/webapps/hooks/profiles/./views.py
-badd +35 serializers.py
-badd +21 models.py
+badd +12 urls.py
+badd +9 views.py
+badd +123 serializers.py
+badd +24 models.py
+badd +10 permissions.py
 argglobal
 %argdel
-edit ~/Desktop/codes/webapps/hooks/profiles/./views.py
+edit urls.py
 let s:save_splitbelow = &splitbelow
 let s:save_splitright = &splitright
 set splitbelow splitright
@@ -43,23 +45,24 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 22 + 19) / 38)
-exe 'vert 1resize ' . ((&columns * 94 + 95) / 190)
-exe '2resize ' . ((&lines * 13 + 19) / 38)
-exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 21 + 19) / 38)
-exe 'vert 3resize ' . ((&columns * 95 + 95) / 190)
-exe '4resize ' . ((&lines * 14 + 19) / 38)
-exe 'vert 4resize ' . ((&columns * 95 + 95) / 190)
+exe '1resize ' . ((&lines * 20 + 19) / 38)
+exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
+exe '2resize ' . ((&lines * 15 + 19) / 38)
+exe 'vert 2resize ' . ((&columns * 95 + 95) / 190)
+exe '3resize ' . ((&lines * 20 + 19) / 38)
+exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
+exe '4resize ' . ((&lines * 15 + 19) / 38)
+exe 'vert 4resize ' . ((&columns * 94 + 95) / 190)
 argglobal
+balt permissions.py
+vnoremap <buffer>  ghr :Gitsigns reset_hunk
+nnoremap <buffer>  ghr :Gitsigns reset_hunk
+vnoremap <buffer>  ghs :Gitsigns stage_hunk
+nnoremap <buffer>  ghs :Gitsigns stage_hunk
 nnoremap <buffer>  cR TypescriptRenameFile
 nnoremap <buffer>  co TypescriptOrganizeImports
-nnoremap <buffer>  ghs :Gitsigns stage_hunk
-vnoremap <buffer>  ghs :Gitsigns stage_hunk
-nnoremap <buffer>  ghr :Gitsigns reset_hunk
-vnoremap <buffer>  ghr :Gitsigns reset_hunk
-onoremap <buffer> ih :Gitsigns select_hunk
 xnoremap <buffer> ih :Gitsigns select_hunk
+onoremap <buffer> ih :Gitsigns select_hunk
 setlocal keymap=
 setlocal noarabic
 setlocal autoindent
@@ -148,7 +151,7 @@ setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
 setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_11_normal#%<%#lualine_c_11_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_normal#\ \ 1\ %#lualine_c_diagnostics_hint_normal#\ 4\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_14_LV_Bold_normal#\ views.py%#lualine_c_normal#\ %#lualine_c_normal#%=%#lualine_x_3_normal#\ zv\ %#lualine_c_normal#%#lualine_x_6_normal#\ \ 14\ %#lualine_transitional_lualine_b_normal_to_lualine_x_6_normal#%#lualine_b_normal#\ 62%%\ %#lualine_b_normal#\ 37:1\ \ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 10:09\ 
+setlocal statusline=%#lualine_a_insert#\ INSERT\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_b_insert#\ \ backend\ %#lualine_transitional_lualine_b_insert_to_lualine_c_5_insert#%<%#lualine_c_5_insert#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_insert#\ \ 2\ %#lualine_c_diagnostics_hint_insert#\ 1\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_insert#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_8_LV_Bold_insert#\ serializers.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#CreateLikeSerializer%*\ %#TroubleStatusline2#󰊕\ %*%#TroubleStatusline1#validate_like%*\ \ %#lualine_c_normal#%=%#lualine_x_11_insert#\ a\ %#lualine_c_normal#%#lualine_x_12_insert#\ --\ INSERT\ --\ %#lualine_c_normal#%#lualine_x_14_insert#\ \ 14\ %#lualine_c_normal#%#lualine_x_diff_added_insert#\ \ 79\ %#lualine_transitional_lualine_b_insert_to_lualine_x_diff_added_insert#%#lualine_b_insert#\ 82%%\ %#lualine_b_insert#123:39\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_a_insert#\ \ 15:32\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -168,11 +171,11 @@ setlocal nowinfixwidth
 setlocal winhighlight=Normal:Normal,VertSplit:VerticalSplit
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 37 - ((16 * winheight(0) + 11) / 22)
+let s:l = 12 - ((11 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 37
+keepjumps 12
 normal! 0
 wincmd w
 argglobal
@@ -180,7 +183,7 @@ if bufexists(fnamemodify("models.py", ":p")) | buffer models.py | else | edit mo
 if &buftype ==# 'terminal'
   silent file models.py
 endif
-balt ~/Desktop/codes/webapps/hooks/profiles/./views.py
+balt urls.py
 nnoremap <buffer>  cR TypescriptRenameFile
 nnoremap <buffer>  co TypescriptOrganizeImports
 nnoremap <buffer>  ghs :Gitsigns stage_hunk
@@ -278,7 +281,7 @@ setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
 setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_11_normal#%<%#lualine_c_11_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_normal#\ \ 1\ %#lualine_c_diagnostics_hint_normal#\ 4\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_14_LV_Bold_normal#\ views.py%#lualine_c_normal#\ %#lualine_c_normal#%=%#lualine_x_3_normal#\ zv\ %#lualine_c_normal#%#lualine_x_6_normal#\ \ 14\ %#lualine_transitional_lualine_b_normal_to_lualine_x_6_normal#%#lualine_b_normal#\ 62%%\ %#lualine_b_normal#\ 37:1\ \ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 15:26\ 
+setlocal statusline=%#lualine_a_insert#\ INSERT\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_b_insert#\ \ backend\ %#lualine_transitional_lualine_b_insert_to_lualine_c_5_insert#%<%#lualine_c_5_insert#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_insert#\ \ 2\ %#lualine_c_diagnostics_hint_insert#\ 1\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_insert#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_8_LV_Bold_insert#\ serializers.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#CreateLikeSerializer%*\ %#TroubleStatusline2#󰊕\ %*%#TroubleStatusline1#validate_like%*\ \ %#lualine_c_normal#%=%#lualine_x_11_insert#\ a\ %#lualine_c_normal#%#lualine_x_12_insert#\ --\ INSERT\ --\ %#lualine_c_normal#%#lualine_x_14_insert#\ \ 14\ %#lualine_c_normal#%#lualine_x_diff_added_insert#\ \ 79\ %#lualine_transitional_lualine_b_insert_to_lualine_x_diff_added_insert#%#lualine_b_insert#\ 82%%\ %#lualine_b_insert#123:39\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_a_insert#\ \ 15:32\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -299,18 +302,19 @@ setlocal nowinfixwidth
 setlocal winhighlight=Normal:Normal,VertSplit:VerticalSplit
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 24 - ((4 * winheight(0) + 6) / 13)
+let s:l = 22 - ((9 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 24
-normal! 028|
+keepjumps 22
+normal! 0
 wincmd w
 argglobal
-if bufexists(fnamemodify("~/Desktop/codes/webapps/hooks/profiles/./views.py", ":p")) | buffer ~/Desktop/codes/webapps/hooks/profiles/./views.py | else | edit ~/Desktop/codes/webapps/hooks/profiles/./views.py | endif
+if bufexists(fnamemodify("views.py", ":p")) | buffer views.py | else | edit views.py | endif
 if &buftype ==# 'terminal'
-  silent file ~/Desktop/codes/webapps/hooks/profiles/./views.py
+  silent file views.py
 endif
+balt urls.py
 nnoremap <buffer>  cR TypescriptRenameFile
 nnoremap <buffer>  co TypescriptOrganizeImports
 nnoremap <buffer>  ghs :Gitsigns stage_hunk
@@ -408,7 +412,7 @@ setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
 setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_11_normal#%<%#lualine_c_11_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_normal#\ \ 1\ %#lualine_c_diagnostics_hint_normal#\ 4\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_14_LV_Bold_normal#\ views.py%#lualine_c_normal#\ %#lualine_c_normal#%=%#lualine_x_3_normal#\ zv\ %#lualine_c_normal#%#lualine_x_6_normal#\ \ 14\ %#lualine_transitional_lualine_b_normal_to_lualine_x_6_normal#%#lualine_b_normal#\ 62%%\ %#lualine_b_normal#\ 37:1\ \ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 15:26\ 
+setlocal statusline=%#lualine_a_insert#\ INSERT\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_b_insert#\ \ backend\ %#lualine_transitional_lualine_b_insert_to_lualine_c_5_insert#%<%#lualine_c_5_insert#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_insert#\ \ 2\ %#lualine_c_diagnostics_hint_insert#\ 1\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_insert#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_8_LV_Bold_insert#\ serializers.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#CreateLikeSerializer%*\ %#TroubleStatusline2#󰊕\ %*%#TroubleStatusline1#validate_like%*\ \ %#lualine_c_normal#%=%#lualine_x_11_insert#\ a\ %#lualine_c_normal#%#lualine_x_12_insert#\ --\ INSERT\ --\ %#lualine_c_normal#%#lualine_x_14_insert#\ \ 14\ %#lualine_c_normal#%#lualine_x_diff_added_insert#\ \ 79\ %#lualine_transitional_lualine_b_insert_to_lualine_x_diff_added_insert#%#lualine_b_insert#\ 82%%\ %#lualine_b_insert#123:39\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_a_insert#\ \ 15:32\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -433,19 +437,43 @@ setlocal wrapmargin=0
 sil! normal! zo
 21
 sil! normal! zo
-23
+29
 sil! normal! zo
-39
+34
+sil! normal! zo
+37
 sil! normal! zo
 43
 sil! normal! zo
-54
+52
 sil! normal! zo
-let s:l = 15 - ((5 * winheight(0) + 10) / 21)
+56
+sil! normal! zo
+59
+sil! normal! zo
+64
+sil! normal! zo
+75
+sil! normal! zo
+80
+sil! normal! zo
+87
+sil! normal! zo
+92
+sil! normal! zo
+105
+sil! normal! zo
+106
+sil! normal! zo
+107
+sil! normal! zo
+113
+sil! normal! zo
+let s:l = 120 - ((10 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 15
+keepjumps 120
 normal! 0
 wincmd w
 argglobal
@@ -453,7 +481,7 @@ if bufexists(fnamemodify("serializers.py", ":p")) | buffer serializers.py | else
 if &buftype ==# 'terminal'
   silent file serializers.py
 endif
-balt ~/Desktop/codes/webapps/hooks/profiles/./views.py
+balt urls.py
 nnoremap <buffer>  cR TypescriptRenameFile
 nnoremap <buffer>  co TypescriptOrganizeImports
 nnoremap <buffer>  ghs :Gitsigns stage_hunk
@@ -551,7 +579,7 @@ setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
 setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_11_normal#%<%#lualine_c_11_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_normal#\ \ 1\ %#lualine_c_diagnostics_hint_normal#\ 4\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_14_LV_Bold_normal#\ views.py%#lualine_c_normal#\ %#lualine_c_normal#%=%#lualine_x_3_normal#\ zv\ %#lualine_c_normal#%#lualine_x_6_normal#\ \ 14\ %#lualine_transitional_lualine_b_normal_to_lualine_x_6_normal#%#lualine_b_normal#\ 62%%\ %#lualine_b_normal#\ 37:1\ \ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 15:26\ 
+setlocal statusline=%#lualine_a_insert#\ INSERT\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_b_insert#\ \ backend\ %#lualine_transitional_lualine_b_insert_to_lualine_c_5_insert#%<%#lualine_c_5_insert#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_insert#\ \ 2\ %#lualine_c_diagnostics_hint_insert#\ 1\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_insert#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_8_LV_Bold_insert#\ serializers.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#CreateLikeSerializer%*\ %#TroubleStatusline2#󰊕\ %*%#TroubleStatusline1#validate_like%*\ \ %#lualine_c_normal#%=%#lualine_x_11_insert#\ a\ %#lualine_c_normal#%#lualine_x_12_insert#\ --\ INSERT\ --\ %#lualine_c_normal#%#lualine_x_14_insert#\ \ 14\ %#lualine_c_normal#%#lualine_x_diff_added_insert#\ \ 79\ %#lualine_transitional_lualine_b_insert_to_lualine_x_diff_added_insert#%#lualine_b_insert#\ 82%%\ %#lualine_b_insert#123:39\ %#lualine_transitional_lualine_a_insert_to_lualine_b_insert#%#lualine_a_insert#\ \ 10:09\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -572,39 +600,48 @@ setlocal nowinfixwidth
 setlocal winhighlight=Normal:Normal,VertSplit:VerticalSplit
 setlocal wrap
 setlocal wrapmargin=0
-37
+19
 sil! normal! zo
-48
+22
 sil! normal! zo
-54
+38
 sil! normal! zo
-69
+41
 sil! normal! zo
-74
+51
 sil! normal! zo
-83
+65
 sil! normal! zo
-88
+81
 sil! normal! zo
-96
+102
 sil! normal! zo
-123
+117
 sil! normal! zo
-let s:l = 123 - ((6 * winheight(0) + 7) / 14)
+120
+sil! normal! zo
+122
+sil! normal! zo
+135
+sil! normal! zo
+142
+sil! normal! zo
+let s:l = 123 - ((6 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
 keepjumps 123
-normal! 07|
+normal! 038|
 wincmd w
-exe '1resize ' . ((&lines * 22 + 19) / 38)
-exe 'vert 1resize ' . ((&columns * 94 + 95) / 190)
-exe '2resize ' . ((&lines * 13 + 19) / 38)
-exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 21 + 19) / 38)
-exe 'vert 3resize ' . ((&columns * 95 + 95) / 190)
-exe '4resize ' . ((&lines * 14 + 19) / 38)
-exe 'vert 4resize ' . ((&columns * 95 + 95) / 190)
+4wincmd w
+exe '1resize ' . ((&lines * 20 + 19) / 38)
+exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
+exe '2resize ' . ((&lines * 15 + 19) / 38)
+exe 'vert 2resize ' . ((&columns * 95 + 95) / 190)
+exe '3resize ' . ((&lines * 20 + 19) / 38)
+exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
+exe '4resize ' . ((&lines * 15 + 19) / 38)
+exe 'vert 4resize ' . ((&columns * 94 + 95) / 190)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -620,6 +657,7 @@ if filereadable(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
+nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :

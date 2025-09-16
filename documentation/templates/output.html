@@ -17,17 +17,53 @@
     </style>
 </head>
 <body class="markdown-body">
+    <input type="text" id="searchBox" placeholder="Search index..." />
+    <ul id="searchResults"></ul>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+  const searchBox = document.getElementById('searchBox');
+  const indexLinks = document.querySelectorAll('#index li a');
+  const resultsList = document.getElementById('searchResults');
+
+  searchBox.addEventListener('input', function () {
+    const query = searchBox.value.toLowerCase();
+    resultsList.innerHTML = ''; // Clear previous results
+
+    if (!query) return;
+
+    indexLinks.forEach(link => {
+      const text = link.textContent.toLowerCase();
+      if (text.includes(query)) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = link.href;
+        a.textContent = link.textContent;
+        li.appendChild(a);
+        resultsList.appendChild(li);
+      }
+    });
+  });
+});
+</script>
+
+
+    
 <h1>Hooks Backend Documentation<a name='hooks_backend_documentation'></a></h1>
 <h2>Index<a name='toc'></a></h2>
-<ol>
+<ol id='index'>
 <li><a href="#follow_user">follow user</a></li>
 <li><a href="#get_followers">get followers</a></li>
 <li><a href="#get_followings">get followings</a></li>
 <li><a href="#hooks_backend_documentation">hooks backend documentation</a></li>
+<li><a href="#like_request">like request</a></li>
+<li><a href="#like_request_response">like request response</a></li>
 <li><a href="#profile_retrieve">profile retrieve</a></li>
 <li><a href="#profile_update">profile update</a></li>
+<li><a href="#retrieve_likes">retrieve likes</a></li>
 <li><a href="#signout_user">signout user</a></li>
 <li><a href="#unfollow_user">unfollow user</a></li>
+<li><a href="#user_recommendation">user recommendation</a></li>
 <li><a href="#user_signin">user signin</a></li>
 <li><a href="#user_signup">user signup</a></li>
 </ol>
@@ -289,6 +325,128 @@ WHERE FLAG IS APPLIED
 WITH FLAG
 {
   &quot;followers&quot;: 1
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>User Recommendation<a name='user_recommendation'></a></h1>
+<p>This API recommends users for the logged in user to interact with which may include follow/like.</p>
+<p><strong>Endpoint:</strong><code>/follow/recommended/</code></p>
+<p><strong>Method:</strong> <code>GET</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: 2,
+    &quot;full_name&quot;: &quot;Balogun Abiola&quot;,
+    &quot;display_pic&quot;: &quot;https://hooks-storage.s3.amazonaws.com/display_pic/275581f4-10bb-4145-86f7-6313cbba88e3default_pp.jpeg&quot;,
+    &quot;age&quot;: 0,
+    &quot;location&quot;: &quot;N/A&quot;,
+    &quot;followers&quot;: 1,
+    &quot;subscribers&quot;: &quot;Not Available&quot;,
+    &quot;interests&quot;: [
+      &quot;nature&quot;,
+      &quot;sports&quot;
+    ],
+    &quot;active&quot;: false
+  },
+  {
+    &quot;id&quot;: 3,
+    &quot;full_name&quot;: &quot;Rebecca Omotoke&quot;,
+    &quot;display_pic&quot;: &quot;https://hooks-storage.s3.amazonaws.com/display_pic/275581f4-10bb-4145-86f7-6313cbba88e3default_pp.jpeg&quot;,
+    &quot;age&quot;: 0,
+    &quot;location&quot;: &quot;N/A&quot;,
+    &quot;followers&quot;: 0,
+    &quot;subscribers&quot;: &quot;Not Available&quot;,
+    &quot;interests&quot;: [
+      &quot;social networking&quot;,
+      &quot;dancing&quot;,
+      &quot;social&quot;
+    ],
+    &quot;active&quot;: true
+  }
+]
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>Like Request<a name='like_request'></a></h1>
+<p>This API allows the logged in user to send a like request to another user. N.B:A like request can only be sent to a user that has a pending Like request from the user or has accepted the request previously.</p>
+<p><strong>Endpoint:</strong><code>/follow/like/</code></p>
+<p><strong>Method:</strong> <code>POST</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">{
+
+&quot;like (user_id)&quot;:&quot;*****&quot;
+
+}
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">{
+  &quot;like&quot;: {
+    &quot;id&quot;: 1,
+    &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
+    &quot;gender&quot;: &quot;Male&quot;,
+    &quot;bio&quot;: &quot;A skilled backend developer and innovation specialist.&quot;
+  }
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>Retrieve Likes<a name='retrieve_likes'></a></h1>
+<p>This API retrieves likes that are associated with the logged in user. N.B:A status query parameter must be provided for this request. status options are pending,requested and confirmed. A pending status retrieves all the like requests initiated by the logged in user that have not been accepted/rejected by the other user. A requested status retrieves all the like requests initiated by other users towards the logged in user which the logged in user can either accept or reject. A confirmed status retrieves all the likes associated with the logged in user that have been confirmed by the user or other users.</p>
+<p><strong>Endpoint:</strong><code>/follow/like/?status=requested</code></p>
+<p><strong>Method:</strong> <code>GET</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">{
+  &quot;count&quot;: 1,
+  &quot;next&quot;: null,
+  &quot;previous&quot;: null,
+  &quot;results&quot;: [
+    {
+      &quot;like&quot;: {
+        &quot;id&quot;: 3,
+        &quot;full_name&quot;: &quot;Rebecca Omotoke&quot;,
+        &quot;gender&quot;: &quot;Female&quot;,
+        &quot;bio&quot;: &quot;N/A&quot;
+      }
+    }
+  ]
+}
+</code></pre>
+<p><a href="#toc">Table of contents</a></p>
+<h1>Like Request Response<a name='like_request_response'></a></h1>
+<p>This API allows the logged in to either accept or reject a like request. N.B:The logged in user must be the one the like request was directed at to make them eligible to respond to the request. Also, the like request should not have been previously confirmed.</p>
+<p><strong>Endpoint:</strong><code>/follow/like/respond/</code></p>
+<p><strong>Method:</strong> <code>POST</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">{
+
+&quot;like_instance&quot;:&quot;*****&quot;
+
+&quot;action (either accept/reject)&quot;:&quot;*****&quot;
+
+}
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">{
+  &quot;like_id&quot;: 6,
+  &quot;like&quot;: {
+    &quot;id&quot;: 1,
+    &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
+    &quot;gender&quot;: &quot;Male&quot;,
+    &quot;bio&quot;: &quot;A skilled backend developer and innovation specialist.&quot;
+  },
+  &quot;action&quot;: &quot;Accepted&quot;
 }
 </code></pre>
 <p><a href="#toc">Table of contents</a></p>

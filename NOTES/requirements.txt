@@ -21,12 +21,14 @@ h11==0.16.0
 jmespath==1.0.1
 kombu==5.5.4
 packaging==25.0
+pillow==11.3.0
 prompt_toolkit==3.0.51
 psycopg2-binary==2.9.10
 pydotenv==0.0.7
 PyJWT==2.9.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
+pytz==2025.2
 redis==6.2.0
 regex==2024.11.6
 s3transfer==0.13.1
