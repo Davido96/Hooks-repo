@@ -65,10 +65,10 @@ class SigninSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=200,write_only=True)
 
     def validate(self,data):
-        email = data.get("email")
+        email = data.get("email").lower().strip()
         password = data.get("password")
         try:
-            user = models.Users.objects.get(email=email)
+            user = models.Users.objects.get(email__icontains=email)
             if not user.check_password(password):
                 raise serializers.ValidationError("Invalid Email/Password.")
             return user
