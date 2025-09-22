@@ -1,4 +1,6 @@
 from django.db.models import Q
+from django.core.cache import cache
+
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,6 +17,8 @@ from django.db.models import Q
 from . import models
 from users.models import Users
 from profiles.models import Profile
+from communication.utils import send_notification
+from utilities.utils import invalidate_cache
 
 
 class LikePagination(PageNumberPagination):
@@ -41,9 +45,16 @@ class CreateFollowView(APIView):
         serializer = serializers.CreateFollowSerializer(data=request.data,context={"user":request.user})
         if serializer.is_valid(raise_exception=True):
             output_instance = serializer.save()
+
+            send_notification(output_instance.following,f"{output_instance.follower.profile.full_name} just followed you.")
+
+            invalidate_cache([f"user_{output_instance.follower.id}_followings",f"user_{output_instance.following.id}_followers"])
+
             output = serializers.FollowSerializer(output_instance,many=False).data
             output["message"] = "Following"
             return Response(output,status=status.HTTP_201_CREATED)
+
+
 
 class RetrieveFollowings(APIView):
     permission_classes = [
@@ -54,8 +65,14 @@ class RetrieveFollowings(APIView):
         user = request.user
         params = request.query_params
         if not "count" in params:
-            followings = models.Follows.objects.filter(follower=user)
-            output = serializers.FollowSerializer(followings,many=True).data
+            cache_key = f"user_{user.id}_followings"
+            cached_data = cache.get(cache_key)
+            if not cached_data:
+                followings = models.Follows.objects.filter(follower=user)
+                output = serializers.RetrieveFollowingsSerializer(followings,many=True).data
+                cache.set(cache_key,output,timeout=60*60*3)
+            else:
+                output = cached_data
             return Response(output,status=status.HTTP_200_OK)
         else:
             #Ensuring no value is passed for count and is treated as just a flag
@@ -68,6 +85,8 @@ class RetrieveFollowings(APIView):
             else:
                 return Response({'error':"count should not have a value."})
 
+
+
 class RetrieveFollowersView(APIView):
     permission_classes = [
         IsActiveAndLoggedin,
@@ -76,8 +95,14 @@ class RetrieveFollowersView(APIView):
         user = request.user
         param = request.query_params
         if "count" not in param:
-            all_followers = models.Follows.objects.filter(following=user)
-            output = serializers.FollowSerializer(all_followers,many=True).data
+            cache_key = f"user_{user.id}_followers"
+            cached_data = cache.get(cache_key)
+            if not cached_data:
+                all_followers = models.Follows.objects.filter(following=user)
+                output = serializers.RetrieveFollowersSerializer(all_followers,many=True).data
+                cache.set(cache_key,output,timeout=60*60*3)
+            else:
+                output = cached_data
             return Response(output,status=status.HTTP_200_OK)
         else:
             if param.get("count") == "":
@@ -131,13 +156,16 @@ class LikeView(APIView):
         serializer = serializers.CreateLikeSerializer(data=request.data,context={"user":user})
         if serializer.is_valid(raise_exception=True):
             output_instance = serializer.save()
+
+            send_notification(output_instance.liked,f"{output_instance.liker.profile.full_name} likes you.")
+
             output = serializers.LikesSerializer(output_instance,many=False,context={"user":user}).data
             return Response(output,status=status.HTTP_200_OK)
 
     def get(self,request):
         user = request.user
         param = retrieve_query_paramter(request,"status",["requested","pending","confirmed"])
-        print(param)
+
         if param == "requested":
             likes = models.UserLike.objects.filter(liked=user,status="pending").order_by("-timestamp")
         elif param == "pending":
@@ -152,6 +180,9 @@ class LikeView(APIView):
         serialized_items = serializers.LikesSerializer(paginated_items,many=True,context={"user":user}).data
         output = paginator.get_paginated_response(serialized_items).data
         return Response(output,status=status.HTTP_200_OK)
+
+
+
 
 class AcceptRejectLikeView(APIView):
     permission_classes = [

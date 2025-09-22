@@ -23,6 +23,7 @@ urlpatterns = [
     path("user/",include("users.urls")),
     path("profile/",include("profiles.urls")),
     path("follow/",include("follows.urls")),
+    path("communication/",include("communication.urls")),
 
     path("documentation/", include("documentation.urls")),
 

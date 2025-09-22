@@ -45,6 +45,49 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+
+        let currentEndpoint = '';
+        let currentMethod = 'GET';
+
+        function openApiTester(endpoint, method) {
+            currentEndpoint = endpoint;
+            currentMethod = method;
+            document.getElementById("apiTitle").innerText = `${method} ${endpoint}`;
+            document.getElementById("apiTester").style.display = "block";
+        }
+
+        function closeApiTester() {
+            document.getElementById("apiTester").style.display = "none";
+        }
+
+        async function sendApiRequest() {
+            let payload = document.getElementById("apiPayload").value;
+            let host = document.getElementById("apiHost").value.replace(/\/$/, '');
+            let token = document.getElementById("apiToken").value;
+
+            let options = {
+                method: currentMethod,
+                headers: {"Content-Type": "application/json"}
+            };
+
+            if (token) {
+                options.headers["Authorization"] = `Bearer ${token}`;
+            }
+
+            if (payload && currentMethod !== "GET") {
+                options.body = payload;
+            }
+
+            try {
+                let res = await fetch(host + currentEndpoint, options);
+                let text = await res.text();
+                document.getElementById("apiResponse").innerText = text;
+            } catch (e) {
+                document.getElementById("apiResponse").innerText = "Error: " + e;
+            }
+
+        }
+
 </script>
 
 
@@ -52,15 +95,18 @@ document.addEventListener('DOMContentLoaded', function () {
 <h1>Hooks Backend Documentation<a name='hooks_backend_documentation'></a></h1>
 <h2>Index<a name='toc'></a></h2>
 <ol id='index'>
+<li><a href="#clear_notifications">clear notifications</a></li>
 <li><a href="#follow_user">follow user</a></li>
 <li><a href="#get_followers">get followers</a></li>
 <li><a href="#get_followings">get followings</a></li>
 <li><a href="#hooks_backend_documentation">hooks backend documentation</a></li>
 <li><a href="#like_request">like request</a></li>
 <li><a href="#like_request_response">like request response</a></li>
+<li><a href="#notification_connect">notification connect</a></li>
 <li><a href="#profile_retrieve">profile retrieve</a></li>
 <li><a href="#profile_update">profile update</a></li>
 <li><a href="#retrieve_likes">retrieve likes</a></li>
+<li><a href="#retrieve_notifications">retrieve notifications</a></li>
 <li><a href="#signout_user">signout user</a></li>
 <li><a href="#unfollow_user">unfollow user</a></li>
 <li><a href="#user_recommendation">user recommendation</a></li>
@@ -273,27 +319,16 @@ unfollow (A followed user id):*****
 <p><strong>status code:200</strong></p>
 <pre><code class="language-json">[
   {
-    &quot;id&quot;: 3,
-    &quot;follower&quot;: {
-      &quot;id&quot;: 1,
-      &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
-      &quot;gender&quot;: &quot;Male&quot;,
-      &quot;bio&quot;: &quot;A skilled backend developer and innovation specialist.&quot;
-    },
     &quot;following&quot;: {
       &quot;id&quot;: 2,
-      &quot;full_name&quot;: &quot;N/A&quot;,
-      &quot;gender&quot;: &quot;N/A&quot;,
+      &quot;full_name&quot;: &quot;Balogun Abiola&quot;,
+      &quot;gender&quot;: &quot;Male&quot;,
       &quot;bio&quot;: &quot;N/A&quot;
     }
   }
 ]
-WHERE FLAG IS APPLIED
-{
-  &quot;following&quot;: 1
-}
 </code></pre>
-<p><a href="#toc">Table of contents</a></p>
+<p><button onclick="openApiTester('/follow/followings/','GET')">Run Test</button><a href="#toc">Table of contents</a></p>
 <h1>Get Followers<a name='get_followers'></a></h1>
 <p>This API retrieves all the users that are currently following the logged in user. N.B:By applying the flag ?count to the endpoint url, the total number of the logged in user followers can be retrieved.</p>
 <p><strong>Endpoint:</strong><code>/follow/followers/</code></p>
@@ -304,30 +339,18 @@ WHERE FLAG IS APPLIED
 </code></pre>
 <h2>Response body</h2>
 <p><strong>status code:200</strong></p>
-<pre><code class="language-json">WITHOUT FLAG
-[
+<pre><code class="language-json">[
   {
-    &quot;id&quot;: 3,
-    &quot;follower&quot;: {
+    &quot;followers&quot;: {
       &quot;id&quot;: 1,
       &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
       &quot;gender&quot;: &quot;Male&quot;,
       &quot;bio&quot;: &quot;A skilled backend developer and innovation specialist.&quot;
-    },
-    &quot;following&quot;: {
-      &quot;id&quot;: 2,
-      &quot;full_name&quot;: &quot;Balogun Abiola&quot;,
-      &quot;gender&quot;: &quot;Male&quot;,
-      &quot;bio&quot;: &quot;N/A&quot;
     }
   }
 ]
-WITH FLAG
-{
-  &quot;followers&quot;: 1
-}
 </code></pre>
-<p><a href="#toc">Table of contents</a></p>
+<p><button onclick="openApiTester('/follow/followers/','GET')">Run Test</button><a href="#toc">Table of contents</a></p>
 <h1>User Recommendation<a name='user_recommendation'></a></h1>
 <p>This API recommends users for the logged in user to interact with which may include follow/like.</p>
 <p><strong>Endpoint:</strong><code>/follow/recommended/</code></p>
@@ -450,6 +473,81 @@ WITH FLAG
 }
 </code></pre>
 <p><a href="#toc">Table of contents</a></p>
+<h1>Retrieve Notifications<a name='retrieve_notifications'></a></h1>
+<p>This API allows users to retrieve their saved notifications.</p>
+<p><strong>Endpoint:</strong><code>/communication/notifications/</code></p>
+<p><strong>Method:</strong> <code>GET</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;message&quot;: &quot;Balogun Abiola just followed you.&quot;,
+    &quot;timestamp&quot;: &quot;2025-09-22T01:36:33.911316Z&quot;
+  }
+]
+</code></pre>
+<p><button onclick="openApiTester('/communication/notifications/','GET')">Run Test</button><a href="#toc">Table of contents</a></p>
+<h1>Notification Connect<a name='notification_connect'></a></h1>
+<p>This API allows a user connect to their live notifications. N.B:This API call should be made via ws/wss protocol.</p>
+<p><strong>Endpoint:</strong><code>ws/notification/?token=********</code></p>
+<p><strong>Method:</strong> <code>NONE</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:NONE</strong></p>
+<p><button onclick="openApiTester('ws/notification/?token=********','NONE')">Run Test</button><a href="#toc">Table of contents</a></p>
+<h1>Clear Notifications<a name='clear_notifications'></a></h1>
+<p>This API clears all persistent notifications of a user.</p>
+<p><strong>Endpoint:</strong><code>/communication/notifications/</code></p>
+<p><strong>Method:</strong> <code>DELETE</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:204</strong></p>
+<p><button onclick="openApiTester('/communication/notifications/','DELETE')">Run Test</button><a href="#toc">Table of contents</a></p>
+
+
+<div id="apiTester" style="position:fixed; bottom:20px; right:20px; width:300px; height:400px; 
+            background:#fff; border:1px solid #ccc; border-radius:8px; 
+            box-shadow:0px 4px 12px rgba(0,0,0,0.2); padding:10px; 
+            overflow-y:auto; z-index:9999; font-family:sans-serif; display:none">
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 id="apiTitle" style="margin:0; font-size:16px;">API Tester</h3>
+            <span onclick="closeApiTester()" style="cursor:pointer; font-size:18px; font-weight:bold; color:#888;"
+                onmouseover="this.style.color='red'" onmouseout="this.style.color='#888'">&times;</span>
+        </div>
+
+        <label style="font-size:12px;">Host</label>
+        <input id="apiHost" type="text" value="http://localhost:8000"
+            style="width:100%; margin:5px 0 10px 0; padding:5px; font-size:12px;">
+
+        <!-- Token input -->
+        <label style="font-size:12px;">Bearer Token (optional)</label>
+        <input id="apiToken" type="text" placeholder="Enter token"
+            style="width:100%; margin:5px 0 10px 0; padding:5px; font-size:12px;">
+
+        <textarea id="apiPayload" placeholder="Enter JSON body"
+            style="width:100%; height:100px; margin:10px 0; font-family:monospace;"></textarea>
+
+        <button onclick="sendApiRequest()"
+            style="padding:6px 12px; border:none; border-radius:4px; background:#007bff; color:#fff; cursor:pointer;">
+            Send
+        </button>
+
+        <pre id="apiResponse" style="background:#f9f9f9; border:1px solid #ddd; padding:5px; 
+              max-height:150px; overflow-y:auto; margin-top:10px;"></pre>
+    </div>
+
 
 </body>
 </html>

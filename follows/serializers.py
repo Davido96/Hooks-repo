@@ -9,6 +9,9 @@ from users.models import Users
 from profiles.models import Profile
 from profiles.serializers import MinimalProfileSerializer
 
+from utilities.utils import invalidate_cache
+from communication.utils import send_notification
+
 from datetime import datetime,date
 import pytz
 
@@ -56,15 +59,16 @@ class UnfollowSerializer(serializers.Serializer):
 
     def create(self,validated_data):
         unfollow = validated_data.get("unfollow")
+        user = validated_data.get("user")
+        invalidate_cache([f"user_{unfollow.id}_followers",f"user_{user.id}_followings"])
+
         unfollow_output = MinimalProfileSerializer(unfollow.profile,many=False).data
-        models.Follows.objects.filter(follower=validated_data.get("user"),following=unfollow).delete()
+        models.Follows.objects.filter(follower=user,following=unfollow).delete()
         output = {
             "user": unfollow_output,
             "message":"Unfollowed"
         }
         return output
-
-
 
 
 
@@ -83,6 +87,31 @@ class FollowSerializer(serializers.ModelSerializer):
     def get_following(self,obj):
         output = MinimalProfileSerializer(obj.following.profile,many=False).data
         return output
+
+
+class RetrieveFollowingsSerializer(serializers.ModelSerializer):
+    following = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Follows
+        fields = ["following"]
+
+    def get_following(self,obj):
+        output = MinimalProfileSerializer(obj.following.profile,many=False).data
+        return output
+
+class RetrieveFollowersSerializer(serializers.ModelSerializer):
+    followers = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Follows
+        fields = ["followers"]
+
+    def get_followers(self,obj):
+        output = MinimalProfileSerializer(obj.follower.profile,many=False).data
+        return output
+
+
 
 class MiniUserProfileSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
@@ -198,12 +227,16 @@ class AcceptRejectLikeSerializer(serializers.Serializer):
         user = self.context["user"]
         action = validated_data.get("action")
         like = validated_data.get("like_instance")
+
+        notify_user = like.liker
         output = LikesSerializer(like,many=False,context={"user":user}).data
         if action == "accept":
             like.status = "confirmed"
             like.save()
             output["action"] = "Accepted"
+            send_notification(notify_user,f"{user.profile.full_name} accepted your like.")
         else:
             like.delete()
             output["action"] = "Rejected"
+            send_notification(notify_user,f"{user.profile.full_name} rejected your like.")
         return output

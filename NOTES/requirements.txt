@@ -1,10 +1,12 @@
 amqp==5.3.1
-asgiref==3.8.1
+asgiref==3.9.1
 async-timeout==5.0.1
 billiard==4.2.1
 boto3==1.39.9
 botocore==1.39.9
 celery==5.5.3
+channels==4.3.1
+channels_redis==4.3.0
 click==8.2.1
 click-didyoumean==0.3.1
 click-plugins==1.1.1.2
@@ -20,6 +22,7 @@ gunicorn==23.0.0
 h11==0.16.0
 jmespath==1.0.1
 kombu==5.5.4
+msgpack==1.1.1
 packaging==25.0
 pillow==11.3.0
 prompt_toolkit==3.0.51
@@ -41,3 +44,4 @@ uuid==1.30
 uvicorn==0.35.0
 vine==5.1.0
 wcwidth==0.2.13
+websockets==15.0.1

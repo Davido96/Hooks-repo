@@ -305,28 +305,17 @@ This API retrieves all the users that the logged in user is currently following.
 ``` json
 [
   {
-    "id": 3,
-    "follower": {
-      "id": 1,
-      "full_name": "Saliu Opeyemi Abdul Azeez",
-      "gender": "Male",
-      "bio": "A skilled backend developer and innovation specialist."
-    },
     "following": {
       "id": 2,
-      "full_name": "N/A",
-      "gender": "N/A",
+      "full_name": "Balogun Abiola",
+      "gender": "Male",
       "bio": "N/A"
     }
   }
 ]
-WHERE FLAG IS APPLIED
-{
-  "following": 1
-}
 ```
 
-[Table of contents](#toc)
+[["/follow/followings/","GET"]][Table of contents](#toc)
 
 
 # Get Followers
@@ -348,31 +337,19 @@ This API retrieves all the users that are currently following the logged in user
 **status code:200**
 
 ``` json
-WITHOUT FLAG
 [
   {
-    "id": 3,
-    "follower": {
+    "followers": {
       "id": 1,
       "full_name": "Saliu Opeyemi Abdul Azeez",
       "gender": "Male",
       "bio": "A skilled backend developer and innovation specialist."
-    },
-    "following": {
-      "id": 2,
-      "full_name": "Balogun Abiola",
-      "gender": "Male",
-      "bio": "N/A"
     }
   }
 ]
-WITH FLAG
-{
-  "followers": 1
-}
 ```
 
-[Table of contents](#toc)
+[["/follow/followers/","GET"]][Table of contents](#toc)
 
 
 # User Recommendation
@@ -543,3 +520,76 @@ This API allows the logged in to either accept or reject a like request. N.B:The
 ```
 
 [Table of contents](#toc)
+
+
+# Retrieve Notifications
+
+This API allows users to retrieve their saved notifications.
+
+**Endpoint:**`/communication/notifications/`
+
+**Method:** `GET`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+[
+  {
+    "id": 1,
+    "message": "Balogun Abiola just followed you.",
+    "timestamp": "2025-09-22T01:36:33.911316Z"
+  }
+]
+```
+
+[["/communication/notifications/","GET"]][Table of contents](#toc)
+
+
+# Notification Connect
+
+This API allows a user connect to their live notifications. N.B:This API call should be made via ws/wss protocol.
+
+**Endpoint:**`ws/notification/?token=********`
+
+**Method:** `NONE`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:NONE**
+
+[["ws/notification/?token=********","NONE"]][Table of contents](#toc)
+
+
+# Clear Notifications
+
+This API clears all persistent notifications of a user.
+
+**Endpoint:**`/communication/notifications/`
+
+**Method:** `DELETE`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:204**
+
+[["/communication/notifications/","DELETE"]][Table of contents](#toc)

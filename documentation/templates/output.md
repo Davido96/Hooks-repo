@@ -4,20 +4,23 @@
 ## Index<a name='toc'></a>
 
 
-1. [follow user](#follow_user)  
-2. [get followers](#get_followers)  
-3. [get followings](#get_followings)  
-4. [hooks backend documentation](#hooks_backend_documentation)  
-5. [like request](#like_request)  
-6. [like request response](#like_request_response)  
-7. [profile retrieve](#profile_retrieve)  
-8. [profile update](#profile_update)  
-9. [retrieve likes](#retrieve_likes)  
-10. [signout user](#signout_user)  
-11. [unfollow user](#unfollow_user)  
-12. [user recommendation](#user_recommendation)  
-13. [user signin](#user_signin)  
-14. [user signup](#user_signup)  
+1. [clear notifications](#clear_notifications)  
+2. [follow user](#follow_user)  
+3. [get followers](#get_followers)  
+4. [get followings](#get_followings)  
+5. [hooks backend documentation](#hooks_backend_documentation)  
+6. [like request](#like_request)  
+7. [like request response](#like_request_response)  
+8. [notification connect](#notification_connect)  
+9. [profile retrieve](#profile_retrieve)  
+10. [profile update](#profile_update)  
+11. [retrieve likes](#retrieve_likes)  
+12. [retrieve notifications](#retrieve_notifications)  
+13. [signout user](#signout_user)  
+14. [unfollow user](#unfollow_user)  
+15. [user recommendation](#user_recommendation)  
+16. [user signin](#user_signin)  
+17. [user signup](#user_signup)  
 
 
 # User Signup<a name='user_signup'></a>
@@ -319,28 +322,17 @@ This API retrieves all the users that the logged in user is currently following.
 ``` json
 [
   {
-    "id": 3,
-    "follower": {
-      "id": 1,
-      "full_name": "Saliu Opeyemi Abdul Azeez",
-      "gender": "Male",
-      "bio": "A skilled backend developer and innovation specialist."
-    },
     "following": {
       "id": 2,
-      "full_name": "N/A",
-      "gender": "N/A",
+      "full_name": "Balogun Abiola",
+      "gender": "Male",
       "bio": "N/A"
     }
   }
 ]
-WHERE FLAG IS APPLIED
-{
-  "following": 1
-}
 ```
 
-[Table of contents](#toc)
+[["/follow/followings/","GET"]][Table of contents](#toc)
 
 
 # Get Followers<a name='get_followers'></a>
@@ -362,31 +354,19 @@ This API retrieves all the users that are currently following the logged in user
 **status code:200**
 
 ``` json
-WITHOUT FLAG
 [
   {
-    "id": 3,
-    "follower": {
+    "followers": {
       "id": 1,
       "full_name": "Saliu Opeyemi Abdul Azeez",
       "gender": "Male",
       "bio": "A skilled backend developer and innovation specialist."
-    },
-    "following": {
-      "id": 2,
-      "full_name": "Balogun Abiola",
-      "gender": "Male",
-      "bio": "N/A"
     }
   }
 ]
-WITH FLAG
-{
-  "followers": 1
-}
 ```
 
-[Table of contents](#toc)
+[["/follow/followers/","GET"]][Table of contents](#toc)
 
 
 # User Recommendation<a name='user_recommendation'></a>
@@ -557,3 +537,76 @@ This API allows the logged in to either accept or reject a like request. N.B:The
 ```
 
 [Table of contents](#toc)
+
+
+# Retrieve Notifications<a name='retrieve_notifications'></a>
+
+This API allows users to retrieve their saved notifications.
+
+**Endpoint:**`/communication/notifications/`
+
+**Method:** `GET`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:200**
+
+``` json
+[
+  {
+    "id": 1,
+    "message": "Balogun Abiola just followed you.",
+    "timestamp": "2025-09-22T01:36:33.911316Z"
+  }
+]
+```
+
+[["/communication/notifications/","GET"]][Table of contents](#toc)
+
+
+# Notification Connect<a name='notification_connect'></a>
+
+This API allows a user connect to their live notifications. N.B:This API call should be made via ws/wss protocol.
+
+**Endpoint:**`ws/notification/?token=********`
+
+**Method:** `NONE`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:NONE**
+
+[["ws/notification/?token=********","NONE"]][Table of contents](#toc)
+
+
+# Clear Notifications<a name='clear_notifications'></a>
+
+This API clears all persistent notifications of a user.
+
+**Endpoint:**`/communication/notifications/`
+
+**Method:** `DELETE`
+
+## Payload
+
+``` json
+
+
+```
+## Response body
+
+**status code:204**
+
+[["/communication/notifications/","DELETE"]][Table of contents](#toc)

@@ -47,10 +47,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'channels',
 
     'users',
     'profiles',
     'follows',
+    'communication',
     
     'documentation',
 
@@ -228,6 +230,16 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/1",  # db index 1
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+
+CHANNEL_LAYERS = {
+    "default":{
+        "BACKEND":"channels_redis.core.RedisChannelLayer",
+        "CONFIG":{
+            "hosts": [("127.0.0.1",6379)],
         }
     }
 }
