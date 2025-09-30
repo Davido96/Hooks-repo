@@ -96,15 +96,19 @@ document.addEventListener('DOMContentLoaded', function () {
 <h2>Index<a name='toc'></a></h2>
 <ol id='index'>
 <li><a href="#clear_notifications">clear notifications</a></li>
+<li><a href="#connecting_to_chat_websocket">connecting to chat websocket</a></li>
 <li><a href="#follow_user">follow user</a></li>
 <li><a href="#get_followers">get followers</a></li>
 <li><a href="#get_followings">get followings</a></li>
 <li><a href="#hooks_backend_documentation">hooks backend documentation</a></li>
+<li><a href="#initiate_chat_session">initiate chat session</a></li>
 <li><a href="#like_request">like request</a></li>
 <li><a href="#like_request_response">like request response</a></li>
 <li><a href="#notification_connect">notification connect</a></li>
 <li><a href="#profile_retrieve">profile retrieve</a></li>
 <li><a href="#profile_update">profile update</a></li>
+<li><a href="#retrieve_chat_sessions">retrieve chat sessions</a></li>
+<li><a href="#retrieve_chats">retrieve chats</a></li>
 <li><a href="#retrieve_likes">retrieve likes</a></li>
 <li><a href="#retrieve_notifications">retrieve notifications</a></li>
 <li><a href="#signout_user">signout user</a></li>
@@ -514,6 +518,117 @@ unfollow (A followed user id):*****
 <h2>Response body</h2>
 <p><strong>status code:204</strong></p>
 <p><button onclick="openApiTester('/communication/notifications/','DELETE')">Run Test</button><a href="#toc">Table of contents</a></p>
+<h1>Retrieve Chat Sessions<a name='retrieve_chat_sessions'></a></h1>
+<p>This API retrieves all the chat sessions established by or with a user.</p>
+<p><strong>Endpoint:</strong><code>/communication/chat/sessions/</code></p>
+<p><strong>Method:</strong> <code>GET</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;recipient&quot;: {
+      &quot;id&quot;: 1,
+      &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
+      &quot;display_pic&quot;: &quot;https://hooks-storage.s3.amazonaws.com/display_pic/33092378-1bf2-4362-9671-504bbd91f604default_pp.jpeg&quot;
+    }
+  }
+]
+</code></pre>
+<p><button onclick="openApiTester('/communication/chat/sessions/','GET')">Run Test</button><a href="#toc">Table of contents</a></p>
+<h1>Connecting to Chat Websocket<a name='connecting_to_chat_websocket'></a></h1>
+<p>This API allows a user establish a personal chat websocket channel with another user. N.B:An existing user id must be provided in the url along with a valid token.</p>
+<p><strong>Endpoint:</strong><code>ws/chat/&lt;user_id&gt;/?token=********</code></p>
+<p><strong>Method:</strong> <code>NONE</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:NONE</strong></p>
+<p><button onclick="openApiTester('ws/chat/&lt;user_id&gt;/?token=********','NONE')">Run Test</button><a href="#toc">Table of contents</a></p>
+<h1>Retrieve Chats<a name='retrieve_chats'></a></h1>
+<p>This API retrieves all the messages of a chat session. N.B:A session_id query parameter is required for this request.</p>
+<p><strong>Endpoint:</strong><code>/communication/chats/?session_id=1</code></p>
+<p><strong>Method:</strong> <code>GET</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;actor&quot;: {
+      &quot;id&quot;: 1,
+      &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
+      &quot;display_pic&quot;: &quot;https://hooks-storage.s3.amazonaws.com/display_pic/33092378-1bf2-4362-9671-504bbd91f604default_pp.jpeg&quot;
+    },
+    &quot;message&quot;: &quot;res&quot;,
+    &quot;timestamp&quot;: &quot;2025-09-30T15:29:50.363134Z&quot;
+  },
+  {
+    &quot;id&quot;: 2,
+    &quot;actor&quot;: {
+      &quot;id&quot;: 3,
+      &quot;full_name&quot;: &quot;Rebecca Omotoke&quot;,
+      &quot;display_pic&quot;: &quot;https://hooks-storage.s3.amazonaws.com/display_pic/275581f4-10bb-4145-86f7-6313cbba88e3default_pp.jpeg&quot;
+    },
+    &quot;message&quot;: &quot;true&quot;,
+    &quot;timestamp&quot;: &quot;2025-09-30T15:30:14.175313Z&quot;
+  },
+  {
+    &quot;id&quot;: 3,
+    &quot;actor&quot;: {
+      &quot;id&quot;: 1,
+      &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
+      &quot;display_pic&quot;: &quot;https://hooks-storage.s3.amazonaws.com/display_pic/33092378-1bf2-4362-9671-504bbd91f604default_pp.jpeg&quot;
+    },
+    &quot;message&quot;: &quot;You be error&quot;,
+    &quot;timestamp&quot;: &quot;2025-09-30T15:30:23.315956Z&quot;
+  },
+  {
+    &quot;id&quot;: 4,
+    &quot;actor&quot;: {
+      &quot;id&quot;: 3,
+      &quot;full_name&quot;: &quot;Rebecca Omotoke&quot;,
+      &quot;display_pic&quot;: &quot;https://hooks-storage.s3.amazonaws.com/display_pic/275581f4-10bb-4145-86f7-6313cbba88e3default_pp.jpeg&quot;
+    },
+    &quot;message&quot;: &quot;Say God&quot;,
+    &quot;timestamp&quot;: &quot;2025-09-30T15:30:30.713641Z&quot;
+  }
+]
+</code></pre>
+<p><button onclick="openApiTester('/communication/chats/?session_id=1','GET')">Run Test</button><a href="#toc">Table of contents</a></p>
+<h1>Initiate Chat Session<a name='initiate_chat_session'></a></h1>
+<p>This API allows a user establish a chat session with another user. N.B:A like must have been previously confirmed with the other user. Also, you cannot establish a chat session with yourself.</p>
+<p><strong>Endpoint:</strong><code>/communication/chat/session/initiate/</code></p>
+<p><strong>Method:</strong> <code>POST</code></p>
+<h2>Payload</h2>
+<pre><code class="language-json">{
+
+&quot;user&quot;:&quot;*****&quot;
+
+}
+
+</code></pre>
+<h2>Response body</h2>
+<p><strong>status code:200</strong></p>
+<pre><code class="language-json">{
+  &quot;id&quot;: 1,
+  &quot;recipient&quot;: {
+    &quot;id&quot;: 1,
+    &quot;full_name&quot;: &quot;Saliu Opeyemi Abdul Azeez&quot;,
+    &quot;display_pic&quot;: &quot;https://hooks-storage.s3.amazonaws.com/display_pic/33092378-1bf2-4362-9671-504bbd91f604default_pp.jpeg&quot;
+  }
+}
+</code></pre>
+<p><button onclick="openApiTester('/communication/chat/session/initiate/','POST')">Run Test</button><a href="#toc">Table of contents</a></p>
 
 
 <div id="apiTester" style="position:fixed; bottom:20px; right:20px; width:300px; height:400px; 

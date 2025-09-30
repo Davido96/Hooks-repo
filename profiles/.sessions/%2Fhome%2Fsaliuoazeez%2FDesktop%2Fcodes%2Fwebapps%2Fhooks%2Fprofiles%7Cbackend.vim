@@ -3,7 +3,7 @@ let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-
 let v:this_session=expand("<sfile>:p")
 silent only
 silent tabonly
-cd ~/Desktop/codes/webapps/hooks/users
+cd ~/Desktop/codes/webapps/hooks/profiles
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
@@ -13,14 +13,13 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +9 urls.py
-badd +1 views.py
-badd +71 serializers.py
-badd +12 models.py
-badd +12 permissions.py
+badd +65 views.py
+badd +1 urls.py
+badd +1 serializers.py
+badd +1 models.py
 argglobal
 %argdel
-edit permissions.py
+edit urls.py
 let s:save_splitbelow = &splitbelow
 let s:save_splitright = &splitright
 set splitbelow splitright
@@ -45,18 +44,18 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 21 + 19) / 38)
-exe 'vert 1resize ' . ((&columns * 94 + 95) / 190)
-exe '2resize ' . ((&lines * 13 + 19) / 38)
-exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 21 + 19) / 38)
-exe 'vert 3resize ' . ((&columns * 95 + 95) / 190)
-exe '4resize ' . ((&lines * 13 + 19) / 38)
-exe 'vert 4resize ' . ((&columns * 95 + 95) / 190)
+exe '1resize ' . ((&lines * 19 + 19) / 38)
+exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
+exe '2resize ' . ((&lines * 15 + 19) / 38)
+exe 'vert 2resize ' . ((&columns * 95 + 95) / 190)
+exe '3resize ' . ((&lines * 19 + 19) / 38)
+exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
+exe '4resize ' . ((&lines * 15 + 19) / 38)
+exe 'vert 4resize ' . ((&columns * 94 + 95) / 190)
 argglobal
-balt urls.py
-nnoremap <buffer>  cR TypescriptRenameFile
+balt views.py
 nnoremap <buffer>  co TypescriptOrganizeImports
+nnoremap <buffer>  cR TypescriptRenameFile
 nnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
 vnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
 nnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
@@ -100,7 +99,7 @@ endif
 setlocal fixendofline
 setlocal foldcolumn=0
 setlocal foldenable
-setlocal foldexpr=v:lua.require'lazyvim.util'.ui.foldexpr()
+setlocal foldexpr=v:lua.LazyVim.treesitter.foldexpr()
 setlocal foldignore=#
 setlocal foldlevel=99
 setlocal foldmarker={{{,}}}
@@ -108,14 +107,14 @@ setlocal foldmethod=expr
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=
-setlocal formatexpr=v:lua.require'lazyvim.util'.format.formatexpr()
+setlocal formatexpr=v:lua.LazyVim.format.formatexpr()
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal formatoptions=jcroqlnt
 setlocal iminsert=0
 setlocal imsearch=-1
 setlocal include=^\\s*\\(from\\|import\\)
 setlocal includeexpr=substitute(substitute(substitute(v:fname,b:grandparent_match,b:grandparent_sub,''),b:parent_match,b:parent_sub,''),b:child_match,b:child_sub,'g')
-setlocal indentexpr=nvim_treesitter#indent()
+setlocal indentexpr=v:lua.LazyVim.treesitter.indentexpr()
 setlocal indentkeys=0{,0},0),0],:,!^F,o,O,e,<:>,=elif,=except
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
@@ -150,8 +149,8 @@ setlocal spellcapcheck=[.?!]\\_[\\])'\"\\t\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
-setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_3_normal#%<%#lualine_c_3_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_normal#\ \ 2\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_6_LV_Bold_normal#\ serializers.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#SigninSerializer%*\ %#TroubleStatusline2#󰊕\ %*%#TroubleStatusline1#validate%*\ \ %#lualine_c_normal#%=%#lualine_x_16_normal#\ \ 18\ %#lualine_c_normal#%#lualine_x_diff_modified_normal#\ \ 1\ %#lualine_transitional_lualine_b_normal_to_lualine_x_diff_modified_normal#%#lualine_b_normal#\ 73%%\ %#lualine_b_normal#\ 70:12\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 16:12\ 
+setlocal statuscolumn=%!v:lua.LazyVim.statuscolumn()
+setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_3_normal#%<%#lualine_c_3_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_6_LV_Bold_normal#\ models.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#Profile%*\ \ %#lualine_c_normal#%=%#lualine_x_15_normal#\ \ 18\ %#lualine_transitional_lualine_b_normal_to_lualine_x_15_normal#%#lualine_b_normal#\ 37%%\ %#lualine_b_normal#\ 11:28\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 16:56\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -168,34 +167,30 @@ setlocal winblend=0
 setlocal nowinfixbuf
 setlocal nowinfixheight
 setlocal nowinfixwidth
-setlocal winhighlight=Normal:Normal,VertSplit:VerticalSplit
+setlocal winhighlight=
 setlocal wrap
 setlocal wrapmargin=0
-5
-sil! normal! zo
-6
-sil! normal! zo
-let s:l = 12 - ((11 * winheight(0) + 10) / 21)
+let s:l = 1 - ((0 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 12
-normal! 019|
+keepjumps 1
+normal! 0
 wincmd w
 argglobal
 if bufexists(fnamemodify("models.py", ":p")) | buffer models.py | else | edit models.py | endif
 if &buftype ==# 'terminal'
   silent file models.py
 endif
-balt serializers.py
-vnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
-nnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
-vnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
-nnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
-nnoremap <buffer>  cR TypescriptRenameFile
+balt views.py
 nnoremap <buffer>  co TypescriptOrganizeImports
-xnoremap <buffer> <silent> ih :Gitsigns select_hunk
+nnoremap <buffer>  cR TypescriptRenameFile
+nnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
+vnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
+nnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
+vnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
 onoremap <buffer> <silent> ih :Gitsigns select_hunk
+xnoremap <buffer> <silent> ih :Gitsigns select_hunk
 setlocal keymap=
 setlocal noarabic
 setlocal autoindent
@@ -233,7 +228,7 @@ endif
 setlocal fixendofline
 setlocal foldcolumn=0
 setlocal foldenable
-setlocal foldexpr=v:lua.require'lazyvim.util'.ui.foldexpr()
+setlocal foldexpr=v:lua.LazyVim.treesitter.foldexpr()
 setlocal foldignore=#
 setlocal foldlevel=99
 setlocal foldmarker={{{,}}}
@@ -241,14 +236,14 @@ setlocal foldmethod=expr
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=
-setlocal formatexpr=v:lua.require'lazyvim.util'.format.formatexpr()
+setlocal formatexpr=v:lua.LazyVim.format.formatexpr()
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal formatoptions=jcroqlnt
 setlocal iminsert=0
 setlocal imsearch=-1
 setlocal include=^\\s*\\(from\\|import\\)
 setlocal includeexpr=substitute(substitute(substitute(v:fname,b:grandparent_match,b:grandparent_sub,''),b:parent_match,b:parent_sub,''),b:child_match,b:child_sub,'g')
-setlocal indentexpr=nvim_treesitter#indent()
+setlocal indentexpr=v:lua.LazyVim.treesitter.indentexpr()
 setlocal indentkeys=0{,0},0),0],:,!^F,o,O,e,<:>,=elif,=except
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
@@ -273,7 +268,6 @@ setlocal norightleft
 setlocal rightleftcmd=search
 setlocal scrollback=-1
 setlocal noscrollbind
-setlocal scrolloff=4
 setlocal shiftwidth=4
 setlocal signcolumn=yes
 setlocal smartindent
@@ -284,8 +278,8 @@ setlocal spellcapcheck=[.?!]\\_[\\])'\"\\t\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
-setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_3_normal#%<%#lualine_c_3_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_normal#\ \ 2\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_6_LV_Bold_normal#\ serializers.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#SigninSerializer%*\ %#TroubleStatusline2#󰊕\ %*%#TroubleStatusline1#validate%*\ \ %#lualine_c_normal#%=%#lualine_x_16_normal#\ \ 18\ %#lualine_c_normal#%#lualine_x_diff_modified_normal#\ \ 1\ %#lualine_transitional_lualine_b_normal_to_lualine_x_diff_modified_normal#%#lualine_b_normal#\ 73%%\ %#lualine_b_normal#\ 70:12\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 16:12\ 
+setlocal statuscolumn=%!v:lua.LazyVim.statuscolumn()
+setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_3_normal#%<%#lualine_c_3_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_6_LV_Bold_normal#\ models.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#Profile%*\ \ %#lualine_c_normal#%=%#lualine_x_15_normal#\ \ 18\ %#lualine_transitional_lualine_b_normal_to_lualine_x_15_normal#%#lualine_b_normal#\ 37%%\ %#lualine_b_normal#\ 11:28\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 17:35\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -298,35 +292,34 @@ setlocal textwidth=0
 setlocal undofile
 setlocal varsofttabstop=
 setlocal vartabstop=
-setlocal virtualedit=block
 setlocal winblend=0
 setlocal nowinfixbuf
 setlocal nowinfixheight
 setlocal nowinfixwidth
-setlocal winhighlight=Normal:Normal,VertSplit:VerticalSplit
+setlocal winhighlight=
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 12 - ((11 * winheight(0) + 6) / 13)
+let s:l = 11 - ((3 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 12
-normal! 044|
+keepjumps 11
+normal! 028|
 wincmd w
 argglobal
 if bufexists(fnamemodify("views.py", ":p")) | buffer views.py | else | edit views.py | endif
 if &buftype ==# 'terminal'
   silent file views.py
 endif
-balt permissions.py
-vnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
-nnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
-vnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
+balt urls.py
 nnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
-nnoremap <buffer>  cR TypescriptRenameFile
+vnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
+nnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
+vnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
 nnoremap <buffer>  co TypescriptOrganizeImports
-xnoremap <buffer> <silent> ih :Gitsigns select_hunk
+nnoremap <buffer>  cR TypescriptRenameFile
 onoremap <buffer> <silent> ih :Gitsigns select_hunk
+xnoremap <buffer> <silent> ih :Gitsigns select_hunk
 setlocal keymap=
 setlocal noarabic
 setlocal autoindent
@@ -364,7 +357,7 @@ endif
 setlocal fixendofline
 setlocal foldcolumn=0
 setlocal foldenable
-setlocal foldexpr=v:lua.require'lazyvim.util'.ui.foldexpr()
+setlocal foldexpr=v:lua.LazyVim.treesitter.foldexpr()
 setlocal foldignore=#
 setlocal foldlevel=99
 setlocal foldmarker={{{,}}}
@@ -372,14 +365,14 @@ setlocal foldmethod=expr
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=
-setlocal formatexpr=v:lua.require'lazyvim.util'.format.formatexpr()
+setlocal formatexpr=v:lua.LazyVim.format.formatexpr()
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal formatoptions=jcroqlnt
 setlocal iminsert=0
 setlocal imsearch=-1
 setlocal include=^\\s*\\(from\\|import\\)
 setlocal includeexpr=substitute(substitute(substitute(v:fname,b:grandparent_match,b:grandparent_sub,''),b:parent_match,b:parent_sub,''),b:child_match,b:child_sub,'g')
-setlocal indentexpr=nvim_treesitter#indent()
+setlocal indentexpr=v:lua.LazyVim.treesitter.indentexpr()
 setlocal indentkeys=0{,0},0),0],:,!^F,o,O,e,<:>,=elif,=except
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
@@ -404,7 +397,6 @@ setlocal norightleft
 setlocal rightleftcmd=search
 setlocal scrollback=-1
 setlocal noscrollbind
-setlocal scrolloff=4
 setlocal shiftwidth=4
 setlocal signcolumn=yes
 setlocal smartindent
@@ -415,8 +407,8 @@ setlocal spellcapcheck=[.?!]\\_[\\])'\"\\t\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
-setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_3_normal#%<%#lualine_c_3_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_normal#\ \ 2\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_6_LV_Bold_normal#\ serializers.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#SigninSerializer%*\ %#TroubleStatusline2#󰊕\ %*%#TroubleStatusline1#validate%*\ \ %#lualine_c_normal#%=%#lualine_x_16_normal#\ \ 18\ %#lualine_c_normal#%#lualine_x_diff_modified_normal#\ \ 1\ %#lualine_transitional_lualine_b_normal_to_lualine_x_diff_modified_normal#%#lualine_b_normal#\ 73%%\ %#lualine_b_normal#\ 70:12\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 16:12\ 
+setlocal statuscolumn=%!v:lua.LazyVim.statuscolumn()
+setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_3_normal#%<%#lualine_c_3_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_6_LV_Bold_normal#\ models.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#Profile%*\ \ %#lualine_c_normal#%=%#lualine_x_15_normal#\ \ 18\ %#lualine_transitional_lualine_b_normal_to_lualine_x_15_normal#%#lualine_b_normal#\ 37%%\ %#lualine_b_normal#\ 11:28\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 16:56\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -429,47 +421,34 @@ setlocal textwidth=0
 setlocal undofile
 setlocal varsofttabstop=
 setlocal vartabstop=
-setlocal virtualedit=block
 setlocal winblend=0
 setlocal nowinfixbuf
 setlocal nowinfixheight
 setlocal nowinfixwidth
-setlocal winhighlight=Normal:Normal,VertSplit:VerticalSplit
+setlocal winhighlight=
 setlocal wrap
 setlocal wrapmargin=0
-19
-sil! normal! zo
-25
-sil! normal! zo
-32
-sil! normal! zo
-38
-sil! normal! zo
-46
-sil! normal! zo
-57
-sil! normal! zo
-let s:l = 17 - ((16 * winheight(0) + 10) / 21)
+let s:l = 51 - ((11 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 17
-normal! 0
+keepjumps 51
+normal! 033|
 wincmd w
 argglobal
 if bufexists(fnamemodify("serializers.py", ":p")) | buffer serializers.py | else | edit serializers.py | endif
 if &buftype ==# 'terminal'
   silent file serializers.py
 endif
-balt urls.py
-vnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
-nnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
-vnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
-nnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
-nnoremap <buffer>  cR TypescriptRenameFile
+balt views.py
 nnoremap <buffer>  co TypescriptOrganizeImports
-xnoremap <buffer> <silent> ih :Gitsigns select_hunk
+nnoremap <buffer>  cR TypescriptRenameFile
+nnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
+vnoremap <buffer> <silent>  ghs :Gitsigns stage_hunk
+nnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
+vnoremap <buffer> <silent>  ghr :Gitsigns reset_hunk
 onoremap <buffer> <silent> ih :Gitsigns select_hunk
+xnoremap <buffer> <silent> ih :Gitsigns select_hunk
 setlocal keymap=
 setlocal noarabic
 setlocal autoindent
@@ -507,7 +486,7 @@ endif
 setlocal fixendofline
 setlocal foldcolumn=0
 setlocal foldenable
-setlocal foldexpr=v:lua.require'lazyvim.util'.ui.foldexpr()
+setlocal foldexpr=v:lua.LazyVim.treesitter.foldexpr()
 setlocal foldignore=#
 setlocal foldlevel=99
 setlocal foldmarker={{{,}}}
@@ -515,14 +494,14 @@ setlocal foldmethod=expr
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=
-setlocal formatexpr=v:lua.require'lazyvim.util'.format.formatexpr()
+setlocal formatexpr=v:lua.LazyVim.format.formatexpr()
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal formatoptions=jcroqlnt
 setlocal iminsert=0
 setlocal imsearch=-1
 setlocal include=^\\s*\\(from\\|import\\)
 setlocal includeexpr=substitute(substitute(substitute(v:fname,b:grandparent_match,b:grandparent_sub,''),b:parent_match,b:parent_sub,''),b:child_match,b:child_sub,'g')
-setlocal indentexpr=nvim_treesitter#indent()
+setlocal indentexpr=v:lua.LazyVim.treesitter.indentexpr()
 setlocal indentkeys=0{,0},0),0],:,!^F,o,O,e,<:>,=elif,=except
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
@@ -558,8 +537,8 @@ setlocal spellcapcheck=[.?!]\\_[\\])'\"\\t\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
 setlocal spelloptions=noplainbuffer
-setlocal statuscolumn=%!v:lua.require'snacks.statuscolumn'.get()
-setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_3_normal#%<%#lualine_c_3_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_diagnostics_error_normal#\ \ 2\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_6_LV_Bold_normal#\ serializers.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#SigninSerializer%*\ %#TroubleStatusline2#󰊕\ %*%#TroubleStatusline1#validate%*\ \ %#lualine_c_normal#%=%#lualine_x_16_normal#\ \ 18\ %#lualine_c_normal#%#lualine_x_diff_modified_normal#\ \ 1\ %#lualine_transitional_lualine_b_normal_to_lualine_x_diff_modified_normal#%#lualine_b_normal#\ 73%%\ %#lualine_b_normal#\ 70:12\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 16:13\ 
+setlocal statuscolumn=%!v:lua.LazyVim.statuscolumn()
+setlocal statusline=%#lualine_a_normal#\ NORMAL\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_b_normal#\ \ backend\ %#lualine_transitional_lualine_b_normal_to_lualine_c_3_normal#%<%#lualine_c_3_normal#\ 󱉭\ \ hooks\ %#lualine_c_normal#%#lualine_c_filetype_MiniIconsYellow_normal#\ 󰌠\ %#lualine_c_normal#%#lualine_c_normal#%#lualine_c_6_LV_Bold_normal#\ models.py%#lualine_c_normal#\ %#lualine_c_normal#%#TroubleStatusline0#\ \ %*%#TroubleStatusline1#Profile%*\ \ %#lualine_c_normal#%=%#lualine_x_15_normal#\ \ 18\ %#lualine_transitional_lualine_b_normal_to_lualine_x_15_normal#%#lualine_b_normal#\ 37%%\ %#lualine_b_normal#\ 11:28\ %#lualine_transitional_lualine_a_normal_to_lualine_b_normal#%#lualine_a_normal#\ \ 16:56\ 
 setlocal suffixesadd=.py
 setlocal swapfile
 setlocal synmaxcol=3000
@@ -577,39 +556,25 @@ setlocal winblend=0
 setlocal nowinfixbuf
 setlocal nowinfixheight
 setlocal nowinfixwidth
-setlocal winhighlight=Normal:Normal,VertSplit:VerticalSplit
+setlocal winhighlight=
 setlocal wrap
 setlocal wrapmargin=0
-25
-sil! normal! zo
-42
-sil! normal! zo
-45
-sil! normal! zo
-63
-sil! normal! zo
-67
-sil! normal! zo
-70
-sil! normal! zo
-79
-sil! normal! zo
-let s:l = 70 - ((7 * winheight(0) + 6) / 13)
+let s:l = 82 - ((4 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 70
-normal! 012|
+keepjumps 82
+normal! 0
 wincmd w
-4wincmd w
-exe '1resize ' . ((&lines * 21 + 19) / 38)
-exe 'vert 1resize ' . ((&columns * 94 + 95) / 190)
-exe '2resize ' . ((&lines * 13 + 19) / 38)
-exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 21 + 19) / 38)
-exe 'vert 3resize ' . ((&columns * 95 + 95) / 190)
-exe '4resize ' . ((&lines * 13 + 19) / 38)
-exe 'vert 4resize ' . ((&columns * 95 + 95) / 190)
+2wincmd w
+exe '1resize ' . ((&lines * 19 + 19) / 38)
+exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
+exe '2resize ' . ((&lines * 15 + 19) / 38)
+exe 'vert 2resize ' . ((&columns * 95 + 95) / 190)
+exe '3resize ' . ((&lines * 19 + 19) / 38)
+exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
+exe '4resize ' . ((&lines * 15 + 19) / 38)
+exe 'vert 4resize ' . ((&columns * 94 + 95) / 190)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

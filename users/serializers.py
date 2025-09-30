@@ -68,7 +68,7 @@ class SigninSerializer(serializers.Serializer):
         email = data.get("email").lower().strip()
         password = data.get("password")
         try:
-            user = models.Users.objects.get(email__icontains=email)
+            user = models.Users.objects.get(email__iexact=email)
             if not user.check_password(password):
                 raise serializers.ValidationError("Invalid Email/Password.")
             return user
