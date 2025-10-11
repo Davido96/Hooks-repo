@@ -17,3 +17,7 @@
 [tasks]
 
 [0m
+
+worker: Hitting Ctrl+C again will initiate cold shutdown, terminating all running tasks!
+
+worker: Warm shutdown (MainProcess)
