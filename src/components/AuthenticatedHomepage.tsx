@@ -1,287 +1,387 @@
-import React, { useState } from "react";
-import {
-  Heart,
-  X,
-  Star,
-  MessageCircle,
-  User,
-  LogOut,
-  Crown,
-} from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { Match } from "../types";
-import { ROUTES, RouteType } from "../routes";
+"use client";
 
-interface AuthenticatedHomepageProps {
-  onNavigate: (route: RouteType) => void;
-}
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/routes/routes";
+import { Match, Profile, RawApiUser } from "@/types";
+import { useSocialStore } from "@/stores/socialStore";
+import { useProfileStore } from "@/stores/profileStore";
+import { useAuthStore } from "@/stores/authStore";
 
-const AuthenticatedHomepage: React.FC<AuthenticatedHomepageProps> = ({
-  onNavigate,
-}) => {
-  const { user, logout } = useAuth();
-  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
-  const [showMatch, setShowMatch] = useState(false);
+// --- Component Imports ---
 
-  const matches: Match[] = [
-    {
-      id: "1",
-      name: "Anita Campbell",
-      age: 30,
-      location: "2 km away • Victoria Island Lagos",
-      bio: "Love traveling and exploring new cultures. Passionate about photography and good food.",
-      interests: ["Sports", "Movies", "Fashion"],
-      profilePicture:
-        "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400",
-      followers: 462,
-      subscribers: 271,
-    },
-    {
-      id: "2",
-      name: "Sarah Johnson",
-      age: 28,
-      location: "3 km away • Lekki Lagos",
-      bio: "Fitness enthusiast and yoga instructor. Looking for someone who shares my passion for healthy living.",
-      interests: ["Fitness", "Yoga", "Cooking"],
-      profilePicture:
-        "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=400",
-      followers: 325,
-      subscribers: 198,
-    },
-    {
-      id: "3",
-      name: "Emily Davis",
-      age: 26,
-      location: "5 km away • Ikoyi Lagos",
-      bio: "Art lover and creative soul. Always looking for new adventures and meaningful connections.",
-      interests: ["Art", "Music", "Travel"],
-      profilePicture:
-        "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400",
-      followers: 542,
-      subscribers: 389,
-    },
-  ];
+// import { Header } from "@/components/fans/Header";
+// import { NavTabs } from "@/components/fans/NavTabs";
+// import { StatsBar } from "@/components/fans/StatsBar";
+import ProfileCard from "@/components/ProfileCard";
+// import { ActionButtons } from "@/components/fans/ActionButtons";
+import { LikeSuccessToast } from "@/components/fans/LikeSuccessToast";
+import SendKeysModal from "@/components/modals/SendKeysModal";
+import ProfileModalSubscribed from "@/components/modals/ProfileModalSubscribed";
+import ProfileModalNotSubscribed from "@/components/modals/ProfileModalNotSubscribed";
+import WalletManagementModal from "@/components/modals/WalletManagementModal";
+import EditProfileModal from "@/components/modals/EditProfileModal";
+import ViewProfileModal from "@/components/modals/ViewProfileModal";
+import ReferralProgramModal from "@/components/modals/ReferralProgramModal";
+import Verification from "./modals/Verification";
+import Filter from "./modals/CreatorFilter";
+import PerfectMatchModal from "@/components/modals/PerfectMatchModal";
+import DailyLimitModal from "@/components/modals/DailyLikeLimitModal";
+import Stats from "./Stats";
+// import ProfileCard from "./ProfileCard";
+import Navbar from "./Navbar";
 
-  const currentMatch = matches[currentMatchIndex];
-
-  const handleSwipe = (direction: "left" | "right") => {
-    if (direction === "right") {
-      setShowMatch(true);
-      setTimeout(() => setShowMatch(false), 2000);
-    }
-
-    setTimeout(() => {
-      setCurrentMatchIndex((prev) => (prev + 1) % matches.length);
-    }, 300);
+const transformToMatch = (rec: RawApiUser): Match => {
+  return {
+    user_id: String(rec.id ?? ""),
+    full_name: rec.full_name ?? "No Name",
+    age: rec.age ?? null,
+    state: rec.state ?? "",
+    city: rec.city ?? "",
+    display_pic: rec.display_pic ?? "",
+    interests: rec.interests ?? [],
+    user_type: "Creator",
+    bio: rec.bio ?? "",
+    followers: rec.followers ?? 0,
+    subscribers: Number(rec.subscribers ?? 0),
+    subscriptionFee: 10,
+    gender: null,
   };
-
-  const handleLogout = () => {
-    logout();
-    onNavigate(ROUTES.HOMEPAGE);
-  };
-
-  return (
-    <div
-      className="min-h-screen text-white"
-      style={{
-        background:
-          "linear-gradient(135deg, #FF6B6B 0%, #FF8E9B 50%, #C44E88 100%)",
-      }}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-3 md:p-4 pb-2">
-        <div className="flex items-center gap-2">
-          <img
-            src="/logo.png"
-            alt="Hooks Logo"
-            className="w-6 h-6 md:w-8 md:h-8 object-contain"
-            onError={(e) => {
-              // Fallback to Crown icon if logo fails to load
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-              target.nextElementSibling?.classList.remove("hidden");
-            }}
-          />
-          <Crown className="text-yellow-300 w-6 h-6 md:w-8 md:h-8 hidden" />
-          <h1 className="text-xl md:text-3xl font-bold text-white">Hooks</h1>
-        </div>
-
-        <div className="flex items-center space-x-2 md:space-x-4">
-          <div className="flex items-center space-x-1 md:space-x-2">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center">
-              <User className="text-gray-600" size={16} />
-            </div>
-            <span className="text-white font-medium text-sm md:text-base hidden sm:block">
-              {user?.fullName || "User"}
-            </span>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="p-1.5 md:p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
-            title="Log out"
-            aria-label="Log out"
-          >
-            <LogOut className="text-white" size={16} />
-          </button>
-        </div>
-      </div>
-
-      {/* Navigation Tabs */}
-      <div className="flex px-3 md:px-4 mb-4">
-        <button className="text-white text-sm font-medium mr-4 md:mr-6 pb-1 border-b-2 border-white">
-          Discover
-        </button>
-        <button className="text-white/70 text-sm font-medium mr-4 md:mr-6 pb-1">
-          Exclusive Content
-        </button>
-      </div>
-
-      {/* Stats */}
-      <div className="flex justify-center space-x-2 md:space-x-4 mb-6 md:mb-8 px-2 md:px-4">
-        <div className="bg-orange-400 text-white px-2 py-1.5 md:px-3 md:py-2 rounded-lg flex-1 text-center max-w-[80px] md:max-w-none">
-          <div className="text-base md:text-lg font-bold">0</div>
-          <div className="text-xs">Premium (99)</div>
-        </div>
-        <div className="bg-green-500 text-white px-2 py-1.5 md:px-3 md:py-2 rounded-lg flex-1 text-center max-w-[80px] md:max-w-none">
-          <div className="text-base md:text-lg font-bold">0</div>
-          <div className="text-xs">Discover</div>
-        </div>
-        <div className="bg-blue-500 text-white px-2 py-1.5 md:px-3 md:py-2 rounded-lg flex-1 text-center max-w-[80px] md:max-w-none">
-          <div className="text-base md:text-lg font-bold">0/20</div>
-          <div className="text-xs">Daily limit</div>
-        </div>
-        <div className="bg-purple-500 text-white px-2 py-1.5 md:px-3 md:py-2 rounded-lg flex-1 text-center max-w-[80px] md:max-w-none">
-          <div className="text-base md:text-lg font-bold">3</div>
-          <div className="text-xs">Total matches</div>
-        </div>
-      </div>
-
-      {/* Profile Card */}
-      <div className="flex justify-center px-3 md:px-4">
-        <div className="relative w-full max-w-sm">
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="relative">
-              <img
-                src={currentMatch.profilePicture}
-                alt={currentMatch.name}
-                className="w-full h-80 sm:h-96 object-cover"
-              />
-              <div className="absolute top-3 md:top-4 right-3 md:right-4 bg-pink-500 text-white px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium">
-                Creator
-              </div>
-
-              {/* Profile Info Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 md:p-4 text-white">
-                <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-lg md:text-xl font-bold">
-                    {currentMatch.name}
-                  </h2>
-                  <span className="text-base md:text-lg">
-                    {currentMatch.age}
-                  </span>
-                </div>
-
-                <p className="text-xs md:text-sm mb-2 opacity-90">
-                  {currentMatch.location}
-                </p>
-
-                <div className="flex items-center space-x-3 md:space-x-4 mb-2 md:mb-3">
-                  <div className="flex items-center">
-                    <User className="mr-1" size={12} />
-                    <span className="text-xs">
-                      {currentMatch.followers} followers
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Star className="mr-1" size={12} />
-                    <span className="text-xs">
-                      {currentMatch.subscribers} subscribers
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-1">
-                  {currentMatch.interests.map((interest) => (
-                    <span
-                      key={interest}
-                      className="bg-white/20 text-white px-2 py-0.5 md:py-1 rounded-full text-xs"
-                    >
-                      {interest}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-center space-x-3 md:space-x-4 mt-4 md:mt-6">
-            <button
-              onClick={() => handleSwipe("left")}
-              className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-110"
-              title="Dislike"
-              aria-label="Dislike"
-            >
-              <X className="text-gray-600 w-5 h-5 md:w-6 md:h-6" />
-            </button>
-
-            <button
-              className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-110"
-              title="Super Like"
-              aria-label="Super Like"
-            >
-              <Star className="text-yellow-500" size={18} />
-            </button>
-
-            <button
-              className="w-12 h-12 md:w-14 md:h-14 bg-blue-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-110"
-              title="Message"
-              aria-label="Message"
-            >
-              <MessageCircle className="text-white" size={18} />
-            </button>
-
-            <button
-              onClick={() => handleSwipe("right")}
-              className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-110"
-              title="Like"
-              aria-label="Like"
-            >
-              <Heart className="text-white" size={18} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Stats */}
-      <div className="text-center mt-4 md:mt-6 text-white px-3 md:px-4">
-        <p className="font-medium text-sm md:text-base">
-          {matches.length} matches • {matches.length - currentMatchIndex - 1}{" "}
-          profiles remaining
-        </p>
-        <p className="text-xs md:text-sm opacity-75 mt-1">
-          You have 3 super likes remaining today
-        </p>
-      </div>
-
-      {/* Success Match Modal */}
-      {showMatch && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-4 md:p-6 max-w-sm mx-4 text-center">
-            <div className="w-12 h-12 md:w-16 md:h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-              <Heart className="text-pink-500 w-6 h-6 md:w-8 md:h-8" />
-            </div>
-            <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">
-              Success
-            </h3>
-            <p className="text-gray-600 text-sm md:text-base">
-              Like sent, wait for user to accept match
-            </p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
 };
 
-export default AuthenticatedHomepage;
+export default function AuthenticatedHomepage(): JSX.Element {
+  const router = useRouter();
+  const { user, signout } = useAuthStore();
+  const { profile, getProfile } = useProfileStore();
+  const {
+    recommendations,
+    getRecommendations,
+    sendLike,
+    followersCount,
+    followingsCount,
+    confirmedLikesCount,
+    getFollowerCount,
+    getFollowingCount,
+    getConfirmedLikesCount,
+  } = useSocialStore();
+
+  // UI state
+  // const [activeTab, setActiveTab] = useState<string>("Discover");
+  const [showLikeSuccess, setShowLikeSuccess] = useState<boolean>(false);
+
+  const [isProfileModalOpen, setProfileModalOpen] = useState<boolean>(false);
+  const [isSendKeysModalOpen, setSendKeysModalOpen] = useState<boolean>(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState<boolean>(false);
+  const [isViewProfileOpen, setIsViewProfileOpen] = useState<boolean>(false);
+  const [isReferralModalOpen, setIsReferralModalOpen] =
+    useState<boolean>(false);
+  const [isSubscribed] = useState<boolean>(false);
+
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+  const [isVerificationOpen, setIsVerificationOpen] = useState<boolean>(false);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [isPerfectMatchOpen, setIsPerfectMatchOpen] = useState<boolean>(false);
+  const [isDailyLimitOpen, setIsDailyLimitOpen] = useState<boolean>(false);
+
+  // daily likes remaining (initialized from user if available)
+  const [dailyLikesRemaining, setDailyLikesRemaining] = useState<number>(() => {
+    // fallback default 10
+    return (user as any)?.dailyLikesRemaining ?? 10;
+  });
+
+  // update dailyLikesRemaining if user changes (sync)
+  useEffect(() => {
+    if (user && typeof (user as any).dailyLikesRemaining === "number") {
+      setDailyLikesRemaining((user as any).dailyLikesRemaining);
+    }
+  }, [user]);
+
+  // Keep timeout id so we can clear on unmount/change
+  const likeTimeoutRef = useRef<number | null>(null);
+
+  // initial data fetch
+  useEffect(() => {
+    if (!profile) getProfile();
+    if (!recommendations || recommendations.length === 0) getRecommendations();
+
+    getFollowerCount();
+    getFollowingCount();
+    getConfirmedLikesCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, recommendations]);
+
+  const availableMatches: Match[] = useMemo(() => {
+    if (!recommendations) return [];
+    return recommendations.map(transformToMatch);
+  }, [recommendations]);
+
+  // Ensure currentIndex never exceeds availableMatches length
+  useEffect(() => {
+    if (
+      currentIndex >= availableMatches.length &&
+      availableMatches.length > 0
+    ) {
+      setCurrentIndex(Math.max(0, availableMatches.length - 1));
+    }
+
+    if (availableMatches.length === 0 && currentIndex !== 0) {
+      setCurrentIndex(0);
+    }
+  }, [availableMatches.length, currentIndex]);
+
+  // currentMatch
+  const currentMatch: Match | undefined =
+    availableMatches.length > 0 &&
+    currentIndex >= 0 &&
+    currentIndex < availableMatches.length
+      ? availableMatches[currentIndex]
+      : undefined;
+
+  const remaining = Math.max(0, availableMatches.length - 1 - currentIndex);
+
+  // Open PerfectMatchModal when remaining hits 0
+  useEffect(() => {
+    if (remaining === 0 && availableMatches.length > 0) {
+      setIsPerfectMatchOpen(true);
+    }
+  }, [remaining, availableMatches.length]);
+
+  const handleLogout = async (): Promise<void> => {
+    await signout();
+    router.push(ROUTES.HOMEPAGE);
+  };
+
+  // Like handler with daily-limit and perfect-match logic
+  const handleLike = async (): Promise<void> => {
+    if (!currentMatch) return;
+
+    // daily limit check
+    if (dailyLikesRemaining <= 0) {
+      setIsDailyLimitOpen(true);
+      return;
+    }
+
+    try {
+      // send like
+      await sendLike(currentMatch.user_id);
+
+      // decrement daily likes (optimistic)
+      setDailyLikesRemaining((prev) => Math.max(0, prev - 1));
+
+      // show like success toast
+      setShowLikeSuccess(true);
+
+      // clear any existing timeout first
+      if (likeTimeoutRef.current) {
+        window.clearTimeout(likeTimeoutRef.current);
+        likeTimeoutRef.current = null;
+      }
+
+      // simulate delay before moving to next profile
+      const id = window.setTimeout(() => {
+        setShowLikeSuccess(false);
+        setCurrentIndex((prev) => prev + 1);
+        likeTimeoutRef.current = null;
+      }, 2500);
+
+      likeTimeoutRef.current = id;
+
+      // If backend provides mutual-match info immediately via recommendations or currentMatch metadata,
+      // open PerfectMatchModal. We'll check a safe property `isMutual` if present on the match object.
+      const maybeMutual =
+        // safe runtime check (don't assume type)
+        (currentMatch as unknown as { isMutual?: boolean }).isMutual ?? false;
+      if (maybeMutual) {
+        setIsPerfectMatchOpen(true);
+      }
+    } catch (error) {
+      console.error("Error sending like:", error);
+      // revert optimistic decrement if you like (optional)
+    }
+  };
+
+  const handleDislike = (): void => {
+    if (!currentMatch) return;
+    setCurrentIndex((prev) => prev + 1);
+  };
+
+  // const handleOpenProfile = (): void => setProfileModalOpen(true);
+
+  const handleCloseAllModals = (): void => {
+    setProfileModalOpen(false);
+    setSendKeysModalOpen(false);
+    setIsWalletModalOpen(false);
+    setIsEditProfileOpen(false);
+    setIsViewProfileOpen(false);
+    setIsReferralModalOpen(false);
+    setIsVerificationOpen(false);
+    setIsFilterOpen(false);
+    setIsPerfectMatchOpen(false);
+    setIsDailyLimitOpen(false);
+  };
+
+  const handleOpenSubscribeFlow = (): void => {
+    setProfileModalOpen(false);
+    setSendKeysModalOpen(true);
+  };
+
+  // cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (likeTimeoutRef.current) {
+        window.clearTimeout(likeTimeoutRef.current);
+        likeTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  return (
+    <>
+      <div
+        className="min-h-screen c-profile text-white"
+        style={{
+          background:
+            "linear-gradient(135deg, #FF6B6B 0%, #F17C88 50%, #C44E88 100%)",
+        }}
+      >
+        {/* {profile && (
+          <Header
+            profile={profile as Profile}
+            onLogout={handleLogout}
+            onWalletClick={() => setIsWalletModalOpen(true)}
+            onMessageClick={() => router.push("/messages")}
+            onEditProfileClick={() => setIsEditProfileOpen(true)}
+            onViewProfileClick={() => setIsViewProfileOpen(true)}
+            onReferralClick={() => setIsReferralModalOpen(true)}
+            onVerificationClick={() => setIsVerificationOpen(true)}
+            onFilterClick={() => setIsFilterOpen(true)}
+          />
+        )} */}
+
+        <Navbar
+          onLogout={handleLogout}
+          onWalletClick={() => setIsWalletModalOpen(true)}
+          onMessageClick={() => router.push("/messages")}
+          onEditProfileClick={() => setIsEditProfileOpen(true)}
+          onViewProfileClick={() => setIsViewProfileOpen(true)}
+          onReferralClick={() => setIsReferralModalOpen(true)}
+          onVerificationClick={() => setIsVerificationOpen(true)}
+          onFilterClick={() => setIsFilterOpen(true)}
+        />
+
+        <Stats
+          followers={followersCount}
+          followings={followingsCount}
+          totalMatches={confirmedLikesCount}
+        />
+
+        {/* <div className="container mx-auto px-4"> */}
+        {/* <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 my-4"> */}
+        {/* <NavTabs activeTab={activeTab} setActiveTab={setActiveTab} /> */}
+        {/* <StatsBar
+              followers={followersCount}
+              followings={followingsCount}
+              totalMatches={confirmedLikesCount}
+            /> */}
+        {/* </div> */}
+
+        {/* <main className="flex flex-col items-center pb-8">
+            {currentMatch ? (
+              // <ProfileCard profile={currentMatch} onClick={handleOpenProfile} />
+            ) : (
+              <div className="flex items-center justify-center h-[65vh] w-full max-w-md bg-white/10 rounded-2xl">
+                <p className="text-white/80">Finding new profiles for you...</p>
+              </div>
+            )}
+
+            <ActionButtons
+              onLike={handleLike}
+              onDislike={handleDislike}
+              dailyLikesRemaining={dailyLikesRemaining}
+              onDailyLimitReached={() => setIsDailyLimitOpen(true)}
+              onPerfectMatch={() => setIsPerfectMatchOpen(true)}
+              isPerfectMatch={currentMatch?.isMutual ?? false}
+            />
+
+            <div className="text-center mt-6">
+              <p className="font-bold">{remaining} profiles remaining</p>
+            </div>
+          </main> */}
+        {/* </div> */}
+
+        <ProfileCard
+          onLike={handleLike}
+          onDislike={handleDislike}
+          dailyLikesRemaining={dailyLikesRemaining}
+          onDailyLimitReached={() => setIsDailyLimitOpen(true)}
+          onPerfectMatch={() => setIsPerfectMatchOpen(true)}
+          isPerfectMatch={currentMatch?.isMutual ?? false}
+        />
+
+        <LikeSuccessToast isOpen={showLikeSuccess} />
+      </div>
+
+      {/* --- Modals --- */}
+      {currentMatch &&
+        (isSubscribed ? (
+          <ProfileModalSubscribed
+            isOpen={isProfileModalOpen}
+            onClose={handleCloseAllModals}
+            match={currentMatch}
+          />
+        ) : (
+          <ProfileModalNotSubscribed
+            isOpen={isProfileModalOpen}
+            onClose={handleCloseAllModals}
+            onSubscribeClick={handleOpenSubscribeFlow}
+            match={currentMatch}
+          />
+        ))}
+
+      {currentMatch && user && (
+        <SendKeysModal
+          isOpen={isSendKeysModalOpen}
+          onClose={handleCloseAllModals}
+          creatorName={currentMatch.full_name}
+          creatorAvatar={currentMatch.display_pic || ""}
+          currentBalance={user.balance ?? 0}
+        />
+      )}
+
+      {profile && (
+        <>
+          <WalletManagementModal
+            isOpen={isWalletModalOpen}
+            onClose={() => setIsWalletModalOpen(false)}
+          />
+          <EditProfileModal
+            isOpen={isEditProfileOpen}
+            onClose={() => setIsEditProfileOpen(false)}
+            currentUser={profile}
+          />
+          <ViewProfileModal
+            isOpen={isViewProfileOpen}
+            onClose={() => setIsViewProfileOpen(false)}
+            profile={profile}
+          />
+          <ReferralProgramModal
+            isOpen={isReferralModalOpen}
+            onClose={() => setIsReferralModalOpen(false)}
+          />
+          <Verification
+            isOpen={isVerificationOpen}
+            onClose={() => setIsVerificationOpen(false)}
+          />
+          <Filter
+            isOpen={isFilterOpen}
+            onClose={() => setIsFilterOpen(false)}
+          />
+          <PerfectMatchModal />
+          <DailyLimitModal />
+        </>
+      )}
+    </>
+  );
+}

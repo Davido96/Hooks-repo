@@ -1,143 +1,187 @@
+"use client";
+
 import React, { useState } from "react";
-import { Mail, Lock, Crown } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { ROUTES, RouteType } from "../routes";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Mail, Lock, ArrowLeft } from "lucide-react";
+import { useAuthStore } from "../stores/authStore";
+import { Button } from "@/components/ui/button";
+import SignupChoiceModal from "./modals/SignUpChoiceModal";
 
-interface LoginProps {
-  onNavigate: (route: RouteType) => void;
-}
-
-const Login: React.FC<LoginProps> = ({ onNavigate }) => {
-  const [isLogin, setIsLogin] = useState(true);
+export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login, register } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { signin } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
 
-    if (!isLogin && password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-
     setIsLoading(true);
-    try {
-      if (isLogin) {
-        await login(email);
-        console.log("Login successful:", email);
-      } else {
-        await register(email, password);
-        console.log("Registration successful:", email);
-      }
 
-      // Navigate to authenticated homepage after successful authentication
-      onNavigate(ROUTES.HOMEPAGE);
+    try {
+      await signin({ email, password });
+
+      const user = useAuthStore.getState().user;
+
+      if (user?.user_type === "Creator") {
+        router.push("/creator-profile");
+      } else {
+        router.push("/authenticated-homepage");
+      }
     } catch (error) {
       console.error("Authentication error:", error);
-      alert("Authentication failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-400 via-pink-500 to-red-400 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <img
-              src="/logo.png"
-              alt="Hooks Logo"
-              className="w-8 h-8 object-contain mr-2"
-              onError={(e) => {
-                // Fallback to Crown icon if logo fails to load
-                const target = e.target as HTMLImageElement;
-                target.style.display = "none";
-                target.nextElementSibling?.classList.remove("hidden");
-              }}
-            />
-            <Crown className="text-yellow-400 mr-2 w-8 h-8 hidden" />
-            <h1 className="text-3xl font-bold text-gray-800">Hooks</h1>
-          </div>
-          <p className="text-gray-600">
-            {isLogin ? "Welcome back!" : "Create your account"}
-          </p>
-        </div>
+    <>
+      <div
+        className="min-h-screen flex flex-col justify-between text-white"
+        style={{
+          background:
+            "linear-gradient(160deg, #FF6B6B 0%, #F17C88 50%, #C44E88 100%)",
+        }}
+      >
+        <header className="absolute top-0 right-0 p-6">
+          <Button
+            asChild
+            variant="outline"
+            className="bg-transparent border-white/30 hover:bg-white/10 text-white text-xs rounded-full px-4 py-2"
+          >
+            <Link href="/">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Home
+            </Link>
+          </Button>
+        </header>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="relative">
-            <Mail
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all"
-              required
-            />
-          </div>
+        <main className="flex-grow flex items-center justify-center p-4">
+          <div className="bg-white/10 border border-white/20 backdrop-blur-lg rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center mb-4 gap-3">
+                <Image
+                  src="/logo.png"
+                  alt="Hooks Logo"
+                  width={32}
+                  height={32}
+                />
 
-          <div className="relative">
-            <Lock
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all"
-              required
-            />
-          </div>
-
-          {!isLogin && (
-            <div className="relative">
-              <Lock
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={20}
-              />
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all"
-                required
-              />
+                <h1 className="text-3xl font-bold text-white">Hooks</h1>
+              </div>
+              <p className="text-white/80">Welcome back!</p>
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-3 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-red-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
-          </button>
-        </form>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="relative">
+                <Mail
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60"
+                  size={20}
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-white/50 focus:border-transparent outline-none transition-all placeholder:text-white/60"
+                  required
+                />
+              </div>
+              <div className="relative">
+                <Lock
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60"
+                  size={20}
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-white/50 focus:border-transparent outline-none transition-all placeholder:text-white/60"
+                  required
+                />
+              </div>
 
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-pink-500 hover:text-pink-600 font-medium transition-colors"
-          >
-            {isLogin
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Sign in"}
-          </button>
-        </div>
+              <div className="text-right">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-white/80 hover:text-white transition-colors"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? "Signing In..." : "Sign In"}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="text-white/80 hover:text-white font-medium transition-colors"
+              >
+                Don&apos;t have an account? Sign up
+              </button>
+            </div>
+          </div>
+        </main>
+
+        <footer className="w-full container mx-auto text-center py-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium text-white/80">
+              <Link
+                href="/about"
+                className="hover:text-white transition-colors"
+              >
+                About
+              </Link>
+              <Link
+                href="/creator-privacy"
+                className="hover:text-white transition-colors"
+              >
+                Creator Policy
+              </Link>
+              <Link
+                href="/fan-privacy"
+                className="hover:text-white transition-colors"
+              >
+                Fan Policy
+              </Link>
+              <Link
+                href="/community-guidelines"
+                className="hover:text-white transition-colors"
+              >
+                Guidelines
+              </Link>
+              <Link
+                href="/terms"
+                className="hover:text-white transition-colors"
+              >
+                Terms of Service
+              </Link>
+            </div>
+            <p className="text-xs text-white/70">
+              &copy; {new Date().getFullYear()} Hooks. All rights reserved.
+            </p>
+          </div>
+        </footer>
       </div>
-    </div>
+      <SignupChoiceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   );
-};
-
-export default Login;
+}

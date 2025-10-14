@@ -1,241 +1,384 @@
-import { Crown, Star, Heart, Shield, Zap, HeartIcon } from "lucide-react";
+/* eslint-disable @next/next/no-img-element */
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Star,
+  ShieldCheck,
+  Zap,
+  TrendingUp,
+  HeartHandshake,
+  CheckCircle2,
+  Users,
+  GitCommitHorizontal,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-interface HomepageProps {
-  onNavigate: (page: string) => void;
-}
+const featuredCreators = [
+  {
+    name: "Amara K.",
+    role: "Fashion Creator",
+    image:
+      "https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg?auto=compress&cs=tinysrgb&w=400",
+    isVerified: false,
+  },
+  {
+    name: "Zara M.",
+    role: "Artist & Model",
+    image:
+      "https://images.pexels.com/photos/1386604/pexels-photo-1386604.jpeg?auto=compress&cs=tinysrgb&w=400",
+    isVerified: false,
+  },
+  {
+    name: "Funmi B.",
+    role: "Dancer & Stylist",
+    image:
+      "https://images.pexels.com/photos/2775556/pexels-photo-2775556.jpeg?auto=compress&cs=tinysrgb&w=400",
+    isVerified: false,
+  },
+  {
+    name: "Demola A.",
+    role: "Travel & Photography",
+    image:
+      "https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&w=400",
+    isVerified: true,
+  },
+];
 
-export default function Homepage({ onNavigate }: HomepageProps) {
-  const featuredCreators = [
-    {
-      name: "Emma S.",
-      image:
-        "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400",
-      age: 24,
-    },
-    {
-      name: "Alex M.",
-      image:
-        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400",
-      age: 28,
-    },
-    {
-      name: "Sarah J.",
-      image:
-        "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=400",
-      age: 26,
-    },
-    {
-      name: "Marcus T.",
-      image:
-        "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=400",
-      age: 30,
-    },
-  ];
+const successStories = [
+  {
+    name: "Kemi A.",
+    location: "Lagos Creator",
+    image:
+      "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=400",
+    story:
+      "The connections are real. In my first 3 months, Hooks changed my life!",
+  },
+  {
+    name: "Chioma B.",
+    location: "Abuja Influencer",
+    image:
+      "https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&w=400",
+    story:
+      "The name says it all. Real following, real connections, real support.",
+  },
+  {
+    name: "Adunni C.",
+    location: "Port Harcourt Creator",
+    image:
+      "https://images.pexels.com/photos/2787341/pexels-photo-2787341.jpeg?auto=compress&cs=tinysrgb&w=400",
+    story: "Finally, a platform that celebrates and empowers Black creators!",
+  },
+];
 
-  const successStories = [
-    {
-      name: "Sarah A.",
-      image:
-        "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=100",
-      story:
-        "I've been able to connect with amazing fans and build a community that supports my content creation journey.",
-    },
-    {
-      name: "Christina M.",
-      image:
-        "https://images.pexels.com/photos/1239288/pexels-photo-1239288.jpeg?auto=compress&cs=tinysrgb&w=100",
-      story:
-        "Hooks has transformed my creative process and helped me monetize my passion in ways I never thought possible.",
-    },
-    {
-      name: "Adrian C.",
-      image:
-        "https://images.pexels.com/photos/2182969/pexels-photo-2182969.jpeg?auto=compress&cs=tinysrgb&w=100",
-      story:
-        "The platform's secure environment and instant connection features have made content creation both safe and profitable.",
-    },
-  ];
-
+export default function Homepage() {
   return (
     <div
-      className="min-h-screen text-white"
+      className="min-h-screen text-white bg-[#FF6B6B]"
       style={{
         background:
-          "linear-gradient(135deg, #FF6B6B 0%, #FF8E9B 50%, #C44E88 100%)",
+          "linear-gradient(135deg, #FF6B6B 0%, #F17C88 50%, #C44E88 100%)",
       }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-center p-4 md:p-6">
-        <div className="flex items-center gap-2">
-          <img
-            src="/logo.png"
-            alt="Hooks Logo"
-            className="w-6 h-6 md:w-8 md:h-8 object-contain"
-          />
-          <span className="text-xl md:text-2xl font-bold">Hooks</span>
-        </div>
+      {/* --- Top Corner Badges --- */}
+      <div className="absolute top-6 left-6 hidden md:flex items-center gap-2 bg-black/20 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+        <Users size={14} className="text-green-300" />
+        <span>
+          <span className="font-bold">21K+</span> Active Users
+        </span>
+      </div>
+      <div className="absolute top-6 right-6 hidden md:flex items-center gap-2 bg-black/20 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+        <GitCommitHorizontal size={14} className="text-blue-300" />
+        <span>
+          <span className="font-bold">1M+</span> Connections Made
+        </span>
       </div>
 
-      {/* Hero Section */}
-      <div className="text-center px-4 md:px-8 mb-8 md:mb-12">
-        <h1 className="text-2xl md:text-3xl font-bold mb-4 leading-tight">
-          Creating awesome connections and unforgettable memories through
-          <br className="hidden md:block" />
-          exclusive content and personalized dating experiences
-        </h1>
-      </div>
+      <main className="container mx-auto px-4 py-16 sm:py-20">
+        <div className="flex flex-col items-center gap-16 md:gap-24">
+          {/* --- Hero Section --- */}
+          <section className="text-center flex flex-col items-center pt-8">
+            <div className="flex items-center gap-3 mb-4">
+              <Image
+                src="/logo.png"
+                alt="Hooks Logo"
+                width={32}
+                height={32}
+                unoptimized
+              />
+              <h1 className="text-5xl font-bold">Hooks</h1>
+            </div>
+            <p className="max-w-2xl text-lg text-white/90 leading-relaxed">
+              Creating awesome connections and unforgettable moments through
+              exclusive content and personalized dating experiences
+            </p>
+          </section>
 
-      {/* For Creators & For Fans */}
-      <div className="flex flex-col sm:flex-row gap-4 px-16 md:px-16 mb-8 md:mb-12">
-        <div className="flex-1 text-center">
-          <Star className="text-yellow-300 mx-auto mb-3" size={28} />
-          <h3 className="text-lg font-semibold mb-2">For Creators</h3>
-          <p className="text-sm opacity-90 mb-4">
-            Monetize your content and build meaningful connections
-          </p>
-          <Button
-            onClick={() => onNavigate("creator-signup")}
-            className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-black px-16 md:px-16 sm:px-16 font-semibold"
-          >
-            Start Creating
-          </Button>
-        </div>
-        <div className="flex-1 text-center">
-          <HeartIcon className="text-slate-300 mx-auto mb-3" size={28} />
-          <h3 className="text-lg font-semibold mb-2">For Fans</h3>
-          <p className="text-sm opacity-90 mb-4">
-            Discover and connect with your favorite creators
-          </p>
-          <Button className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 font-semibold px-16 md:px-16 sm:px-16">
-            Follow Creators
-          </Button>
-        </div>
-      </div>
+          {/* --- For Creators & For Fans Section --- */}
+          <section className="w-full max-w-4xl flex flex-col items-center gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+              <div className="flex flex-col text-center p-8 bg-white/10 border border-white/20 rounded-2xl shadow-lg">
+                <h3 className="text-xl font-semibold mb-2">⭐ For Creators</h3>
+                <p className="text-white/80 mb-4 text-sm">
+                  Monetize your content and build your audience
+                </p>
+                <ul className="space-y-2 text-left text-sm text-white/90 mb-6">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2
+                      size={16}
+                      className="text-green-300 flex-shrink-0 mt-0.5"
+                    />{" "}
+                    Sign up to create, connect, & earn
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2
+                      size={16}
+                      className="text-green-300 flex-shrink-0 mt-0.5"
+                    />{" "}
+                    Keep 80% of your earnings
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2
+                      size={16}
+                      className="text-green-300 flex-shrink-0 mt-0.5"
+                    />{" "}
+                    Direct fan engagement
+                  </li>
+                </ul>
+                <Button
+                  asChild
+                  className="mt-auto w-full bg-gradient-to-r from-yellow-400 to-orange-400 hover:opacity-90 text-black font-bold py-6"
+                >
+                  <Link href="/creator-verification/kyc-policy">
+                    Start Creating
+                  </Link>
+                </Button>
+              </div>
+              <div className="flex flex-col text-center p-8 bg-white/10 border border-white/20 rounded-2xl shadow-lg">
+                <h3 className="text-xl font-semibold mb-2">❤️ For Fans</h3>
+                <p className="text-white/80 mb-4 text-sm">
+                  Connect with amazing creators
+                </p>
+                <ul className="space-y-2 text-left text-sm text-white/90 mb-6">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2
+                      size={16}
+                      className="text-green-300 flex-shrink-0 mt-0.5"
+                    />{" "}
+                    Exclusive content
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2
+                      size={16}
+                      className="text-green-300 flex-shrink-0 mt-0.5"
+                    />{" "}
+                    Direct creator interaction
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2
+                      size={16}
+                      className="text-green-300 flex-shrink-0 mt-0.5"
+                    />{" "}
+                    Premium experiences
+                  </li>
+                </ul>
+                <Button
+                  asChild
+                  className="mt-auto w-full bg-gradient-to-r from-pink-500 to-red-500 hover:opacity-90 font-bold py-6"
+                >
+                  <Link href="/fan-signup">Explore Creators</Link>
+                </Button>
+              </div>
+            </div>
+            <p className="text-sm text-white/70">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-semibold text-white underline hover:text-white/80"
+              >
+                Sign In
+              </Link>
+            </p>
+          </section>
 
-      {/* Featured Creators */}
-      <div className="px-4 md:px-8 mb-8 md:mb-12">
-        <h2 className="text-xl md:text-2xl font-bold text-center mb-6">
-          Featured Creators
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {featuredCreators.map((creator, index) => (
-            <Card
-              key={index}
-              className="overflow-hidden border border-white/20 shadow-lg"
+          {/* --- Featured Creators Section --- */}
+          <section className="w-full flex flex-col items-center">
+            <h2 className="text-3xl font-bold text-center mb-8">
+              Featured Creators
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+              {featuredCreators.map((creator) => (
+                <div
+                  key={creator.name}
+                  className="relative rounded-2xl overflow-hidden shadow-lg group"
+                >
+                  <img
+                    src={creator.image}
+                    alt={creator.name}
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-black/80 to-transparent p-4 flex flex-col justify-end">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-white font-bold text-base">
+                        {creator.name}
+                      </p>
+                      {creator.isVerified && (
+                        <Star
+                          size={14}
+                          className="text-yellow-400 fill-yellow-400"
+                        />
+                      )}
+                    </div>
+                    <p className="text-white/80 text-sm">{creator.role}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button
+              asChild
+              variant="link"
+              className="mt-8 text-white/80 hover:text-white"
             >
-              <CardContent className="p-0 relative">
-                <img
-                  src={creator.image}
-                  alt={creator.name}
-                  className="w-full h-40 md:h-48 object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 md:p-4">
-                  <p className="text-white font-semibold text-sm md:text-base">
-                    {creator.name}
-                  </p>
-                  <p className="text-white/80 text-xs md:text-sm">
-                    {creator.age}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+              <Link href="/earnings">
+                Join 1,000+ creators earning on Hooks →
+              </Link>
+            </Button>
+          </section>
 
-      {/* Features */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 px-4 md:px-8 mb-8 md:mb-12">
-        <div className="text-center bg-white/10 border border-white/20 rounded-lg p-4 shadow-lg">
-          <Heart className="mx-auto mb-2 md:mb-3 text-pink-200" size={28} />
-          <h4 className="font-semibold mb-1 md:mb-2 text-sm md:text-base">
-            Smart Matching
-          </h4>
-          <p className="text-xs md:text-sm opacity-90">
-            AI-powered connections based on interests and preferences
-          </p>
-        </div>
-        <div className="text-center bg-white/10 border border-white/20 rounded-lg p-4 shadow-lg">
-          <Crown className="mx-auto mb-2 md:mb-3 text-yellow-300" size={28} />
-          <h4 className="font-semibold mb-1 md:mb-2 text-sm md:text-base">
-            Create Content
-          </h4>
-          <p className="text-xs md:text-sm opacity-90">
-            Share exclusive content and build your personal brand
-          </p>
-        </div>
-        <div className="text-center bg-white/10 border border-white/20 rounded-lg p-4 shadow-lg">
-          <Shield className="mx-auto mb-2 md:mb-3 text-green-300" size={28} />
-          <h4 className="font-semibold mb-1 md:mb-2 text-sm md:text-base">
-            Safe & Secure
-          </h4>
-          <p className="text-xs md:text-sm opacity-90">
-            Advanced security features to protect your privacy
-          </p>
-        </div>
-        <div className="text-center bg-white/10 border border-white/20 rounded-lg p-4 shadow-lg">
-          <Zap className="mx-auto mb-2 md:mb-3 text-blue-300" size={28} />
-          <h4 className="font-semibold mb-1 md:mb-2 text-sm md:text-base">
-            Instant Connect
-          </h4>
-          <p className="text-xs md:text-sm opacity-90">
-            Real-time messaging and instant notifications
-          </p>
-        </div>
-      </div>
+          {/* --- Features Section --- */}
+          <section className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center p-6">
+              <HeartHandshake
+                className="mx-auto mb-4 text-pink-300"
+                size={32}
+              />
+              <h4 className="font-semibold text-base mb-1">Smart Matching</h4>
+              <p className="text-sm opacity-80">
+                Advanced algorithm connecting creators with their ideal audience
+              </p>
+            </div>
+            <div className="text-center p-6">
+              <TrendingUp className="mx-auto mb-4 text-green-300" size={32} />
+              <h4 className="font-semibold text-base mb-1">Creator Economy</h4>
+              <p className="text-sm opacity-80">
+                Monetize your content with subscriptions, tips, and exclusive
+                access
+              </p>
+            </div>
+            <div className="text-center p-6">
+              <ShieldCheck className="mx-auto mb-4 text-blue-300" size={32} />
+              <h4 className="font-semibold text-base mb-1">Safe & Secure</h4>
+              <p className="text-sm opacity-80">
+                Verified profiles and secure payments for peace of mind
+              </p>
+            </div>
+            <div className="text-center p-6">
+              <Zap className="mx-auto mb-4 text-yellow-300" size={32} />
+              <h4 className="font-semibold text-base mb-1">Instant Connect</h4>
+              <p className="text-sm opacity-80">
+                Real-time messaging and live interactions with your favorite
+                creators
+              </p>
+            </div>
+          </section>
 
-      {/* Creator Success Stories */}
-      <div className="px-4 md:px-8 mb-8 md:mb-12">
-        <h2 className="text-xl md:text-2xl font-bold text-center mb-6">
-          Creator Success Stories
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {successStories.map((story, index) => (
-            <Card key={index} className="bg-white/10 border-white/20 shadow-lg">
-              <CardContent className="p-4 flex items-start gap-3">
-                <img
-                  src={story.image}
-                  alt={story.name}
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover flex-shrink-0"
-                />
-                <div>
-                  <h5 className="font-semibold text-white mb-1 text-sm md:text-base">
-                    {story.name}
-                  </h5>
-                  <p className="text-white/90 text-xs md:text-sm">
-                    {story.story}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+          {/* --- Creator Success Stories Section --- */}
+          <section className="w-full flex flex-col items-center">
+            <h2 className="text-3xl font-bold text-center mb-8">
+              Creator Success Stories
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {successStories.map((story) => (
+                <Card
+                  key={story.name}
+                  className="bg-white/10 border-white/20 shadow-lg rounded-2xl text-center"
+                >
+                  <CardContent className="p-6 flex flex-col items-center">
+                    <div className="flex flex-col items-center mb-4">
+                      <img
+                        src={story.image}
+                        alt={story.name}
+                        className="w-16 h-16 rounded-full object-cover mb-3"
+                      />
+                      <div>
+                        <h5 className="font-semibold text-white">
+                          {story.name}
+                        </h5>
+                        <p className="text-white/70 text-xs">
+                          {story.location}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-white/90 text-sm">
+                      &quot;{story.story}&quot;
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
 
-      {/* CTA Section */}
-      <div className="text-center px-16 md:px-16 pb-8 md:pb-12">
-        <h2 className="text-xl md:text-2xl font-bold mb-2">
-          Ready to Join the Movement?
-        </h2>
-        <p className="opacity-90 mb-6 text-sm md:text-base">
-          Be part of Nigeria's premier creator economy platform
-        </p>
-        <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
-          <Button
-            onClick={() => onNavigate("creator-signup")}
-            className="flex-1 bg-white text-pink-500 text-center hover:bg-white/90 font-semibold"
-          >
-            Start as Creator
-          </Button>
-          <Button
-            onClick={() => onNavigate("fan-signup")}
-            className="flex-1 bg-transparent border-2 border-white hover:bg-white/10 font-semibold"
-          >
-            Join as Fan
-          </Button>
+          <section className="text-center flex flex-col items-center">
+            <h2 className="text-3xl font-bold mb-2">
+              Ready to Join the Movement?
+            </h2>
+            <p className="opacity-80 mb-8 max-w-md">
+              Be part of Nigeria&apos;s premier creator economy platform
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+              <Button
+                asChild
+                className="bg-white text-pink-600 hover:bg-white/90 font-bold px-8 py-6 text-base"
+              >
+                <Link href="/creator-verification/kyc-policy">
+                  Start as Creator
+                </Link>
+              </Button>
+              <Button
+                asChild
+                className="bg-white/10 border-2 border-white/20 text-white hover:bg-white/20 font-bold px-8 py-6 text-base"
+              >
+                <Link href="/fan-signup">Join as Fan</Link>
+              </Button>
+            </div>
+          </section>
         </div>
-      </div>
+      </main>
+
+      {/* --- Footer --- */}
+      <footer className="container mx-auto text-center py-8 mt-16 border-t border-white/20">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium text-white/80">
+            <Link href="/about" className="hover:text-white transition-colors">
+              About
+            </Link>
+            <Link
+              href="/creator-privacy"
+              className="hover:text-white transition-colors"
+            >
+              Creator Policy
+            </Link>
+            <Link
+              href="/creator-privacy"
+              className="hover:text-white transition-colors"
+            >
+              Fan Policy
+            </Link>
+            <Link
+              href="/community-guidelines"
+              className="hover:text-white transition-colors"
+            >
+              Guidelines
+            </Link>
+            <Link href="/terms" className="hover:text-white transition-colors">
+              Terms of Service
+            </Link>
+          </div>
+          <p className="text-xs text-white/70">
+            &copy; {new Date().getFullYear()} Hooks. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

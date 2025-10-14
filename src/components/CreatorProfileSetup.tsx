@@ -1,7 +1,10 @@
-import { useState } from "react";
-import { Camera } from "lucide-react";
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Camera, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,13 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ROUTES, RouteType } from "../routes";
-import { useAuth } from "../contexts/AuthContext";
+import { ROUTES, RouteType } from "@/routes/routes";
 import SuccessModal from "./SuccessModal";
-
-interface CreatorProfileSetupProps {
-  onNavigate: (route: RouteType) => void;
-}
+import Image from "next/image";
 
 interface ProfileData {
   fullName: string;
@@ -26,38 +25,36 @@ interface ProfileData {
   bio: string;
   gender: string;
   interestedIn: string;
-  race: string;
+  country: string;
   city: string;
   phone: string;
   interests: string[];
   subscriptionFee: string;
   profilePicture?: File;
 }
-
 interface FormErrors {
   fullName?: string;
   age?: string;
   gender?: string;
   interestedIn?: string;
+  country?: string;
   city?: string;
   phone?: string;
   subscriptionFee?: string;
 }
 
-export default function CreatorProfileSetupProps({
-  onNavigate,
-}: CreatorProfileSetupProps) {
+export default function CreatorProfileSetup() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<FormErrors>({});
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const { updateProfile } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: "",
     age: "",
     bio: "",
     gender: "",
     interestedIn: "",
-    race: "",
+    country: "",
     city: "",
     phone: "",
     interests: [],
@@ -71,64 +68,45 @@ export default function CreatorProfileSetupProps({
     "Social",
     "Career",
     "Business",
-    "Environment",
     "Fitness",
     "Nature Walks",
-    "Sports & Recreation",
+    "Sports",
     "Running",
     "Cycling",
     "Comedy",
     "Coffee",
     "Night Walks",
     "Foodie",
-    "Dating & Relationships",
+    "Dating",
   ];
 
   const validateStep = (currentStep: number): boolean => {
     const newErrors: FormErrors = {};
-
     if (currentStep === 1) {
-      if (!profileData.fullName.trim()) {
+      if (!profileData.fullName.trim())
         newErrors.fullName = "Full name is required";
-      }
-      if (!profileData.age.trim()) {
-        newErrors.age = "Age is required";
-      } else if (
-        parseInt(profileData.age) < 18 ||
-        parseInt(profileData.age) > 100
-      ) {
-        newErrors.age = "Age must be between 18 and 100";
-      }
+      if (!profileData.age.trim()) newErrors.age = "Age is required";
+      else if (parseInt(profileData.age) < 18)
+        newErrors.age = "You must be at least 18 years old";
     }
-
     if (currentStep === 2) {
-      if (!profileData.gender) {
-        newErrors.gender = "Gender is required";
-      }
-      if (!profileData.interestedIn) {
-        newErrors.interestedIn = "Interest preference is required";
-      }
-      if (!profileData.city.trim()) {
-        newErrors.city = "City is required";
-      }
-      if (!profileData.phone.trim()) {
+      if (!profileData.gender) newErrors.gender = "Gender is required";
+      if (!profileData.interestedIn)
+        newErrors.interestedIn = "This preference is required";
+      if (!profileData.country) newErrors.country = "Country is required";
+      if (!profileData.city.trim()) newErrors.city = "City is required";
+      if (!profileData.phone.trim())
         newErrors.phone = "Phone number is required";
-      } else if (!/^\+?[\d\s-()]+$/.test(profileData.phone)) {
-        newErrors.phone = "Please enter a valid phone number";
-      }
     }
-
     if (currentStep === 3) {
-      if (!profileData.subscriptionFee.trim()) {
-        newErrors.subscriptionFee = "Monthly subscription fee is required";
-      } else if (
+      if (!profileData.subscriptionFee.trim())
+        newErrors.subscriptionFee = "Subscription fee is required";
+      else if (
         isNaN(Number(profileData.subscriptionFee)) ||
         Number(profileData.subscriptionFee) < 10
-      ) {
-        newErrors.subscriptionFee = "Please enter a valid amount (minimum 10)";
-      }
+      )
+        newErrors.subscriptionFee = "Minimum fee is 10";
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -138,22 +116,7 @@ export default function CreatorProfileSetupProps({
       if (step < 3) {
         setStep(step + 1);
       } else {
-        // Handle profile completion
         console.log("Profile setup completed:", profileData);
-
-        // Update user profile in context
-        updateProfile({
-          fullName: profileData.fullName,
-          age: parseInt(profileData.age),
-          bio: profileData.bio,
-          gender: profileData.gender,
-          interestedIn: profileData.interestedIn,
-          city: profileData.city,
-          phoneNumber: profileData.phone,
-          interests: profileData.interests,
-        });
-
-        // Show success modal
         setShowSuccessModal(true);
       }
     }
@@ -161,58 +124,39 @@ export default function CreatorProfileSetupProps({
 
   const handleSuccessComplete = () => {
     setShowSuccessModal(false);
-    onNavigate(ROUTES.HOMEPAGE);
+    router.push(ROUTES.CREATOR_PROFILE);
   };
 
   const prevStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      setErrors({});
-    }
+    if (step > 1) setStep(step - 1);
   };
-
   const updateProfileData = (
     field: keyof ProfileData,
     value: string | string[]
   ) => {
-    setProfileData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Clear error for this field when user starts typing
+    setProfileData((prev) => ({ ...prev, [field]: value }));
     if (errors[field as keyof FormErrors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: undefined,
-      }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
-
   const toggleInterest = (interest: string) => {
     const newInterests = profileData.interests.includes(interest)
       ? profileData.interests.filter((i) => i !== interest)
       : [...profileData.interests, interest];
-
     updateProfileData("interests", newInterests);
   };
-
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setProfileData((prev) => ({
-        ...prev,
-        profilePicture: file,
-      }));
+      setProfileData((prev) => ({ ...prev, profilePicture: file }));
     }
   };
-
   const getStepTitle = () => {
     switch (step) {
       case 1:
         return "Basic Information";
       case 2:
-        return "Location and Preferences";
+        return "Location & Preferences";
       case 3:
         return "Interests & Pricing";
       default:
@@ -223,73 +167,60 @@ export default function CreatorProfileSetupProps({
   return (
     <>
       <div
-        className="min-h-screen flex flex-col items-center justify-center px-4 md:px-6 py-8"
+        className="min-h-screen flex flex-col justify-between text-white"
         style={{
           background:
-            "linear-gradient(135deg, #FF6B6B 0%, #FF8E9B 50%, #C44E88 100%)",
+            "linear-gradient(160deg, #FF6B6B 0%, #F17C88 50%, #C44E88 100%)",
         }}
       >
-        {/* Logo */}
-        <div className="flex items-center gap-2 mb-6 md:mb-8">
-          <img
-            src="/logo.png"
-            alt="Hooks Logo"
-            className="w-6 h-6 md:w-8 md:h-8 object-contain"
-            onError={(e) => {
-              // Fallback to Crown icon if logo fails to load
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-            }}
-          />
-          <span className="text-2xl md:text-3xl font-bold text-white">
-            Hooks
-          </span>
-        </div>
+        <header className="absolute top-0 right-0 p-6 z-10">
+          <Button
+            asChild
+            variant="outline"
+            className="bg-transparent border-white/30 hover:bg-white/10 text-white text-xs rounded-full px-4 py-2"
+          >
+            <Link href="/">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Home
+            </Link>
+          </Button>
+        </header>
 
-        <Card className="w-full max-w-sm md:max-w-md">
-          <CardHeader className="text-center pb-4 md:pb-6">
-            {/* Progress Lines */}
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs text-gray-500">Step {step} of 3</span>
-              </div>
-              <div className="flex gap-2">
-                {/* Step 1 Line */}
-                <div
-                  className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
-                    step >= 1
-                      ? "bg-gradient-to-r from-pink-500 to-red-400"
-                      : "bg-gray-200"
-                  }`}
-                ></div>
-                {/* Step 2 Line */}
-                <div
-                  className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
-                    step >= 2
-                      ? "bg-gradient-to-r from-pink-500 to-red-400"
-                      : "bg-gray-200"
-                  }`}
-                ></div>
-                {/* Step 3 Line */}
-                <div
-                  className={`flex-1 h-1 rounded-full transition-all duration-300 ease-in-out ${
-                    step >= 3
-                      ? "bg-gradient-to-r from-pink-500 to-red-400"
-                      : "bg-gray-200"
-                  }`}
-                ></div>
+        <main className="w-full flex-grow flex items-center justify-center p-4">
+          <div className="bg-white/10 border border-white/20 backdrop-blur-lg rounded-2xl shadow-2xl p-8 w-full max-w-lg">
+            <div className="text-center mb-8">
+              <Link
+                href="/"
+                className="flex items-center justify-center mb-4 gap-3"
+              >
+                <Image src="/logo.png" alt="Hooks Logo" className="w-8 h-8" />
+                <h1 className="text-3xl font-bold text-white">Hooks</h1>
+              </Link>
+              <h2 className="text-2xl font-bold text-white">
+                Set up your profile
+              </h2>
+              <p className="text-white/70">{getStepTitle()}</p>
+              <div className="mt-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs text-white/60">
+                    Step {step} of 3
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  {[1, 2, 3].map((s) => (
+                    <div
+                      key={s}
+                      className={`flex-1 h-1 rounded-full transition-all duration-300 ${
+                        step >= s
+                          ? "bg-gradient-to-r from-pink-500 to-red-400"
+                          : "bg-white/20"
+                      }`}
+                    ></div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <CardTitle className="text-xl md:text-2xl font-bold mb-2">
-              Set up your profile
-            </CardTitle>
-            <p className="text-gray-600 text-sm md:text-base">
-              {getStepTitle()}
-            </p>
-          </CardHeader>
-
-          <CardContent className="space-y-4 md:space-y-6">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -297,10 +228,13 @@ export default function CreatorProfileSetupProps({
               }}
             >
               {step === 1 && (
-                <>
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="relative">
-                      <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                <div className="space-y-4 animate-fade-in">
+                  <div className="flex flex-col items-center space-y-2">
+                    <label
+                      htmlFor="pfp-upload"
+                      className="relative cursor-pointer"
+                    >
+                      <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center overflow-hidden border-2 border-white/20">
                         {profileData.profilePicture ? (
                           <img
                             src={URL.createObjectURL(
@@ -310,340 +244,298 @@ export default function CreatorProfileSetupProps({
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <Camera className="text-gray-400" size={20} />
+                          <Camera className="text-white/60" size={32} />
                         )}
                       </div>
                       <input
+                        id="pfp-upload"
                         type="file"
                         accept="image/*"
                         onChange={handleFileUpload}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        aria-label="Upload profile picture"
+                        className="absolute inset-0 w-full h-full opacity-0"
                       />
-                    </div>
-                    <p className="text-xs md:text-sm text-gray-500">
+                    </label>
+                    <p className="text-sm text-white/70">
                       Profile picture (optional)
                     </p>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName" className="text-sm">
+                  <div>
+                    <Label htmlFor="fullName" className="text-white/80">
                       Full Name *
                     </Label>
                     <Input
                       id="fullName"
-                      className={`h-10 md:h-11 ${
-                        errors.fullName ? "border-red-500" : ""
-                      }`}
                       value={profileData.fullName}
                       onChange={(e) =>
                         updateProfileData("fullName", e.target.value)
                       }
-                      aria-describedby={
-                        errors.fullName ? "fullName-error" : undefined
-                      }
+                      className={`text-white bg-white/10 border-white/20 placeholder:text-white/60 focus:ring-white/50 ${
+                        errors.fullName ? "border-red-500" : ""
+                      }`}
                     />
                     {errors.fullName && (
-                      <p id="fullName-error" className="text-red-500 text-xs">
+                      <p className="text-red-400 text-xs mt-1">
                         {errors.fullName}
                       </p>
                     )}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="age" className="text-sm">
+                  <div>
+                    <Label htmlFor="age" className="text-white/80">
                       Age *
                     </Label>
                     <Input
                       id="age"
                       type="number"
-                      min="18"
-                      max="100"
-                      className={`h-10 md:h-11 ${
-                        errors.age ? "border-red-500" : ""
-                      }`}
                       value={profileData.age}
                       onChange={(e) => updateProfileData("age", e.target.value)}
-                      aria-describedby={errors.age ? "age-error" : undefined}
+                      className={`text-white bg-white/10 border-white/20 placeholder:text-white/60 focus:ring-white/50 ${
+                        errors.age ? "border-red-500" : ""
+                      }`}
                     />
                     {errors.age && (
-                      <p id="age-error" className="text-red-500 text-xs">
-                        {errors.age}
-                      </p>
+                      <p className="text-red-400 text-xs mt-1">{errors.age}</p>
                     )}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="bio" className="text-sm">
+                  <div>
+                    <Label htmlFor="bio" className="text-white/80">
                       Bio
                     </Label>
                     <Textarea
                       id="bio"
-                      rows={3}
-                      className="resize-none"
                       value={profileData.bio}
                       onChange={(e) => updateProfileData("bio", e.target.value)}
                       placeholder="Tell us about yourself..."
+                      className="text-white bg-white/10 border-white/20 placeholder:text-white/60 focus:ring-white/50 resize-none"
                     />
                   </div>
-                </>
+                </div>
               )}
 
               {step === 2 && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="gender" className="text-sm">
-                      Gender *
-                    </Label>
+                <div className="space-y-4 animate-fade-in">
+                  <div>
+                    <Label className="text-white/80">Gender *</Label>
                     <Select
                       value={profileData.gender}
-                      onValueChange={(value) =>
-                        updateProfileData("gender", value)
-                      }
+                      onValueChange={(v) => updateProfileData("gender", v)}
                     >
                       <SelectTrigger
-                        className={`h-10 md:h-11 ${
+                        className={`text-white bg-white/10 border-white/20 focus:ring-white/50 ${
                           errors.gender ? "border-red-500" : ""
                         }`}
                       >
                         <SelectValue placeholder="Select gender" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-gray-800 border-white/20 text-white">
                         <SelectItem value="male">Male</SelectItem>
                         <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="non-binary">Non-binary</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                     {errors.gender && (
-                      <p className="text-red-500 text-xs">{errors.gender}</p>
+                      <p className="text-red-400 text-xs mt-1">
+                        {errors.gender}
+                      </p>
                     )}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="interested" className="text-sm">
-                      Interested In *
-                    </Label>
+                  <div>
+                    <Label className="text-white/80">Interested In *</Label>
                     <Select
                       value={profileData.interestedIn}
-                      onValueChange={(value) =>
-                        updateProfileData("interestedIn", value)
+                      onValueChange={(v) =>
+                        updateProfileData("interestedIn", v)
                       }
                     >
                       <SelectTrigger
-                        className={`h-10 md:h-11 ${
+                        className={`text-white bg-white/10 border-white/20 focus:ring-white/50 ${
                           errors.interestedIn ? "border-red-500" : ""
                         }`}
                       >
                         <SelectValue placeholder="Select preference" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="men">Men</SelectItem>
-                        <SelectItem value="women">Women</SelectItem>
-                        <SelectItem value="non-binary">Non-binary</SelectItem>
-                        <SelectItem value="everyone">Everyone</SelectItem>
+                      <SelectContent className="bg-gray-800 border-white/20 text-white">
+                        <SelectItem value="Men">Men</SelectItem>
+                        <SelectItem value="Women">Women</SelectItem>
+                        <SelectItem value="Everyone">Everyone</SelectItem>
                       </SelectContent>
                     </Select>
                     {errors.interestedIn && (
-                      <p className="text-red-500 text-xs">
+                      <p className="text-red-400 text-xs mt-1">
                         {errors.interestedIn}
                       </p>
                     )}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="race" className="text-sm">
-                      Race/Ethnicity
-                    </Label>
+                  <div>
+                    <Label className="text-white/80">Country *</Label>
                     <Select
-                      value={profileData.race}
-                      onValueChange={(value) =>
-                        updateProfileData("race", value)
-                      }
+                      value={profileData.country}
+                      onValueChange={(v) => updateProfileData("country", v)}
                     >
-                      <SelectTrigger className="h-10 md:h-11">
-                        <SelectValue placeholder="Select race/ethnicity (optional)" />
+                      <SelectTrigger
+                        className={`text-white bg-white/10 border-white/20 focus:ring-white/50 ${
+                          errors.country ? "border-red-500" : ""
+                        }`}
+                      >
+                        <SelectValue placeholder="Select country" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="black">
-                          Black/African American
-                        </SelectItem>
-                        <SelectItem value="white">White/Caucasian</SelectItem>
-                        <SelectItem value="asian">Asian</SelectItem>
-                        <SelectItem value="hispanic">
-                          Hispanic/Latino
-                        </SelectItem>
-                        <SelectItem value="native">Native American</SelectItem>
-                        <SelectItem value="pacific">
-                          Pacific Islander
-                        </SelectItem>
-                        <SelectItem value="mixed">Mixed Race</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                        <SelectItem value="prefer-not-to-say">
-                          Prefer not to say
-                        </SelectItem>
+                      <SelectContent className="bg-gray-800 border-white/20 text-white">
+                        <SelectItem value="Nigeria">Nigeria</SelectItem>
+                        <SelectItem value="Ghana">Ghana</SelectItem>
+                        <SelectItem value="Kenya">Kenya</SelectItem>
                       </SelectContent>
                     </Select>
+                    {errors.country && (
+                      <p className="text-red-400 text-xs mt-1">
+                        {errors.country}
+                      </p>
+                    )}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="city" className="text-sm">
-                      City *
-                    </Label>
+                  <div>
+                    <Label className="text-white/80">City *</Label>
                     <Input
-                      id="city"
-                      className={`h-10 md:h-11 ${
-                        errors.city ? "border-red-500" : ""
-                      }`}
                       value={profileData.city}
                       onChange={(e) =>
                         updateProfileData("city", e.target.value)
                       }
-                      placeholder="Enter your city"
-                      aria-describedby={errors.city ? "city-error" : undefined}
+                      className={`text-white bg-white/10 border-white/20 placeholder:text-white/60 focus:ring-white/50 ${
+                        errors.city ? "border-red-500" : ""
+                      }`}
                     />
                     {errors.city && (
-                      <p id="city-error" className="text-red-500 text-xs">
-                        {errors.city}
-                      </p>
+                      <p className="text-red-400 text-xs mt-1">{errors.city}</p>
                     )}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-sm">
-                      Phone Number *
-                    </Label>
+                  <div>
+                    <Label className="text-white/80">Phone Number *</Label>
                     <Input
-                      id="phone"
                       type="tel"
-                      className={`h-10 md:h-11 ${
-                        errors.phone ? "border-red-500" : ""
-                      }`}
                       value={profileData.phone}
                       onChange={(e) =>
                         updateProfileData("phone", e.target.value)
                       }
-                      placeholder="Enter your phone number"
-                      aria-describedby={
-                        errors.phone ? "phone-error" : undefined
-                      }
+                      className={`text-white bg-white/10 border-white/20 placeholder:text-white/60 focus:ring-white/50 ${
+                        errors.phone ? "border-red-500" : ""
+                      }`}
                     />
                     {errors.phone && (
-                      <p id="phone-error" className="text-red-500 text-xs">
+                      <p className="text-red-400 text-xs mt-1">
                         {errors.phone}
                       </p>
                     )}
                   </div>
-                </>
-              )}
-
-              {step === 3 && (
-                <div className="space-y-4">
-                  <h2 className="text-xs md:text-xs font-light text-gray-800 mb-2">
-                    Monthly subscription fee (Keys)*
-                  </h2>
-
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Input
-                        id="subscriptionFee"
-                        type="number"
-                        min="10"
-                        max="1000"
-                        step="1"
-                        className={`h-10 md:h-11 pl-8 ${
-                          errors.subscriptionFee ? "border-red-500" : ""
-                        }`}
-                        value={profileData.subscriptionFee}
-                        onChange={(e) =>
-                          updateProfileData("subscriptionFee", e.target.value)
-                        }
-                        placeholder="0.00"
-                        aria-describedby={
-                          errors.subscriptionFee
-                            ? "subscriptionFee-error"
-                            : undefined
-                        }
-                      />
-                    </div>
-                    {errors.subscriptionFee && (
-                      <p
-                        id="subscriptionFee-error"
-                        className="text-red-500 text-xs"
-                      >
-                        {errors.subscriptionFee}
-                      </p>
-                    )}
-                    <h2 className="text-xs md:text-xs font-extralight text-gray-800 mb-2">
-                      Set how much subscribers pay monthly to access your
-                      exclusive content (Minimum 10Keys)
-                    </h2>
-                  </div>
-
-                  <p className="text-xs md:text-xs text-black text-center">
-                    Select interests to help us connect you with like-minded
-                    people
-                  </p>
-                  <div
-                    className="flex flex-wrap gap-2"
-                    role="group"
-                    aria-label="Select your interests"
-                  >
-                    {interests.map((interest) => (
-                      <button
-                        key={interest}
-                        type="button"
-                        onClick={() => toggleInterest(interest)}
-                        className={`px-2 py-1 md:px-3 md:py-2 rounded-full text-xs md:text-sm border transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
-                          profileData.interests.includes(interest)
-                            ? "bg-pink-500 text-white border-pink-500"
-                            : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
-                        }`}
-                        aria-pressed={profileData.interests.includes(interest)}
-                      >
-                        {interest}
-                      </button>
-                    ))}
-                  </div>
-                  {profileData.interests.length > 0 && (
-                    <p className="text-xs text-gray-500 text-center">
-                      {profileData.interests.length} interest
-                      {profileData.interests.length !== 1 ? "s" : ""} selected
-                    </p>
-                  )}
                 </div>
               )}
 
-              <div className="flex gap-3 pt-4">
+              {step === 3 && (
+                <div className="space-y-6 animate-fade-in">
+                  <div>
+                    <Label className="text-white/80">
+                      Monthly subscription fee (Minimum: 10) *
+                    </Label>
+                    <Input
+                      type="number"
+                      min="10"
+                      value={profileData.subscriptionFee}
+                      onChange={(e) =>
+                        updateProfileData("subscriptionFee", e.target.value)
+                      }
+                      className={`text-white bg-white/10 border-white/20 placeholder:text-white/60 focus:ring-white/50 ${
+                        errors.subscriptionFee ? "border-red-500" : ""
+                      }`}
+                    />
+                    {errors.subscriptionFee && (
+                      <p className="text-red-400 text-xs mt-1">
+                        {errors.subscriptionFee}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-white/80 text-center block mb-2">
+                      Select interests to connect with like-minded people
+                    </Label>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {interests.map((interest) => (
+                        <Button
+                          key={interest}
+                          type="button"
+                          onClick={() => toggleInterest(interest)}
+                          variant="outline"
+                          size="sm"
+                          className={`rounded-full transition-colors ${
+                            profileData.interests.includes(interest)
+                              ? "bg-pink-500 border-pink-500 text-white hover:bg-pink-600"
+                              : "bg-white/10 border-white/20 text-white/80 hover:bg-white/20"
+                          }`}
+                        >
+                          {interest}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-6">
                 {step > 1 && (
                   <Button
                     type="button"
                     onClick={prevStep}
                     variant="outline"
-                    className="flex-1 h-10 md:h-11"
+                    className="flex-1 border-white/50 text-black bg-white/10 hover:bg-white/10 hover:text-white"
                   >
                     Back
                   </Button>
                 )}
                 <Button
                   type="submit"
-                  className={`font-semibold text-white bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 h-10 md:h-11 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
+                  className={`font-semibold text-white bg-gradient-to-r from-pink-500 to-red-500 hover:opacity-90 ${
                     step === 1 ? "w-full" : "flex-1"
                   }`}
-                  disabled={step === 3 && profileData.interests.length === 0}
                 >
                   {step === 3 ? "Complete Setup" : "Continue"}
                 </Button>
               </div>
             </form>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </main>
 
-      {/* Success Modal */}
+        <footer className="w-full container mx-auto text-center py-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium text-white/80">
+              <Link
+                href="/about"
+                className="hover:text-white transition-colors"
+              >
+                About
+              </Link>
+              <Link
+                href="/privacy"
+                className="hover:text-white transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                href="/guidelines"
+                className="hover:text-white transition-colors"
+              >
+                Guidelines
+              </Link>
+              <Link
+                href="/terms"
+                className="hover:text-white transition-colors"
+              >
+                Terms of Service
+              </Link>
+            </div>
+            <p className="text-xs text-white/70">
+              &copy; {new Date().getFullYear()} Hooks. All rights reserved.
+            </p>
+          </div>
+        </footer>
+      </div>
       <SuccessModal
         isOpen={showSuccessModal}
         onComplete={handleSuccessComplete}
+        role="Creator"
       />
     </>
   );

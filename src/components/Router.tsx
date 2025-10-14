@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { RouteType } from "../routes";
+import { RouteType } from "@/routes/routes";
 
 interface Route {
   path: RouteType;

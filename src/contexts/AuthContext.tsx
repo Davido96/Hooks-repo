@@ -1,13 +1,34 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { User } from "../types";
+"use client";
+
+import React, { createContext, useContext, ReactNode, useEffect } from "react";
+import { useAuthStore } from "../stores/authStore";
+
+interface User {
+  email: string;
+  user_id?: number;
+  user_type?: "Fan" | "Creator";
+  full_name?: string;
+  display_pic?: string;
+  age?: number;
+  bio?: string;
+  gender?: string;
+  state?: string;
+  city?: string;
+  interests?: string[];
+}
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    password2: string,
+    user_type?: "Fan" | "Creator"
+  ) => Promise<void>;
   updateProfile: (userData: Partial<User>) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,60 +46,33 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, signin, signup, signout, initializeAuth } = useAuthStore();
 
-  const login = async (email: string) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  const isAuthenticated = !!user;
 
-    const userData: User = {
-      id: "1",
-      email,
-      fullName: "",
-      age: 0,
-      bio: "",
-      gender: "",
-      interestedIn: "",
-      city: "",
-      phoneNumber: "",
-      interests: [],
-    };
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
 
-    setUser(userData);
-    setIsAuthenticated(true);
+  const login = async (email: string, password: string) => {
+    await signin({ email, password });
   };
 
-  const register = async (email: string) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const userData: User = {
-      id: Date.now().toString(),
-      email,
-      fullName: "",
-      age: 0,
-      bio: "",
-      gender: "",
-      interestedIn: "",
-      city: "",
-      phoneNumber: "",
-      interests: [],
-    };
-
-    setUser(userData);
-    setIsAuthenticated(true);
+  const register = async (
+    email: string,
+    password: string,
+    password2: string,
+    user_type?: "Fan" | "Creator"
+  ) => {
+    await signup({ email, password, password2, user_type });
   };
 
   const updateProfile = (userData: Partial<User>) => {
-    if (user) {
-      setUser({ ...user, ...userData });
-    }
+    console.log("Profile update (to be implemented):", userData);
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
+  const logout = async () => {
+    await signout();
   };
 
   return (

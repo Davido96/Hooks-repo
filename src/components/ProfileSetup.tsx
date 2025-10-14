@@ -13,8 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { ROUTES, RouteType } from "@/routes/routes";
+import { useProfileStore } from "@/stores/profileStore";
+import toast from "react-hot-toast";
+import Image from "next/image";
+
 interface ProfileSetupProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (route: RouteType) => void;
 }
 
 interface ProfileData {
@@ -40,6 +45,7 @@ interface FormErrors {
 }
 
 export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
+  const { updateProfile, loading } = useProfileStore();
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<FormErrors>({});
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -112,14 +118,31 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (validateStep(step)) {
       if (step < 3) {
         setStep(step + 1);
       } else {
-        // Handle profile completion
-        console.log("Profile setup completed:", profileData);
-        onNavigate(ROUTES.HOMEPAGE);
+        // Handle profile completion with API call
+        try {
+          const updateData: any = {
+            full_name: profileData.fullName,
+            bio: profileData.bio,
+            gender: profileData.gender,
+            city: profileData.city,
+            interests: profileData.interests,
+          };
+
+          if (profileData.profilePicture) {
+            updateData.display_pic = profileData.profilePicture;
+          }
+
+          await updateProfile(updateData);
+          toast.success("Profile setup completed!");
+          onNavigate(ROUTES.AUTHENTICATED_HOMEPAGE);
+        } catch (error) {
+          console.error("Profile setup error:", error);
+        }
       }
     }
   };
@@ -190,9 +213,11 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
     >
       {/* Logo */}
       <div className="flex items-center gap-2 mb-6 md:mb-8">
-        <img
+        <Image
           src="/logo.png"
           alt="Hooks Logo"
+          width={24}
+          height={24}
           className="w-6 h-6 md:w-8 md:h-8 object-contain"
           onError={(e) => {
             // Fallback to Crown icon if logo fails to load
@@ -273,6 +298,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                       onChange={handleFileUpload}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       aria-label="Upload profile picture"
+                      disabled={loading}
                     />
                   </div>
                   <p className="text-xs md:text-sm text-gray-500">
@@ -296,6 +322,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                     aria-describedby={
                       errors.fullName ? "fullName-error" : undefined
                     }
+                    disabled={loading}
                   />
                   {errors.fullName && (
                     <p id="fullName-error" className="text-red-500 text-xs">
@@ -319,6 +346,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                     value={profileData.age}
                     onChange={(e) => updateProfileData("age", e.target.value)}
                     aria-describedby={errors.age ? "age-error" : undefined}
+                    disabled={loading}
                   />
                   {errors.age && (
                     <p id="age-error" className="text-red-500 text-xs">
@@ -338,6 +366,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                     value={profileData.bio}
                     onChange={(e) => updateProfileData("bio", e.target.value)}
                     placeholder="Tell us about yourself..."
+                    disabled={loading}
                   />
                 </div>
               </>
@@ -354,6 +383,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                     onValueChange={(value) =>
                       updateProfileData("gender", value)
                     }
+                    disabled={loading}
                   >
                     <SelectTrigger
                       className={`h-10 md:h-11 ${
@@ -383,6 +413,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                     onValueChange={(value) =>
                       updateProfileData("interestedIn", value)
                     }
+                    disabled={loading}
                   >
                     <SelectTrigger
                       className={`h-10 md:h-11 ${
@@ -412,6 +443,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                   <Select
                     value={profileData.race}
                     onValueChange={(value) => updateProfileData("race", value)}
+                    disabled={loading}
                   >
                     <SelectTrigger className="h-10 md:h-11">
                       <SelectValue placeholder="Select race/ethnicity (optional)" />
@@ -447,6 +479,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                     onChange={(e) => updateProfileData("city", e.target.value)}
                     placeholder="Enter your city"
                     aria-describedby={errors.city ? "city-error" : undefined}
+                    disabled={loading}
                   />
                   {errors.city && (
                     <p id="city-error" className="text-red-500 text-xs">
@@ -469,6 +502,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                     onChange={(e) => updateProfileData("phone", e.target.value)}
                     placeholder="Enter your phone number"
                     aria-describedby={errors.phone ? "phone-error" : undefined}
+                    disabled={loading}
                   />
                   {errors.phone && (
                     <p id="phone-error" className="text-red-500 text-xs">
@@ -501,6 +535,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                           : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
                       }`}
                       aria-pressed={profileData.interests.includes(interest)}
+                      disabled={loading}
                     >
                       {interest}
                     </button>
@@ -522,6 +557,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                   onClick={prevStep}
                   variant="outline"
                   className="flex-1 h-10 md:h-11"
+                  disabled={loading}
                 >
                   Back
                 </Button>
@@ -532,8 +568,15 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                   step === 1 ? "w-full" : "flex-1"
                 }`}
                 disabled={step === 3 && profileData.interests.length === 0}
+                disabled={
+                  loading || (step === 3 && profileData.interests.length === 0)
+                }
               >
-                {step === 3 ? "Complete Setup" : "Continue"}
+                {loading
+                  ? "Processing..."
+                  : step === 3
+                  ? "Complete Setup"
+                  : "Continue"}
               </Button>
             </div>
           </form>
