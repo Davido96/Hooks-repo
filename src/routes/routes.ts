@@ -12,6 +12,9 @@ export const ROUTES = {
   LOGIN: "/login",
   FAN_SIGNUP: "/fan-signup",
   CREATOR_SIGNUP: "/creator-signup",
+  FORGOT_PASSWORD: "/forgot-password",
+  VERIFY_RESET_CODE: "/verify-reset-code",
+  CREATE_NEW_PASSWORD: "/create-new-password",
 
   // --- Onboarding & Setup Routes ---
   PROFILE_SETUP: "/profile-setup", // For Fans

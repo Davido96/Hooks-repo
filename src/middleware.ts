@@ -16,6 +16,9 @@ const authRoutes = [
   ROUTES.LOGIN,
   ROUTES.FAN_SIGNUP,
   ROUTES.CREATOR_SIGNUP,
+  ROUTES.FORGOT_PASSWORD,
+  ROUTES.VERIFY_RESET_CODE,
+  ROUTES.CREATE_NEW_PASSWORD,
 ] as const;
 
 // Creates the type: "/" | "/about" | ...

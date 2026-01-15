@@ -104,6 +104,34 @@ export const signup = async (
   return api.post("/user/signup/", formData);
 };
 
+/* ---------------------- PASSWORD RESET APIs ---------------------- */
+export const forgotPassword = async (email: string) => {
+  const formData = new FormData();
+  formData.append("email", email);
+  return api.post("/user/forgot-password/", formData);
+};
+
+export const verifyResetCode = async (email: string, code: string) => {
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("code", code);
+  return api.post("/user/verify-reset-code/", formData);
+};
+
+export const resetPassword = async (
+  email: string,
+  code: string,
+  password: string,
+  password2: string
+) => {
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("code", code);
+  formData.append("password", password);
+  formData.append("password2", password2);
+  return api.post("/user/reset-password/", formData);
+};
+
 /* ---------------------- PROFILE APIs ---------------------- */
 export const getProfile = async (userId?: string | number) => {
   const url = userId ? `/profile/?user_id=${userId}` : "/profile/";
