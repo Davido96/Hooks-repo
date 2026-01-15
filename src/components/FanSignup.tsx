@@ -2,18 +2,20 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ROUTES } from "@/routes/routes";
+import { ROUTES, RouteType } from "@/routes/routes";
 import { useAuthStore } from "@/stores/authStore";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { AxiosError } from "axios";
 
-export default function FanSignup() {
-  const router = useRouter();
+interface FanSignupProps {
+  onNavigate: (route: RouteType) => void;
+}
+
+export default function FanSignup({ onNavigate }: FanSignupProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -48,14 +50,14 @@ export default function FanSignup() {
 
       // --- Conditional Redirect Logic ---
       if (newUser?.profileCreated === false) {
-        router.push(ROUTES.PROFILE_SETUP);
+        onNavigate(ROUTES.PROFILE_SETUP);
       } else if (newUser) {
-        router.push(ROUTES.AUTHENTICATED_HOMEPAGE);
+        onNavigate(ROUTES.AUTHENTICATED_HOMEPAGE);
       } else {
         toast.error(
           "Login failed after signup. Please try logging in manually."
         );
-        router.push(ROUTES.LOGIN);
+        onNavigate(ROUTES.LOGIN);
       }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {

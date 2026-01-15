@@ -8,23 +8,11 @@ import {
   getProfile as apiGetProfile,
 } from "@/api/api";
 import { AxiosError } from "axios";
+import { User } from "@/types";
 
-interface User {
-  email: string;
-  user_id?: string;
-  user_type?: "Fan" | "Creator";
-  full_name?: string;
-  display_pic?: string;
-  age?: number;
-  bio?: string;
-  gender?: string;
-  state?: string;
-  city?: string;
+interface AuthUser extends User {
   balance?: number;
-  interests?: string[];
-  monthly_sub_keys?: string | null;
-  isVerified?: boolean;
-  profileCreated?: boolean;
+  dailyLikesRemaining?: number;
 }
 
 interface ApiError {
@@ -33,7 +21,7 @@ interface ApiError {
 }
 
 interface AuthState {
-  user: User | null;
+  user: AuthUser | null;
   access: string | null;
   refresh: string | null;
   loading: boolean;
@@ -43,15 +31,15 @@ interface AuthState {
     password: string;
     password2: string;
     user_type?: "Fan" | "Creator";
-  }) => Promise<User | null>;
-  signin: (data: { email: string; password: string }) => Promise<User | null>;
+  }) => Promise<AuthUser | null>;
+  signin: (data: { email: string; password: string }) => Promise<AuthUser | null>;
   signout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
   initializeAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => {
-  const handleAuthSuccess = (access: string, refresh: string, user: User) => {
+  const handleAuthSuccess = (access: string, refresh: string, user: AuthUser) => {
     const cookieOptions = { expires: 7, secure: true, path: "/" };
 
     // Set cookies for middleware
@@ -85,103 +73,91 @@ export const useAuthStore = create<AuthState>((set, get) => {
     signup: async (data) => {
       set({ loading: true, error: null });
       try {
-        await apiSignup(
+        const response = await apiSignup(
           data.email,
           data.password,
           data.password2,
-          data.user_type
+          data.user_type || "Fan"
         );
-        toast.success("Account created successfully! Logging you in...");
 
-        try {
-          const loginRes = await apiSignin(data.email, data.password);
-          const { access, refresh, user } = loginRes.data;
-          handleAuthSuccess(access, refresh, user); // Use helper
-          return user;
-        } catch (loginErr) {
-          // Gracefully handle auto-login failure
-          console.error("Auto-login after signup failed:", loginErr);
-          toast.success("Registration successful! Please log in to continue.");
-          // Don't re-throw, just return null to signify login is needed
-          return null;
-        }
-      } catch (err: unknown) {
-        const axiosError = err as AxiosError<ApiError>;
+        const user = response.data.user as AuthUser;
+        handleAuthSuccess(response.data.access, response.data.refresh, user);
+        toast.success("Signup successful!");
+        return user;
+      } catch (error) {
+        const err = error as AxiosError<ApiError>;
         const errorMessage =
-          axiosError.response?.data?.message ||
-          axiosError.response?.data?.error ||
-          "Sign up failed";
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Signup failed";
         set({ error: errorMessage, loading: false });
         toast.error(errorMessage);
-        throw axiosError;
+        return null;
       }
     },
 
     signin: async (data) => {
       set({ loading: true, error: null });
       try {
-        const res = await apiSignin(data.email, data.password);
-        const { access, refresh, user } = res.data;
-        handleAuthSuccess(access, refresh, user); // Use helper
+        const response = await apiSignin(data.email, data.password);
+
+        const user = response.data.user as AuthUser;
+        handleAuthSuccess(response.data.access, response.data.refresh, user);
         toast.success("Login successful!");
         return user;
-      } catch (err: unknown) {
-        const axiosError = err as AxiosError<ApiError>;
+      } catch (error) {
+        const err = error as AxiosError<ApiError>;
         const errorMessage =
-          axiosError.response?.data?.message ||
-          axiosError.response?.data?.error ||
-          "Signin failed";
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Login failed";
         set({ error: errorMessage, loading: false });
         toast.error(errorMessage);
-        throw axiosError;
+        return null;
       }
     },
 
     signout: async () => {
-      set({ loading: true });
       try {
         await apiSignout();
-        toast.success("Logged out successfully!");
-      } catch (error: unknown) {
-        console.error("Logout error:", error);
-      } finally {
         Cookies.remove("authToken");
         Cookies.remove("userRole");
         Cookies.remove("profileComplete");
         localStorage.removeItem("access");
         localStorage.removeItem("refresh");
-        set({
-          user: null,
-          access: null,
-          refresh: null,
-          error: null,
-          loading: false,
-        });
+        set({ user: null, access: null, refresh: null, error: null });
+        toast.success("Logged out successfully");
+      } catch (error) {
+        console.error("Signout error:", error);
+        // Still clear local state even if API call fails
+        set({ user: null, access: null, refresh: null });
       }
     },
 
     fetchProfile: async () => {
       try {
-        if (get().user) return; // Don't fetch if user is already in state
-        const res = await apiGetProfile();
-        set({ user: res.data });
+        const response = await apiGetProfile();
+        const user = response.data as AuthUser;
+        set({ user, loading: false });
       } catch (error) {
-        console.error("Profile fetch failed, signing out:", error);
-        // If profile fetch fails, the token is likely invalid. Sign out.
-        get().signout();
+        console.error("Fetch profile error:", error);
+        set({ loading: false });
       }
     },
 
     initializeAuth: async () => {
       try {
-        const accessToken = localStorage.getItem("access");
-        if (accessToken) {
-          set({ access: accessToken });
+        const access = localStorage.getItem("access");
+        const refresh = localStorage.getItem("refresh");
+
+        if (access && refresh) {
+          set({ access, refresh, loading: true });
           await get().fetchProfile();
+        } else {
+          set({ loading: false });
         }
       } catch (error) {
-        console.error("Initialization failed:", error);
-      } finally {
+        console.error("Initialize auth error:", error);
         set({ loading: false });
       }
     },

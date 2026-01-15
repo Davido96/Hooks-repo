@@ -1,22 +1,37 @@
 "use client";
 
 import React, { useState } from "react";
+
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import { Camera, ArrowLeft } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
+
 import { Label } from "@/components/ui/label";
+
 import { Textarea } from "@/components/ui/textarea";
+
 import {
+
   Select,
+
   SelectContent,
+
   SelectItem,
+
   SelectTrigger,
+
   SelectValue,
+
 } from "@/components/ui/select";
-import { ROUTES, RouteType } from "@/routes/routes";
+
+import { ROUTES, RouteType } from "@/routes/routes"; // Added RouteType import
+
 import SuccessModal from "./SuccessModal";
+
 import Image from "next/image";
 
 interface ProfileData {
@@ -32,6 +47,7 @@ interface ProfileData {
   subscriptionFee: string;
   profilePicture?: File;
 }
+
 interface FormErrors {
   fullName?: string;
   age?: string;
@@ -43,8 +59,13 @@ interface FormErrors {
   subscriptionFee?: string;
 }
 
-export default function CreatorProfileSetup() {
-  const router = useRouter();
+interface CreatorProfileSetupProps {
+  onNavigate: (route: RouteType) => void;
+}
+
+export default function CreatorProfileSetup({
+  onNavigate,
+}: CreatorProfileSetupProps) {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<FormErrors>({});
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -124,7 +145,7 @@ export default function CreatorProfileSetup() {
 
   const handleSuccessComplete = () => {
     setShowSuccessModal(false);
-    router.push(ROUTES.CREATOR_PROFILE);
+    onNavigate(ROUTES.CREATOR_PROFILE);
   };
 
   const prevStep = () => {
@@ -236,11 +257,13 @@ export default function CreatorProfileSetup() {
                     >
                       <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center overflow-hidden border-2 border-white/20">
                         {profileData.profilePicture ? (
-                          <img
+                          <Image
                             src={URL.createObjectURL(
                               profileData.profilePicture
                             )}
                             alt="Profile preview"
+                            width={80}
+                            height={80}
                             className="w-full h-full object-cover"
                           />
                         ) : (

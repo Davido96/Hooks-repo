@@ -267,12 +267,11 @@ function Main({
 }) {
   const [message, setMessage] = useState("");
   const profile = useProfileStore((state) => state.profile);
-  const [media, setMedia] = useState<File | null>(null);
   const mediaRef = useRef<HTMLInputElement>(null);
 
   const handleMediaChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    setMedia(e.target.files[0]);
+    // setMedia(e.target.files[0]);
   };
 
   return (

@@ -11,10 +11,9 @@ import SendKeysTipModal from "@/components/modals/SendKeysTipModal";
 import { X, ChevronLeft, CheckCheck, Key, KeyIcon } from "lucide-react"; // Import necessary icons
 
 export default function MessagePage() {
-  const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("Exclusive Content");
-  const [mobileView, setMobileView] = useState<"list" | "chat">("list");
+   const router = useRouter();
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [mobileView, setMobileView] = useState<"list" | "chat">("list");
 
   const conversations = [
     {
@@ -52,7 +51,7 @@ export default function MessagePage() {
     <>
       <div className="container mx-auto px-4 text-white">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 my-4">
-          <NavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <NavTabs />
           <StatsBar />
         </div>
         <div>
@@ -129,11 +128,12 @@ export default function MessagePage() {
           >
             <div className="flex items-center p-4 border-b border-white/10">
               <button
-                onClick={() => setMobileView("list")}
-                className="mr-3 lg:hidden text-white"
-              >
-                <ChevronLeft size={24} />
-              </button>
+                  onClick={() => setMobileView("list")}
+                  className="mr-3 lg:hidden text-white"
+                  title="Back to conversations"
+                >
+                  <ChevronLeft size={24} />
+                </button>
               <div className="relative">
                 <Image
                   src={activeConversation.avatar}

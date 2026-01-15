@@ -103,7 +103,7 @@ export default function Filter({ isOpen, onClose }: Props) {
             </h3>
             <Select
               value={gender ?? ""}
-              onValueChange={(val: Gender) => setGender(val)}
+              onValueChange={(val) => setGender(val as Gender)}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a gender" />
@@ -123,7 +123,7 @@ export default function Filter({ isOpen, onClose }: Props) {
             <h3 className="text-filter-dull-heading text-sm">User Type</h3>
             <Select
               value={userType ?? ""}
-              onValueChange={(val: UserType) => setUserType(val)}
+              onValueChange={(val) => setUserType(val as UserType)}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a user type" />

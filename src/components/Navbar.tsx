@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useProfileStore } from "@/stores/profileStore";
+import { useAuthStore } from "@/stores/authStore";
 
 interface Props {
   onLogout: () => void;
@@ -33,9 +34,25 @@ const Navbar: React.FC<Props> = ({
     onClick: () => void;
   };
 
-  const { profile } = useProfileStore();
+  const { profile, getProfile } = useProfileStore();
+   const { user } = useAuthStore();
 
-  const [showDropDown, setShowDropDown] = useState(false);
+   const [showDropDown, setShowDropDown] = useState(false);
+
+   // Load profile on mount
+   useEffect(() => {
+     if (!profile) {
+       getProfile();
+     }
+   }, [profile, getProfile]);
+
+   // Format name as "First Last_initial"
+   const formatName = (fullName?: string) => {
+     if (!fullName) return "User";
+     const nameParts = fullName.trim().split(/\s+/);
+     if (nameParts.length === 1) return nameParts[0];
+     return `${nameParts[0]} ${nameParts[nameParts.length - 1][0]}.`;
+   };
   const dropDownLinks: DropDown[] = [
     {
       name: "View Profile",
@@ -119,15 +136,17 @@ const Navbar: React.FC<Props> = ({
             )}
           </div>
           <h4 className="hidden sm:block">
-            {profile?.full_name.split(" ")[0]}
+            {formatName(profile?.full_name || user?.name)}
           </h4>
           {/* dropdown */}
           {showDropDown && (
             <div className="absolute top-[62px] z-[999] pt-5 right-[30px]">
               <div className=" w-[211px] rounded-[8px] text-black py-[13px] pl-[29px] bg-white/95">
-                <h2 className="text-2xl font-bold leading-[32px]">Anthony</h2>
+                <h2 className="text-2xl font-bold leading-[32px]">
+                  {formatName(profile?.full_name || user?.name)}
+                </h2>
                 <p className="text-grayBorder text-sm leading-[24px]">
-                  Creator
+                  {user?.user_type || "User"}
                 </p>
                 <ul className="flex flex-col gap-[10px]">
                   {dropDownLinks.map((item, i) => (

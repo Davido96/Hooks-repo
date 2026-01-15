@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { X, Check, Crown, Heart } from "lucide-react";
 
 interface FeatureItemProps {
@@ -73,18 +73,23 @@ const PricingCard: React.FC<PricingCardProps> = ({
   </div>
 );
 
-export default function HooksGoldModal() {
-  // Start closed by default
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+interface HooksGoldModalProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
 
+export default function HooksGoldModal({
+  isOpen = false,
+  onClose = () => {},
+}: HooksGoldModalProps = {}) {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-3xl max-w-md w-full p-8 relative max-h-[90vh] overflow-y-auto">
-        {/* Close button */}
-        <button
-          onClick={() => setIsOpen(false)}
+         {/* Close button */}
+         <button
+           onClick={onClose}
           className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
           aria-label="Close modal"
         >

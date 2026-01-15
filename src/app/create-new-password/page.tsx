@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
 
-export default function CreateNewPassword() {
+function CreateNewPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
@@ -162,5 +162,13 @@ export default function CreateNewPassword() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function CreateNewPassword() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CreateNewPasswordContent />
+    </Suspense>
   );
 }

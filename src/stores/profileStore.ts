@@ -5,6 +5,12 @@ import {
   updateProfile as apiUpdateProfile,
 } from "@/api/api";
 import { Profile, ProfileUpdatePayload } from "@/types";
+import { AxiosError } from "axios";
+
+interface ApiError {
+  message?: string;
+  error?: string;
+}
 
 interface ProfileState {
   profile: Profile | null;
@@ -16,20 +22,21 @@ interface ProfileState {
   clearError: () => void;
 }
 
-export const useProfileStore = create<ProfileState>((set, get) => ({
+export const useProfileStore = create<ProfileState>((set) => ({
   profile: null,
   loading: false,
   error: null,
 
   getProfile: async (userId) => {
-    set({ loading: true, error: null });
-    try {
-      const res = await apiGetProfile(userId);
-      set({ profile: res.data, loading: false });
-    } catch (err: any) {
+     set({ loading: true, error: null });
+     try {
+       const res = await apiGetProfile(userId);
+       set({ profile: res.data as unknown as Profile, loading: false });
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiError>;
       const errorMessage =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
+        axiosError.response?.data?.message ||
+        axiosError.response?.data?.error ||
         "Failed to fetch profile";
       set({ error: errorMessage, loading: false });
       toast.error(errorMessage);
@@ -41,12 +48,13 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const res = await apiUpdateProfile(data);
-      set({ profile: res.data, loading: false });
+      set({ profile: res.data as unknown as Profile, loading: false });
       toast.success("Profile updated successfully!");
-    } catch (err: any) {
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiError>;
       const errorMessage =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
+        axiosError.response?.data?.message ||
+        axiosError.response?.data?.error ||
         "Profile update failed";
       set({ error: errorMessage, loading: false });
       toast.error(errorMessage);

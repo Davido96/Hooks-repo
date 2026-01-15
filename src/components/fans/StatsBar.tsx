@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { Progress } from "@/components/ui/progress";
 
 interface StatsBarProps {
   followers?: number;

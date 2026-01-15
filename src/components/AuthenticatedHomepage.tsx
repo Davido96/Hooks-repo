@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/routes/routes";
-import { Match, Profile, RawApiUser } from "@/types";
+import { Match, RawApiUser } from "@/types";
 import { useSocialStore } from "@/stores/socialStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useAuthStore } from "@/stores/authStore";
@@ -49,7 +49,7 @@ const transformToMatch = (rec: RawApiUser): Match => {
   };
 };
 
-export default function AuthenticatedHomepage(): JSX.Element {
+export default function AuthenticatedHomepage(): ReactNode {
   const router = useRouter();
   const { user, signout } = useAuthStore();
   const { profile, getProfile } = useProfileStore();
@@ -58,7 +58,6 @@ export default function AuthenticatedHomepage(): JSX.Element {
     getRecommendations,
     sendLike,
     followersCount,
-    followingsCount,
     confirmedLikesCount,
     getFollowerCount,
     getFollowingCount,
@@ -88,13 +87,13 @@ export default function AuthenticatedHomepage(): JSX.Element {
   // daily likes remaining (initialized from user if available)
   const [dailyLikesRemaining, setDailyLikesRemaining] = useState<number>(() => {
     // fallback default 10
-    return (user as any)?.dailyLikesRemaining ?? 10;
+    return user?.dailyLikesRemaining ?? 10;
   });
 
   // update dailyLikesRemaining if user changes (sync)
   useEffect(() => {
-    if (user && typeof (user as any).dailyLikesRemaining === "number") {
-      setDailyLikesRemaining((user as any).dailyLikesRemaining);
+    if (user && typeof user.dailyLikesRemaining === "number") {
+      setDailyLikesRemaining(user.dailyLikesRemaining);
     }
   }, [user]);
 
@@ -114,7 +113,7 @@ export default function AuthenticatedHomepage(): JSX.Element {
 
   const availableMatches: Match[] = useMemo(() => {
     if (!recommendations) return [];
-    return recommendations.map(transformToMatch);
+    return (recommendations as RawApiUser[]).map(transformToMatch);
   }, [recommendations]);
 
   // Ensure currentIndex never exceeds availableMatches length
@@ -271,11 +270,7 @@ export default function AuthenticatedHomepage(): JSX.Element {
           onFilterClick={() => setIsFilterOpen(true)}
         />
 
-        <Stats
-          followers={followersCount}
-          followings={followingsCount}
-          totalMatches={confirmedLikesCount}
-        />
+        <Stats followers={followersCount} totalMatches={confirmedLikesCount} />
 
         {/* <div className="container mx-auto px-4"> */}
         {/* <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 my-4"> */}
@@ -378,8 +373,14 @@ export default function AuthenticatedHomepage(): JSX.Element {
             isOpen={isFilterOpen}
             onClose={() => setIsFilterOpen(false)}
           />
-          <PerfectMatchModal />
-          <DailyLimitModal />
+          <PerfectMatchModal
+            isOpen={isPerfectMatchOpen}
+            onClose={() => setIsPerfectMatchOpen(false)}
+          />
+          <DailyLimitModal
+            isOpen={isDailyLimitOpen}
+            onClose={() => setIsDailyLimitOpen(false)}
+          />
         </>
       )}
     </>

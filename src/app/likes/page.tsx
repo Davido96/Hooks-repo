@@ -115,6 +115,8 @@ export default function LikesPage() {
             onEditProfileClick={() => {}}
             onViewProfileClick={() => {}}
             onReferralClick={() => {}}
+            onVerificationClick={() => {}}
+            onFilterClick={() => {}}
           />
         )}
 

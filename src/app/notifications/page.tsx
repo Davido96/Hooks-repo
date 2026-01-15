@@ -50,7 +50,7 @@ export default function NotificationsPage() {
     },
   ];
 
-  const getBadgeColor = (type: string) => {
+  const getBadgeColor = () => {
     return "bg-white text-gray-800";
   };
 
@@ -104,7 +104,16 @@ export default function NotificationsPage() {
       <main className="container mx-auto px-4 pt-20 pb-6">
         {/* Navigation Tabs */}
         <div className="mb-6">
-          <NavigationTabs />
+          <NavigationTabs
+            onLogout={() => {}}
+            onWalletClick={() => {}}
+            onMessageClick={() => {}}
+            onEditProfileClick={() => {}}
+            onViewProfileClick={() => {}}
+            onReferralClick={() => {}}
+            onVerificationClick={() => {}}
+            onFilterClick={() => {}}
+          />
         </div>
 
         {/* Stats Bar */}
@@ -136,9 +145,7 @@ export default function NotificationsPage() {
                   </div>
                   <p className="text-gray-700 mb-3">{notification.message}</p>
                   <span
-                    className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${getBadgeColor(
-                      notification.type
-                    )}`}
+                    className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${getBadgeColor()}`}
                   >
                     {notification.type}
                   </span>

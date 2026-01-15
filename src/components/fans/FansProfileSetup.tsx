@@ -211,9 +211,11 @@ export default function FanProfileSetup() {
                   >
                     <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-200">
                       {profileData.profilePicture ? (
-                        <img
+                        <Image
                           src={URL.createObjectURL(profileData.profilePicture)}
                           alt="Profile preview"
+                          width={80}
+                          height={80}
                           className="w-full h-full object-cover"
                         />
                       ) : (

@@ -9,6 +9,12 @@ import { Button } from "@/components/ui/button";
 import SignupChoiceModal from "../../components/modals/SignUpChoiceModal";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+
+interface ApiError {
+  message?: string;
+  error?: string;
+}
 
 export default function Login() {
   const router = useRouter();
@@ -34,10 +40,11 @@ export default function Login() {
       } else {
         router.push("/authenticated-homepage");
       }
-    } catch (error: any) {
-      console.error("Authentication error:", error);
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiError>;
+      console.error("Authentication error:", axiosError);
       alert(
-        error?.response?.data?.message ||
+        axiosError.response?.data?.message ||
           "Authentication failed. Please try again."
       );
     } finally {

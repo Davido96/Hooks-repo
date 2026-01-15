@@ -1,15 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Profile } from "@/types";
 import Image from "next/image";
+import { useProfileStore } from "@/stores/profileStore";
+import { useAuthStore } from "@/stores/authStore";
 
 interface ViewProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  profile: Profile | null;
+  profile?: Profile | null;
 }
 
 const ProfileField = ({
@@ -26,11 +28,24 @@ const ProfileField = ({
 );
 
 export default function ViewProfileModal({
-  isOpen,
-  onClose,
-  profile, 
-}: ViewProfileModalProps) {
-  if (!isOpen || !profile) return null;
+   isOpen,
+   onClose,
+   profile: propProfile,
+ }: ViewProfileModalProps) {
+   const { profile: storeProfile, getProfile } = useProfileStore();
+   const { user } = useAuthStore();
+
+   // Use profile from props or store
+   const profile = propProfile || storeProfile;
+
+   // Load profile from store on mount if not provided
+   useEffect(() => {
+     if (isOpen && !propProfile && !storeProfile) {
+       getProfile();
+     }
+   }, [isOpen, propProfile, storeProfile, getProfile]);
+
+   if (!isOpen || !profile) return null;
 
   return (
     <div
@@ -94,23 +109,7 @@ export default function ViewProfileModal({
             </div>
           </div>
 
-          <div>
-            <h3 className="text-lg font-bold mb-4">Interests</h3>
-            {profile.interests && profile.interests.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {profile.interests.map((interest) => (
-                  <span
-                    key={interest}
-                    className="inline-flex items-center px-3 py-1 bg-gray-100 rounded-full text-sm font-medium text-gray-800"
-                  >
-                    {interest}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">No interests added.</p>
-            )}
-          </div>
+
         </div>
 
         {/* Footer */}

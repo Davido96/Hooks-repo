@@ -1,7 +1,10 @@
 "use client";
 
 import { useProfileStore } from "@/stores/profileStore";
+import { useAuthStore } from "@/stores/authStore";
+import { useSocialStore } from "@/stores/socialStore";
 import Image from "next/image";
+import { useEffect } from "react";
 
 interface Props {
   userRole?: string;
@@ -14,13 +17,28 @@ interface Props {
 }
 
 const ProfileCard: React.FC<Props> = ({
-  userRole,
+  userRole: propUserRole,
   onLike,
   onDislike,
   dailyLikesRemaining,
   onDailyLimitReached,
+  isPerfectMatch,
 }) => {
-  const { profile } = useProfileStore();
+  const { profile, getProfile } = useProfileStore();
+  const { user } = useAuthStore();
+  const { followersCount, confirmedLikesCount, getFollowerCount, getConfirmedLikesCount } = useSocialStore();
+
+  // Get user role from props or auth store
+  const userRole = propUserRole || user?.user_type;
+
+  // Load profile and stats on mount
+  useEffect(() => {
+    if (!profile) {
+      getProfile();
+    }
+    getFollowerCount();
+    getConfirmedLikesCount();
+  }, [profile, getProfile, getFollowerCount, getConfirmedLikesCount]);
 
   function getColor(text: string): string {
     switch (text.toLowerCase()) {
@@ -62,7 +80,7 @@ const ProfileCard: React.FC<Props> = ({
           )}
 
           {/* badge */}
-          {userRole && userRole.toLowerCase() === "creator" ? (
+          {userRole?.toLowerCase() === "creator" && (
             <div className="bg-badgePink flex items-center gap-1 text-white rounded-full h-6 w-20 justify-center absolute right-3 top-6">
               <Image
                 width={12}
@@ -72,8 +90,6 @@ const ProfileCard: React.FC<Props> = ({
               />
               <p className="text-xs font-bold">Creator</p>
             </div>
-          ) : (
-            <div>hello</div>
           )}
 
           <div className="z-50 absolute max-w-[90%] left-4 bottom-3 text-white">
@@ -88,8 +104,8 @@ const ProfileCard: React.FC<Props> = ({
               </p>
             </div>
             <div className="min-[400px]:flex-row flex flex-col max-[400px]:gap-y-1 min-[400px]:items-center justify-between mt-1">
-              <p>💚 482 followers</p>
-              <p>🔥 271 subscribers</p>
+              <p>💚 {followersCount || 0} followers</p>
+              <p>🔥 {confirmedLikesCount || 0} {userRole?.toLowerCase() === "creator" ? "subscribers" : "matches"}</p>
             </div>
             {profile && profile.interests.length > 0 && (
               <div className="flex gap-2 mt-3">
@@ -128,10 +144,10 @@ const ProfileCard: React.FC<Props> = ({
             </div>
           </div>
           <h3 className="text-center mt-4 text-lg font-bold text-white">
-            3 matches • 4 profiles remaining
+            {confirmedLikesCount || 0} matches • {dailyLikesRemaining || 0} profiles remaining
           </h3>
           <h4 className="mt-2 text-center text-white">
-            You have 3 super likes remaining today
+            You have {dailyLikesRemaining || 0} likes remaining today
           </h4>
         </div>
       </div>

@@ -150,12 +150,14 @@ const CreatorsEditingPopup: React.FC<Props> = ({ onClose }) => {
               Change Photo
             </Button>
             <input
-              className="hidden"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              ref={inpRef}
-            />
+               id="profile-photo"
+               className="hidden"
+               type="file"
+               accept="image/*"
+               onChange={handleFileChange}
+               ref={inpRef}
+               aria-label="Profile photo upload"
+             />
           </div>
 
           {/* Form */}
@@ -164,15 +166,17 @@ const CreatorsEditingPopup: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-lg font-bold">Basic Information</h3>
               {/* name */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium" htmlFor="name">
+                <label className="text-sm font-medium" htmlFor="full_name">
                   Name
                 </label>
                 <Input
+                  id="full_name"
                   type="text"
                   name="full_name"
                   value={formFields.full_name}
                   onChange={handleOnchange}
                   autoComplete="off"
+                  placeholder="Enter your full name"
                 />
               </div>
               {/* age */}
@@ -181,6 +185,7 @@ const CreatorsEditingPopup: React.FC<Props> = ({ onClose }) => {
                   Age
                 </label>
                 <Input
+                  id="age"
                   value={formFields.age}
                   onChange={handleOnchange}
                   type="number"
@@ -195,6 +200,7 @@ const CreatorsEditingPopup: React.FC<Props> = ({ onClose }) => {
                   Bio
                 </label>
                 <Textarea
+                  id="bio"
                   value={formFields.bio}
                   onChange={handleOnchange}
                   className="h-24 resize-none"
@@ -289,6 +295,7 @@ const CreatorsEditingPopup: React.FC<Props> = ({ onClose }) => {
                   Default Monthly Subscription Rate
                 </label>
                 <Input
+                  id="subscription"
                   type="text"
                   name="subscription"
                   placeholder="e.g 10 (10000 Naira)"
@@ -307,6 +314,7 @@ const CreatorsEditingPopup: React.FC<Props> = ({ onClose }) => {
                     New PIN
                   </label>
                   <Input
+                    id="new-pin"
                     type="password"
                     name="new-pin"
                     maxLength={4}
@@ -318,6 +326,7 @@ const CreatorsEditingPopup: React.FC<Props> = ({ onClose }) => {
                     Confirm New PIN
                   </label>
                   <Input
+                    id="confirm-pin"
                     type="password"
                     name="confirm-pin"
                     maxLength={4}

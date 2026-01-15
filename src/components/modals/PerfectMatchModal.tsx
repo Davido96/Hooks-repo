@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { X, Check, Crown } from "lucide-react";
 
 interface FeatureItemProps {
@@ -105,22 +105,27 @@ const SimplePricingCard: React.FC<SimplePricingCardProps> = ({
   </div>
 );
 
-export default function HooksPerfectMatchModal() {
-  // Start closed, only open via trigger
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+interface HooksPerfectMatchModalProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
 
+export default function HooksPerfectMatchModal({
+  isOpen = false,
+  onClose = () => {},
+}: HooksPerfectMatchModalProps = {}) {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-3xl max-w-md w-full p-8 relative max-h-[90vh] overflow-y-auto">
         <button
-          onClick={() => setIsOpen(false)}
-          className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
-          aria-label="Close modal"
-        >
-          <X size={24} />
-        </button>
+           onClick={onClose}
+           className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+           aria-label="Close modal"
+         >
+           <X size={24} />
+         </button>
 
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 flex items-center justify-center">

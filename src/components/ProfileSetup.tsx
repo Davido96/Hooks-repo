@@ -15,25 +15,26 @@ import {
 
 import { ROUTES, RouteType } from "@/routes/routes";
 import { useProfileStore } from "@/stores/profileStore";
+import { useAuthStore } from "@/stores/authStore";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { ProfileUpdatePayload } from "@/types";
 
 interface ProfileSetupProps {
   onNavigate: (route: RouteType) => void;
 }
 
 interface ProfileData {
-  fullName: string;
-  age: string;
-  bio: string;
-  gender: string;
-  interestedIn: string;
-  race: string;
-  city: string;
-  phone: string;
-  interests: string[];
-  profilePicture?: File;
-}
+   fullName: string;
+   age: string;
+   bio: string;
+   gender: string;
+   interestedIn: string;
+   race: string;
+   city: string;
+   phone: string;
+   profilePicture?: File;
+ }
 
 interface FormErrors {
   fullName?: string;
@@ -45,8 +46,9 @@ interface FormErrors {
 }
 
 export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
-  const { updateProfile, loading } = useProfileStore();
-  const [step, setStep] = useState(1);
+   const { updateProfile, loading, getProfile } = useProfileStore();
+   const { user } = useAuthStore();
+   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<FormErrors>({});
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: "",
@@ -57,28 +59,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
     race: "",
     city: "",
     phone: "",
-    interests: [],
   });
-
-  const interests = [
-    "Social Networking",
-    "Dancing",
-    "Fun Times",
-    "Social",
-    "Career",
-    "Business",
-    "Environment",
-    "Fitness",
-    "Nature Walks",
-    "Sports & Recreation",
-    "Running",
-    "Cycling",
-    "Comedy",
-    "Coffee",
-    "Night Walks",
-    "Foodie",
-    "Dating & Relationships",
-  ];
 
   const validateStep = (currentStep: number): boolean => {
     const newErrors: FormErrors = {};
@@ -120,29 +101,36 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
 
   const nextStep = async () => {
     if (validateStep(step)) {
-      if (step < 3) {
+      if (step < 2) {
         setStep(step + 1);
       } else {
         // Handle profile completion with API call
-        try {
-          const updateData: any = {
-            full_name: profileData.fullName,
-            bio: profileData.bio,
-            gender: profileData.gender,
-            city: profileData.city,
-            interests: profileData.interests,
-          };
+         try {
+           const updateData: ProfileUpdatePayload = {
+             full_name: profileData.fullName,
+             bio: profileData.bio,
+             gender: profileData.gender
+               ? (profileData.gender as "Male" | "Female" | "Other")
+               : null,
+             age: parseInt(profileData.age, 10) || undefined,
+             city: profileData.city,
+           };
 
-          if (profileData.profilePicture) {
-            updateData.display_pic = profileData.profilePicture;
-          }
+           if (profileData.profilePicture) {
+             updateData.display_pic = profileData.profilePicture;
+           }
 
-          await updateProfile(updateData);
-          toast.success("Profile setup completed!");
-          onNavigate(ROUTES.AUTHENTICATED_HOMEPAGE);
-        } catch (error) {
-          console.error("Profile setup error:", error);
-        }
+           await updateProfile(updateData);
+           
+           // Refresh profile to get updated data
+           await getProfile();
+           
+           toast.success("Profile setup completed!");
+           onNavigate(ROUTES.AUTHENTICATED_HOMEPAGE);
+         } catch (error) {
+           console.error("Profile setup error:", error);
+           toast.error("Failed to complete profile setup");
+         }
       }
     }
   };
@@ -172,13 +160,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
     }
   };
 
-  const toggleInterest = (interest: string) => {
-    const newInterests = profileData.interests.includes(interest)
-      ? profileData.interests.filter((i) => i !== interest)
-      : [...profileData.interests, interest];
 
-    updateProfileData("interests", newInterests);
-  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -191,23 +173,21 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
   };
 
   const getStepTitle = () => {
-    switch (step) {
-      case 1:
-        return "Basic Information";
-      case 2:
-        return "Location and Preferences";
-      case 3:
-        return "Interests";
-      default:
-        return "";
-    }
-  };
+     switch (step) {
+       case 1:
+         return "Basic Information";
+       case 2:
+         return "Location and Preferences";
+       default:
+         return "";
+     }
+   };
 
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 md:px-6 py-8"
       style={{
-        background:
+        backgroundImage:
           "linear-gradient(135deg, #FF6B6B 0%, #FF8E9B 50%, #C44E88 100%)",
       }}
     >
@@ -283,9 +263,11 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                   <div className="relative">
                     <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
                       {profileData.profilePicture ? (
-                        <img
+                        <Image
                           src={URL.createObjectURL(profileData.profilePicture)}
                           alt="Profile preview"
+                          width={80}
+                          height={80}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -513,42 +495,7 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
               </>
             )}
 
-            {step === 3 && (
-              <div className="space-y-4">
-                <p className="text-xs md:text-sm text-gray-600 text-center">
-                  Select interests to help us connect you with like-minded
-                  people
-                </p>
-                <div
-                  className="flex flex-wrap gap-2"
-                  role="group"
-                  aria-label="Select your interests"
-                >
-                  {interests.map((interest) => (
-                    <button
-                      key={interest}
-                      type="button"
-                      onClick={() => toggleInterest(interest)}
-                      className={`px-2 py-1 md:px-3 md:py-2 rounded-full text-xs md:text-sm border transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
-                        profileData.interests.includes(interest)
-                          ? "bg-pink-500 text-white border-pink-500"
-                          : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
-                      }`}
-                      aria-pressed={profileData.interests.includes(interest)}
-                      disabled={loading}
-                    >
-                      {interest}
-                    </button>
-                  ))}
-                </div>
-                {profileData.interests.length > 0 && (
-                  <p className="text-xs text-gray-500 text-center">
-                    {profileData.interests.length} interest
-                    {profileData.interests.length !== 1 ? "s" : ""} selected
-                  </p>
-                )}
-              </div>
-            )}
+
 
             <div className="flex gap-3 pt-4">
               {step > 1 && (
@@ -567,11 +514,9 @@ export default function ProfileSetup({ onNavigate }: ProfileSetupProps) {
                 className={`font-semibold text-white bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 h-10 md:h-11 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
                   step === 1 ? "w-full" : "flex-1"
                 }`}
-                disabled={step === 3 && profileData.interests.length === 0}
-                disabled={
-                  loading || (step === 3 && profileData.interests.length === 0)
-                }
+                disabled={loading}
               >
+                {" "}
                 {loading
                   ? "Processing..."
                   : step === 3

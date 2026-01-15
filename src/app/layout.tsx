@@ -1,14 +1,8 @@
-import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import CreatorContextProvider from "@/contexts/creatorProfile";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -50,7 +44,6 @@ export default function RootLayout({
     <html lang="en">
       <head />
       <body
-        // className={`${manrope.className} antialiased min-h-screen bg-white text-black`}
         className={`c-profile antialiased min-h-screen bg-white text-black`}
         suppressHydrationWarning={true}
       >
