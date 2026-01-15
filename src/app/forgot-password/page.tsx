@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { ROUTES } from "@/routes/routes";
 import { forgotPassword } from "@/api/api";
+import SignupChoiceModal from "@/components/modals/SignUpChoiceModal";
 
 interface ApiError {
   message?: string;
@@ -21,6 +22,7 @@ export default function ForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,17 +45,21 @@ export default function ForgotPassword() {
       await forgotPassword(email);
       setIsSubmitted(true);
       toast.success("Reset code sent to your email!");
-      
+
       // Navigate to verify code page after 2 seconds
       setTimeout(() => {
-        router.push(`${ROUTES.VERIFY_RESET_CODE}?email=${encodeURIComponent(email)}`);
+        router.push(
+          `${ROUTES.VERIFY_RESET_CODE}?email=${encodeURIComponent(email)}`
+        );
       }, 2000);
     } catch (err) {
       const axiosError = err as AxiosError<ApiError>;
       const errorMessage =
         axiosError.response?.data?.message ||
         axiosError.response?.data?.error ||
-        (err instanceof Error ? err.message : "Failed to send reset code. Please try again.");
+        (err instanceof Error
+          ? err.message
+          : "Failed to send reset code. Please try again.");
       setError(errorMessage);
       toast.error(errorMessage);
       console.error("Forgot password error:", err);
@@ -109,8 +115,8 @@ export default function ForgotPassword() {
                     Reset Password
                   </h2>
                   <p className="text-white/80 text-base leading-relaxed">
-                    Enter your email address and we'll send you a code to reset
-                    your password.
+                    Enter your email address and we&#39;ll send you a code to
+                    reset your password.
                   </p>
                 </div>
 
@@ -148,7 +154,9 @@ export default function ForgotPassword() {
                   {/* Error Message */}
                   {error && (
                     <div className="bg-red-500/20 border border-red-400/40 rounded-xl p-4 backdrop-blur-sm">
-                      <p className="text-red-100 text-sm font-medium">{error}</p>
+                      <p className="text-red-100 text-sm font-medium">
+                        {error}
+                      </p>
                     </div>
                   )}
 
@@ -181,13 +189,12 @@ export default function ForgotPassword() {
                     </span>
                   </Link>
                   <p className="text-center text-white/60 text-xs">
-                    Don't have an account?{" "}
-                    <Link
-                      href={ROUTES.FAN_SIGNUP}
-                      className="text-pink-300 hover:text-pink-200 font-semibold transition-colors"
+                    <button
+                      onClick={() => setIsSignupModalOpen(true)}
+                      className="text-white/80 hover:text-white font-medium transition-colors"
                     >
-                      Create account
-                    </Link>
+                      Don&apos;t have an account? Sign up
+                    </button>
                   </p>
                 </div>
               </>
@@ -202,14 +209,14 @@ export default function ForgotPassword() {
                     Code Sent Successfully
                   </h3>
                   <p className="text-white/80 text-sm mb-6">
-                    We've sent a password reset code to
+                    We&#39;ve sent a password reset code to
                     <br />
                     <span className="text-white font-semibold">{email}</span>
                   </p>
                   <div className="bg-white/10 rounded-xl p-4 mb-6">
                     <p className="text-white/70 text-xs">
-                      Didn't receive the code? Check your spam folder or wait a
-                      few seconds.
+                      Didn&#39;t receive the code? Check your spam folder or
+                      wait a few seconds.
                     </p>
                   </div>
                   <p className="text-white/60 text-sm">
@@ -226,6 +233,12 @@ export default function ForgotPassword() {
       <footer className="py-4 text-center text-white/50 text-xs">
         <p>&copy; {new Date().getFullYear()} Hooks. All rights reserved.</p>
       </footer>
+
+      {/* Signup Modal */}
+      <SignupChoiceModal
+        isOpen={isSignupModalOpen}
+        onClose={() => setIsSignupModalOpen(false)}
+      />
     </div>
   );
 }

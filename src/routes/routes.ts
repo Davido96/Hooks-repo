@@ -27,6 +27,7 @@ export const ROUTES = {
   // --- Core Authenticated Routes ---
   AUTHENTICATED_HOMEPAGE: "/authenticated-homepage",
   DISCOVER: "/authenticated-homepage",
+  EXCLUSIVE_CONTENT: "/exclusive-content",
   LIKES: "/likes",
   MESSAGES: "/messages",
   CREATOR_PROFILE: "/creator-profile",

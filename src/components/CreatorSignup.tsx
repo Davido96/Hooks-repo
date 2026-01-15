@@ -34,19 +34,21 @@ export default function CreatorSignup() {
   const handlePwdChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
 
-    if (e.target.value.length <= 8) {
+    if (e.target.value.length < 8) {
       setErrors((prev) => ({
         ...prev,
-        password: "Password must be less than or equal to 8 characters",
+        password: "Password must be at least 8 characters",
       }));
+      setIsPwdValid(false);
       return;
     }
 
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(e.target.value)) {
       setErrors((prev) => ({
         ...prev,
-        password: "Password must contain one lowercase, uppercase and a number",
+        password: "Password must contain lowercase, uppercase and a number",
       }));
+      setIsPwdValid(false);
       return;
     }
 
@@ -81,21 +83,31 @@ export default function CreatorSignup() {
       return;
     }
 
+    if (!isEmailValid || !isPwdValid) {
+      return toast.error("Please fix validation errors");
+    }
+
     setIsLoading(true);
     try {
-      await signup({
+      const result = await signup({
         email,
         password,
         password2: confirmPassword,
         user_type: "Creator",
       });
 
-      console.log("Creator registration successful:", email);
-
-      router.push(ROUTES.CREATOR_VERIFICATION_KYC_POLICY);
+      if (result) {
+        console.log("Creator registration successful:", email);
+        toast.success("Please sign in with your credentials");
+        router.push(ROUTES.LOGIN);
+      } else {
+        console.log("Creator registration completed. Please sign in.");
+        // Signup is successful even if result is null, redirect to login
+        router.push(ROUTES.LOGIN);
+      }
     } catch (error) {
       console.error("Registration error:", error);
-      // toast.error("Something went wrong during signup");
+      toast.error("Something went wrong during signup. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -10,11 +10,7 @@ import { useAuthStore } from "@/stores/authStore";
 
 // --- Component Imports ---
 
-// import { Header } from "@/components/fans/Header";
-// import { NavTabs } from "@/components/fans/NavTabs";
-// import { StatsBar } from "@/components/fans/StatsBar";
 import ProfileCard from "@/components/ProfileCard";
-// import { ActionButtons } from "@/components/fans/ActionButtons";
 import { LikeSuccessToast } from "@/components/fans/LikeSuccessToast";
 import SendKeysModal from "@/components/modals/SendKeysModal";
 import ProfileModalSubscribed from "@/components/modals/ProfileModalSubscribed";
@@ -28,7 +24,6 @@ import Filter from "./modals/CreatorFilter";
 import PerfectMatchModal from "@/components/modals/PerfectMatchModal";
 import DailyLimitModal from "@/components/modals/DailyLikeLimitModal";
 import Stats from "./Stats";
-// import ProfileCard from "./ProfileCard";
 import Navbar from "./Navbar";
 
 const transformToMatch = (rec: RawApiUser): Match => {
@@ -270,7 +265,12 @@ export default function AuthenticatedHomepage(): ReactNode {
           onFilterClick={() => setIsFilterOpen(true)}
         />
 
-        <Stats followers={followersCount} totalMatches={confirmedLikesCount} />
+        <Stats 
+          followers={followersCount} 
+          totalMatches={confirmedLikesCount}
+          todayMatches={dailyLikesRemaining}
+          dailyGoal={{ current: 10 - dailyLikesRemaining, target: 10 }}
+        />
 
         {/* <div className="container mx-auto px-4"> */}
         {/* <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 my-4"> */}
