@@ -114,6 +114,7 @@ export const updateProfile = async (data: ProfileUpdatePayload) => {
   const formData = new FormData();
   if (data.full_name) formData.append("full_name", data.full_name);
   if (data.gender) formData.append("gender", data.gender);
+  if (data.age) formData.append("age", String(data.age));
   if (data.display_pic) formData.append("display_pic", data.display_pic);
   if (data.monthly_sub_keys)
     formData.append("monthly_sub_keys", data.monthly_sub_keys);

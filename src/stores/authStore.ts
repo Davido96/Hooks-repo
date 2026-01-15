@@ -80,10 +80,11 @@ export const useAuthStore = create<AuthState>((set, get) => {
           data.user_type || "Fan"
         );
 
-        const user = response.data.user as AuthUser;
-        handleAuthSuccess(response.data.access, response.data.refresh, user);
-        toast.success("Signup successful!");
-        return user;
+        // Signup only returns email and user_type, not tokens
+        // User needs to sign in separately to get tokens
+        toast.success("Signup successful! Please sign in.");
+        set({ loading: false });
+        return null; // Return null as signup doesn't authenticate
       } catch (error) {
         const err = error as AxiosError<ApiError>;
         const errorMessage =
