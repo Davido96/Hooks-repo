@@ -50,10 +50,10 @@ export const getRecommendations = async () => {
 };
 
 /* ---------------------- LIKE APIs ---------------------- */
-export const sendLike = async (likeId: string | number) => {
-  const formData = new FormData();
-  formData.append("like", String(likeId));
-  return api.post("/follow/like/", formData);
+export const sendLike = async (userId: string | number) => {
+  return api.post("/follow/like/", {
+    like: String(userId),
+  });
 };
 
 export const getLikes = async (
@@ -66,10 +66,10 @@ export const respondLike = async (
   likeInstance: string | number,
   action: "accept" | "reject"
 ) => {
-  const formData = new FormData();
-  formData.append("like_instance", String(likeInstance));
-  formData.append("action", action);
-  return api.post("/follow/like/respond/", formData);
+  return api.post("/follow/like/respond/", {
+    like_instance: String(likeInstance),
+    action: action,
+  });
 };
 
 /* ---------------------- AUTH APIs ---------------------- */

@@ -29,16 +29,18 @@ import Navbar from "./Navbar";
 const transformToMatch = (rec: RawApiUser): Match => {
   return {
     user_id: String(rec.id ?? ""),
-    full_name: rec.full_name ?? "No Name",
-    age: rec.age ?? null,
-    state: rec.state ?? "",
-    city: rec.city ?? "",
-    display_pic: rec.display_pic ?? "",
-    interests: rec.interests ?? [],
-    user_type: "Creator",
-    bio: rec.bio ?? "",
-    followers: rec.followers ?? 0,
-    subscribers: Number(rec.subscribers ?? 0),
+    full_name: rec.full_name || "No Name",
+    age: rec.age || null,
+    state: rec.state || "Unknown",
+    city: rec.city || "Unknown",
+    display_pic: rec.display_pic || "/avatar.png",
+    interests: Array.isArray(rec.interests) && rec.interests.length > 0 
+      ? rec.interests 
+      : ["Single", "Friendly"],
+    user_type: "Creator" as const,
+    bio: rec.bio || "Passionate creator sharing amazing content",
+    followers: Number(rec.followers) || 0,
+    subscribers: Number(rec.subscribers) || 0,
     subscriptionFee: 10,
     gender: null,
   };

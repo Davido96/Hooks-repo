@@ -90,36 +90,36 @@ const ProfileCard: React.FC<Props> = ({
 
           {/* Profile Info Overlay */}
           <div className="z-50 absolute max-w-[90%] left-4 bottom-3 text-white">
+            {/* Name and Age */}
             <h3 className="text-3xl font-bold truncate">
-              {currentMatch.full_name}{" "}
-              {currentMatch.age && <span className="text-2xl">{currentMatch.age}</span>}
+              {currentMatch.full_name}
+              {currentMatch.age && currentMatch.age > 0 && (
+                <span className="text-2xl ml-2">{currentMatch.age}</span>
+              )}
             </h3>
             
             <div className="flex flex-col gap-2 mt-3">
               {/* Location */}
-              {(currentMatch.state || currentMatch.city) && (
-                <p>
-                  📍 {currentMatch.state} {currentMatch.city}
-                </p>
-              )}
+              <p className="text-sm">
+                📍 {currentMatch.state || "Location TBA"}{" "}
+                {currentMatch.city && currentMatch.city !== "Unknown" ? currentMatch.city : ""}
+              </p>
 
               {/* Stats */}
-              <div className="flex gap-4">
-                {currentMatch.followers !== undefined && (
-                  <p>💚 {currentMatch.followers} followers</p>
-                )}
-                {currentMatch.subscribers !== undefined && (
-                  <p>🔥 {currentMatch.subscribers} subscribers</p>
-                )}
+              <div className="flex gap-4 text-sm">
+                <p>💚 {currentMatch.followers || 0} followers</p>
+                <p>🔥 {currentMatch.subscribers || 0} subscribers</p>
               </div>
             </div>
 
             {/* Interests */}
-            {currentMatch.interests && currentMatch.interests.length > 0 && (
+            {Array.isArray(currentMatch.interests) && 
+              currentMatch.interests.length > 0 && 
+              currentMatch.interests[0] !== "" && (
               <div className="flex gap-2 mt-3 flex-wrap">
-                {currentMatch.interests.map((interest) => (
+                {currentMatch.interests.slice(0, 3).map((interest) => (
                   <p
-                    className="capitalize text-xs font-bold bg-tagBackground py-1 px-[7px] rounded-full"
+                    className="capitalize text-xs font-bold bg-tagBackground py-1 px-[7px] rounded-full whitespace-nowrap"
                     key={interest}
                   >
                     {interest}
@@ -129,12 +129,12 @@ const ProfileCard: React.FC<Props> = ({
             )}
 
             {/* Bio */}
-            {currentMatch.bio && (
+            {currentMatch.bio && currentMatch.bio.trim().length > 0 && (
               <p className="mt-3 text-sm line-clamp-2">{currentMatch.bio}</p>
             )}
 
             {/* Status */}
-            <p className="text-[#22C55E] mt-3">🟢 Online</p>
+            <p className="text-[#22C55E] mt-3 text-xs">🟢 Online</p>
           </div>
         </div>
 
