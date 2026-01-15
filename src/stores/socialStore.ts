@@ -42,6 +42,7 @@ interface SocialState {
   confirmedLikesCount: number;
   loading: boolean;
   error: string | null;
+  matchedUser: Match | null;
 
   followUser: (id: string | number) => Promise<void>;
   unfollowUser: (id: string | number) => Promise<void>;
@@ -52,12 +53,13 @@ interface SocialState {
   getConfirmedLikesCount: () => Promise<void>;
   getRecommendations: () => Promise<void>;
   isFollowing: (id: string | number) => boolean;
-  sendLike: (id: string | number) => Promise<void>;
+  sendLike: (id: string | number) => Promise<Match | null>;
   getLikes: (status: "pending" | "requested" | "confirmed") => Promise<void>;
   respondLike: (
     likeInstance: string | number,
     action: "accept" | "reject"
-  ) => Promise<void>;
+  ) => Promise<Match | null>;
+  clearMatchedUser: () => void;
   clearError: () => void;
 }
 
@@ -71,6 +73,7 @@ export const useSocialStore = create<SocialState>((set, get) => ({
   confirmedLikesCount: 0,
   loading: false,
   error: null,
+  matchedUser: null,
 
   isFollowing: (id) => {
     const followings = get().followings;
@@ -186,9 +189,10 @@ export const useSocialStore = create<SocialState>((set, get) => ({
   sendLike: async (id) => {
     set({ loading: true, error: null });
     try {
-      await apiSendLike(id);
+      const response = await apiSendLike(id);
       set({ loading: false });
       toast.success("Like sent successfully!");
+      return null; // Like sent, not accepted yet
     } catch (err) {
       const axiosError = err as AxiosError<ApiError>;
       const errorMessage =
@@ -214,10 +218,31 @@ export const useSocialStore = create<SocialState>((set, get) => ({
   respondLike: async (likeInstance, action) => {
     set({ loading: true, error: null });
     try {
-      await apiRespondLike(likeInstance, action);
+      const response = await apiRespondLike(likeInstance, action);
       set({ loading: false });
       toast.success(`Like ${action}ed successfully!`);
       await get().getLikes("requested");
+      
+      // If action is accept, set the matched user and trigger modal
+      if (action === "accept" && response.data?.like) {
+        const matchedUser: Match = {
+          user_id: String(response.data.like.id),
+          full_name: response.data.like.full_name,
+          age: null,
+          state: "",
+          city: "",
+          bio: response.data.like.bio || "",
+          gender: null,
+          interests: [],
+          followers: 0,
+          subscribers: 0,
+          subscriptionFee: 10,
+          user_type: "Creator",
+        };
+        set({ matchedUser });
+      }
+      
+      return action === "accept" ? get().matchedUser : null;
     } catch (err) {
       const axiosError = err as AxiosError<ApiError>;
       const errorMessage =
@@ -230,5 +255,6 @@ export const useSocialStore = create<SocialState>((set, get) => ({
     }
   },
 
+  clearMatchedUser: () => set({ matchedUser: null }),
   clearError: () => set({ error: null }),
 }));

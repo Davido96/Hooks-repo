@@ -12,6 +12,7 @@ import { useAuthStore } from "@/stores/authStore";
 
 import ProfileCard from "@/components/ProfileCard";
 import { LikeSuccessToast } from "@/components/fans/LikeSuccessToast";
+import { MatchModal } from "@/components/fans/MatchModal";
 import SendKeysModal from "@/components/modals/SendKeysModal";
 import ProfileModalSubscribed from "@/components/modals/ProfileModalSubscribed";
 import ProfileModalNotSubscribed from "@/components/modals/ProfileModalNotSubscribed";
@@ -59,6 +60,8 @@ export default function AuthenticatedHomepage(): ReactNode {
     getFollowerCount,
     getFollowingCount,
     getConfirmedLikesCount,
+    matchedUser,
+    clearMatchedUser,
   } = useSocialStore();
 
   // UI state
@@ -321,6 +324,25 @@ export default function AuthenticatedHomepage(): ReactNode {
 
         <LikeSuccessToast isOpen={showLikeSuccess} />
       </div>
+
+      {/* Match Modal - Shown when like is accepted */}
+      {matchedUser && (
+        <MatchModal
+          matchedUser={{
+            id: Number(matchedUser.user_id),
+            user_id: matchedUser.user_id,
+            full_name: matchedUser.full_name,
+            display_pic: matchedUser.display_pic,
+            age: matchedUser.age,
+            bio: matchedUser.bio,
+            gender: matchedUser.gender,
+            state: matchedUser.state,
+            city: matchedUser.city,
+            interests: matchedUser.interests,
+          }}
+          onClose={() => clearMatchedUser()}
+        />
+      )}
 
       {/* --- Modals --- */}
       {currentMatch &&
