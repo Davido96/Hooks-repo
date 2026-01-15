@@ -307,12 +307,14 @@ export default function AuthenticatedHomepage(): ReactNode {
         {/* </div> */}
 
         <ProfileCard
+          currentMatch={currentMatch}
           onLike={handleLike}
           onDislike={handleDislike}
           dailyLikesRemaining={dailyLikesRemaining}
           onDailyLimitReached={() => setIsDailyLimitOpen(true)}
-          onPerfectMatch={() => setIsPerfectMatchOpen(true)}
           isPerfectMatch={currentMatch?.isMutual ?? false}
+          remainingProfiles={remaining}
+          totalMatches={confirmedLikesCount}
         />
 
         <LikeSuccessToast isOpen={showLikeSuccess} />
